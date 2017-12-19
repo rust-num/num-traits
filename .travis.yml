@@ -1,25 +1,13 @@
 language: rust
 rust:
-  - 1.15.0
+  - 1.8.0
+  - stable
   - beta
   - nightly
-matrix:
-  include:
-    - rust: 1.8.0
-      before_script:
-        # libc 0.2.34 started using #[deprecated]
-        - cargo generate-lockfile
-        - cargo update --package libc --precise 0.2.33
 sudo: false
 script:
   - cargo build --verbose
   - ./ci/test_full.sh
-  - cargo doc
-after_success: |
-  [ $TRAVIS_BRANCH = master ] &&
-  [ $TRAVIS_PULL_REQUEST = false ] &&
-  [ $TRAVIS_RUST_VERSION = nightly ] &&
-  ssh-agent ./ci/deploy.sh
 notifications:
   email:
     on_success: never
