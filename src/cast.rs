@@ -452,6 +452,48 @@ impl<T: NumCast> NumCast for Wrapping<T> {
     }
 }
 
+/// A generic interface for casting between machine scalars with the
+/// `as` operator, which admits narrowing and precision loss.
+///
+/// # Examples
+///
+/// ```
+/// # use num_traits::AsPrimitive;
+/// let three: i32 = (3.14159265f32).as_();
+/// assert_eq!(three, 3);
+/// ```
+pub trait AsPrimitive<T>: 'static + Copy
+where
+    T: 'static + Copy
+{
+    /// Convert a value to another, using the `as` operator.
+    fn as_(self) -> T;
+}
+
+macro_rules! impl_as_primitive {
+    ($T: ty => $( $U: ty ),* ) => {
+        $(
+        impl AsPrimitive<$U> for $T {
+            #[inline] fn as_(self) -> $U { self as $U }
+        }
+        )*
+    };
+}
+
+impl_as_primitive!(u8 => char, u8, i8, u16, i16, u32, i32, u64, isize, usize, i64, f32, f64);
+impl_as_primitive!(i8 => u8, i8, u16, i16, u32, i32, u64, isize, usize, i64, f32, f64);
+impl_as_primitive!(u16 => u8, i8, u16, i16, u32, i32, u64, isize, usize, i64, f32, f64);
+impl_as_primitive!(i16 => u8, i8, u16, i16, u32, i32, u64, isize, usize, i64, f32, f64);
+impl_as_primitive!(u32 => u8, i8, u16, i16, u32, i32, u64, isize, usize, i64, f32, f64);
+impl_as_primitive!(i32 => u8, i8, u16, i16, u32, i32, u64, isize, usize, i64, f32, f64);
+impl_as_primitive!(u64 => u8, i8, u16, i16, u32, i32, u64, isize, usize, i64, f32, f64);
+impl_as_primitive!(i64 => u8, i8, u16, i16, u32, i32, u64, isize, usize, i64, f32, f64);
+impl_as_primitive!(usize => u8, i8, u16, i16, u32, i32, u64, isize, usize, i64, f32, f64);
+impl_as_primitive!(isize => u8, i8, u16, i16, u32, i32, u64, isize, usize, i64, f32, f64);
+impl_as_primitive!(f32 => u8, i8, u16, i16, u32, i32, u64, isize, usize, i64, f32, f64);
+impl_as_primitive!(f64 => u8, i8, u16, i16, u32, i32, u64, isize, usize, i64, f32, f64);
+impl_as_primitive!(char => char, u8, i8, u16, i16, u32, i32, u64, isize, usize, i64);
+
 #[test]
 fn to_primitive_float() {
     use std::f32;
@@ -508,4 +550,16 @@ fn wrapping_is_fromprimitive() {
 fn wrapping_is_numcast() {
     fn require_numcast<T: NumCast>(_: &T) {}
     require_numcast(&Wrapping(42));
+}
+
+#[test]
+fn as_primitive() {
+    let x: f32 = (1.625f64).as_();
+    assert_eq!(x, 1.625f32);
+
+    let x: f32 = (3.14159265358979323846f64).as_();
+    assert_eq!(x, 3.1415927f32);
+
+    let x: u8 = (768i16).as_();
+    assert_eq!(x, 0);
 }
