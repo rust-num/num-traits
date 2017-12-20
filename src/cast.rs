@@ -493,6 +493,7 @@ impl_as_primitive!(isize => u8, i8, u16, i16, u32, i32, u64, isize, usize, i64, 
 impl_as_primitive!(f32 => u8, i8, u16, i16, u32, i32, u64, isize, usize, i64, f32, f64);
 impl_as_primitive!(f64 => u8, i8, u16, i16, u32, i32, u64, isize, usize, i64, f32, f64);
 impl_as_primitive!(char => char, u8, i8, u16, i16, u32, i32, u64, isize, usize, i64);
+impl_as_primitive!(bool => u8, i8, u16, i16, u32, i32, u64, isize, usize, i64);
 
 #[test]
 fn to_primitive_float() {
