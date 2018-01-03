@@ -21,6 +21,8 @@ pub trait PrimInt
     + CheckedSub<Output=Self>
     + CheckedMul<Output=Self>
     + CheckedDiv<Output=Self>
+    + CheckedShl<usize, Output=Self>
+    + CheckedShr<usize, Output=Self>
     + Saturating
 {
     /// Returns the number of ones in the binary representation of `self`.
