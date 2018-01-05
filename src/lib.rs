@@ -18,6 +18,7 @@ use std::num::Wrapping;
 
 pub use bounds::Bounded;
 pub use float::{Float, FloatConst};
+pub use realnum::RealNum;
 pub use identities::{Zero, One, zero, one};
 pub use ops::checked::*;
 pub use ops::wrapping::*;
@@ -32,6 +33,7 @@ pub mod sign;
 pub mod ops;
 pub mod bounds;
 pub mod float;
+pub mod realnum;
 pub mod cast;
 pub mod int;
 pub mod pow;
@@ -303,8 +305,8 @@ macro_rules! float_trait_impl {
                         };
 
                         match (is_positive, exp) {
-                            (true,  Ok(exp)) => base.powi(exp as i32),
-                            (false, Ok(exp)) => 1.0 / base.powi(exp as i32),
+                            (true,  Ok(exp)) => Float::powi(base, exp as i32),
+                            (false, Ok(exp)) => 1.0 / Float::powi(base, exp as i32),
                             (_, Err(_))      => return Err(PFE { kind: Invalid }),
                         }
                     },
