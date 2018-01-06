@@ -3,14 +3,14 @@ use std::ops::Neg;
 use {Num, NumCast, Float};
 
 // NOTE: These doctests have the same issue as those in src/float.rs.
-// They're testing the inherent methods directly, and not those of `RealNum`.
+// They're testing the inherent methods directly, and not those of `Real`.
 
 /// A trait for real number types that do not necessarily have
 /// floating-point-specific characteristics such as NaN and infinity.
 ///
 /// See [this Wikipedia article](https://en.wikipedia.org/wiki/Real_data_type)
 /// for a list of data types that could meaningfully implement this trait.
-pub trait RealNum
+pub trait Real
     : Num
     + Copy
     + NumCast
@@ -20,10 +20,10 @@ pub trait RealNum
     /// Returns the smallest finite value that this type can represent.
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     /// use std::f64;
     ///
-    /// let x: f64 = RealNum::min_value();
+    /// let x: f64 = Real::min_value();
     ///
     /// assert_eq!(x, f64::MIN);
     /// ```
@@ -32,10 +32,10 @@ pub trait RealNum
     /// Returns the smallest positive, normalized value that this type can represent.
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     /// use std::f64;
     ///
-    /// let x: f64 = RealNum::min_positive_value();
+    /// let x: f64 = Real::min_positive_value();
     ///
     /// assert_eq!(x, f64::MIN_POSITIVE);
     /// ```
@@ -44,10 +44,10 @@ pub trait RealNum
     /// Returns epsilon, a small positive value.
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     /// use std::f64;
     ///
-    /// let x: f64 = RealNum::epsilon();
+    /// let x: f64 = Real::epsilon();
     ///
     /// assert_eq!(x, f64::EPSILON);
     /// ```
@@ -63,10 +63,10 @@ pub trait RealNum
     /// Returns the largest finite value that this type can represent.
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     /// use std::f64;
     ///
-    /// let x: f64 = RealNum::max_value();
+    /// let x: f64 = Real::max_value();
     /// assert_eq!(x, f64::MAX);
     /// ```
     fn max_value() -> Self;
@@ -74,7 +74,7 @@ pub trait RealNum
     /// Returns the largest integer less than or equal to a number.
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     ///
     /// let f = 3.99;
     /// let g = 3.0;
@@ -87,7 +87,7 @@ pub trait RealNum
     /// Returns the smallest integer greater than or equal to a number.
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     ///
     /// let f = 3.01;
     /// let g = 4.0;
@@ -101,7 +101,7 @@ pub trait RealNum
     /// `0.0`.
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     ///
     /// let f = 3.3;
     /// let g = -3.3;
@@ -114,7 +114,7 @@ pub trait RealNum
     /// Return the integer part of a number.
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     ///
     /// let f = 3.3;
     /// let g = -3.7;
@@ -127,7 +127,7 @@ pub trait RealNum
     /// Returns the fractional part of a number.
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     ///
     /// let x = 3.5;
     /// let y = -3.5;
@@ -143,7 +143,7 @@ pub trait RealNum
     /// number is `Float::nan()`.
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     /// use std::f64;
     ///
     /// let x = 3.5;
@@ -166,7 +166,7 @@ pub trait RealNum
     /// - `Float::nan()` if the number is `Float::nan()`
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     /// use std::f64;
     ///
     /// let f = 3.5;
@@ -182,7 +182,7 @@ pub trait RealNum
     /// `Float::infinity()`, and with newer versions of Rust `f64::NAN`.
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     /// use std::f64;
     ///
     /// let neg_nan: f64 = -f64::NAN;
@@ -200,7 +200,7 @@ pub trait RealNum
     /// `Float::neg_infinity()`, and with newer versions of Rust `-f64::NAN`.
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     /// use std::f64;
     ///
     /// let nan: f64 = f64::NAN;
@@ -219,7 +219,7 @@ pub trait RealNum
     /// a separate multiplication operation followed by an add.
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     ///
     /// let m = 10.0;
     /// let x = 4.0;
@@ -235,7 +235,7 @@ pub trait RealNum
     /// Take the reciprocal (inverse) of a number, `1/x`.
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     ///
     /// let x = 2.0;
     /// let abs_difference = (x.recip() - (1.0/x)).abs();
@@ -249,7 +249,7 @@ pub trait RealNum
     /// Using this function is generally faster than using `powf`
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     ///
     /// let x = 2.0;
     /// let abs_difference = (x.powi(2) - x*x).abs();
@@ -261,7 +261,7 @@ pub trait RealNum
     /// Raise a number to a real number power.
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     ///
     /// let x = 2.0;
     /// let abs_difference = (x.powf(2.0) - x*x).abs();
@@ -276,7 +276,7 @@ pub trait RealNum
     /// If `self` is negative, but not floating-point, the implementation may panic.
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     ///
     /// let positive = 4.0;
     /// let negative = -4.0;
@@ -291,7 +291,7 @@ pub trait RealNum
     /// Returns `e^(self)`, (the exponential function).
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     ///
     /// let one = 1.0;
     /// // e^1
@@ -307,7 +307,7 @@ pub trait RealNum
     /// Returns `2^(self)`.
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     ///
     /// let f = 2.0;
     ///
@@ -321,7 +321,7 @@ pub trait RealNum
     /// Returns the natural logarithm of the number.
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     ///
     /// let one = 1.0;
     /// // e^1
@@ -337,7 +337,7 @@ pub trait RealNum
     /// Returns the logarithm of the number with respect to an arbitrary base.
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     ///
     /// let ten = 10.0;
     /// let two = 2.0;
@@ -356,7 +356,7 @@ pub trait RealNum
     /// Returns the base 2 logarithm of the number.
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     ///
     /// let two = 2.0;
     ///
@@ -370,7 +370,7 @@ pub trait RealNum
     /// Returns the base 10 logarithm of the number.
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     ///
     /// let ten = 10.0;
     ///
@@ -420,7 +420,7 @@ pub trait RealNum
     /// Returns the maximum of the two numbers.
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     ///
     /// let x = 1.0;
     /// let y = 2.0;
@@ -432,7 +432,7 @@ pub trait RealNum
     /// Returns the minimum of the two numbers.
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     ///
     /// let x = 1.0;
     /// let y = 2.0;
@@ -447,7 +447,7 @@ pub trait RealNum
     /// * Else: `self - other`
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     ///
     /// let x = 3.0;
     /// let y = -3.0;
@@ -463,7 +463,7 @@ pub trait RealNum
     /// Take the cubic root of a number.
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     ///
     /// let x = 8.0;
     ///
@@ -478,7 +478,7 @@ pub trait RealNum
     /// legs of length `x` and `y`.
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     ///
     /// let x = 2.0;
     /// let y = 3.0;
@@ -493,7 +493,7 @@ pub trait RealNum
     /// Computes the sine of a number (in radians).
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     /// use std::f64;
     ///
     /// let x = f64::consts::PI/2.0;
@@ -507,7 +507,7 @@ pub trait RealNum
     /// Computes the cosine of a number (in radians).
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     /// use std::f64;
     ///
     /// let x = 2.0*f64::consts::PI;
@@ -521,7 +521,7 @@ pub trait RealNum
     /// Computes the tangent of a number (in radians).
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     /// use std::f64;
     ///
     /// let x = f64::consts::PI/4.0;
@@ -536,7 +536,7 @@ pub trait RealNum
     /// [-1, 1].
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     /// use std::f64;
     ///
     /// let f = f64::consts::PI / 2.0;
@@ -553,7 +553,7 @@ pub trait RealNum
     /// [-1, 1].
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     /// use std::f64;
     ///
     /// let f = f64::consts::PI / 4.0;
@@ -569,7 +569,7 @@ pub trait RealNum
     /// range [-pi/2, pi/2];
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     ///
     /// let f = 1.0;
     ///
@@ -588,7 +588,7 @@ pub trait RealNum
     /// * `y < 0`: `arctan(y/x) - pi` -> `(-pi, -pi/2)`
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     /// use std::f64;
     ///
     /// let pi = f64::consts::PI;
@@ -613,7 +613,7 @@ pub trait RealNum
     /// `(sin(x), cos(x))`.
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     /// use std::f64;
     ///
     /// let x = f64::consts::PI/4.0;
@@ -631,7 +631,7 @@ pub trait RealNum
     /// number is close to zero.
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     ///
     /// let x = 7.0;
     ///
@@ -646,7 +646,7 @@ pub trait RealNum
     /// the operations were performed separately.
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     /// use std::f64;
     ///
     /// let x = f64::consts::E - 1.0;
@@ -661,7 +661,7 @@ pub trait RealNum
     /// Hyperbolic sine function.
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     /// use std::f64;
     ///
     /// let e = f64::consts::E;
@@ -679,7 +679,7 @@ pub trait RealNum
     /// Hyperbolic cosine function.
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     /// use std::f64;
     ///
     /// let e = f64::consts::E;
@@ -697,7 +697,7 @@ pub trait RealNum
     /// Hyperbolic tangent function.
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     /// use std::f64;
     ///
     /// let e = f64::consts::E;
@@ -715,7 +715,7 @@ pub trait RealNum
     /// Inverse hyperbolic sine function.
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     ///
     /// let x = 1.0;
     /// let f = x.sinh().asinh();
@@ -729,7 +729,7 @@ pub trait RealNum
     /// Inverse hyperbolic cosine function.
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     ///
     /// let x = 1.0;
     /// let f = x.cosh().acosh();
@@ -743,7 +743,7 @@ pub trait RealNum
     /// Inverse hyperbolic tangent function.
     ///
     /// ```
-    /// use num_traits::realnum::RealNum;
+    /// use num_traits::real::Real;
     /// use std::f64;
     ///
     /// let e = f64::consts::E;
@@ -756,7 +756,7 @@ pub trait RealNum
     fn atanh(self) -> Self;
 }
 
-impl<T: Float> RealNum for T {
+impl<T: Float> Real for T {
     fn min_value() -> Self {
         Self::min_value()
     }
