@@ -12,3 +12,7 @@ version = "0.1.41"
 readme = "README.md"
 
 [dependencies]
+
+[features]
+default = ["std"]
+std = []

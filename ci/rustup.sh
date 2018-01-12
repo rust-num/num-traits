@@ -7,6 +7,9 @@ set -ex
 export TRAVIS_RUST_VERSION
 for TRAVIS_RUST_VERSION in 1.8.0 stable beta nightly; do
     run="rustup run $TRAVIS_RUST_VERSION"
+    if [ "$TRAVIS_RUST_VERSION" = 1.8.0 ]; then
+      $run cargo generate-lockfile
+    fi
     $run cargo build --verbose
     $run $PWD/ci/test_full.sh
 done
