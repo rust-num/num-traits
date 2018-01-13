@@ -15,6 +15,7 @@
 use std::ops::{Add, Sub, Mul, Div, Rem};
 use std::ops::{AddAssign, SubAssign, MulAssign, DivAssign, RemAssign};
 use std::num::Wrapping;
+use std::fmt;
 
 pub use bounds::Bounded;
 pub use float::{Float, FloatConst};
@@ -161,6 +162,17 @@ pub enum FloatErrorKind {
 #[derive(Debug)]
 pub struct ParseFloatError {
     pub kind: FloatErrorKind,
+}
+
+impl fmt::Display for ParseFloatError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let description = match self.kind {
+            FloatErrorKind::Empty => "cannot parse float from empty string",
+            FloatErrorKind::Invalid => "invalid float literal",
+        };
+
+        description.fmt(f)
+    }
 }
 
 // FIXME: The standard library from_str_radix on floats was deprecated, so we're stuck
