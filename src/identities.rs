@@ -17,7 +17,6 @@ pub trait Zero: Sized + Add<Self, Output = Self> {
     /// This function should return the same result at all times regardless of
     /// external mutable state, for example values stored in TLS or in
     /// `static mut`s.
-    // FIXME (#5527): This should be an associated constant
     const ZERO: Self;
     
     #[inline]
@@ -83,7 +82,6 @@ pub trait One: Sized + Mul<Self, Output = Self> {
     /// This function should return the same result at all times regardless of
     /// external mutable state, for example values stored in TLS or in
     /// `static mut`s.
-    // FIXME (#5527): This should be an associated constant
     const ONE: Self;
 
     #[inline]
