@@ -20,6 +20,7 @@ pub trait Zero: Sized + Add<Self, Output = Self> {
     // FIXME (#5527): This should be an associated constant
     const ZERO: Self;
     
+    #[inline]
     fn zero() -> Self {
         Self::ZERO
     }
@@ -85,6 +86,7 @@ pub trait One: Sized + Mul<Self, Output = Self> {
     // FIXME (#5527): This should be an associated constant
     const ONE: Self;
 
+    #[inline]
     fn one() -> Self {
         Self::ONE
     }
