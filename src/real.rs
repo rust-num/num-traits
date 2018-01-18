@@ -56,9 +56,7 @@ pub trait Real
     ///
     /// The default implementation will panic if `f32::EPSILON` cannot
     /// be cast to `Self`.
-    fn epsilon() -> Self {
-        Self::from(::std::f32::EPSILON).expect("Unable to cast from f32::EPSILON")
-    }
+    fn epsilon() -> Self;
 
     /// Returns the largest finite value that this type can represent.
     ///
@@ -412,12 +410,7 @@ pub trait Real
     ///
     /// assert!(abs_difference < 1e-10);
     /// ```
-    #[inline]
-    fn to_degrees(self) -> Self {
-        let halfpi = Self::zero().acos();
-        let ninety = Self::from(90u8).unwrap();
-        self * ninety / halfpi
-    }
+    fn to_degrees(self) -> Self;
 
     /// Converts degrees to radians.
     ///
@@ -430,12 +423,7 @@ pub trait Real
     ///
     /// assert!(abs_difference < 1e-10);
     /// ```
-    #[inline]
-    fn to_radians(self) -> Self {
-        let halfpi = Self::zero().acos();
-        let ninety = Self::from(90u8).unwrap();
-        self * halfpi / ninety
-    }
+    fn to_radians(self) -> Self;
 
     /// Returns the maximum of the two numbers.
     ///
