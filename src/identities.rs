@@ -17,8 +17,12 @@ pub trait Zero: Sized + Add<Self, Output = Self> {
     /// This function should return the same result at all times regardless of
     /// external mutable state, for example values stored in TLS or in
     /// `static mut`s.
-    // FIXME (#5527): This should be an associated constant
-    fn zero() -> Self;
+    const ZERO: Self;
+    
+    #[inline]
+    fn zero() -> Self {
+        Self::ZERO
+    }
 
     /// Returns `true` if `self` is equal to the additive identity.
     #[inline]
@@ -28,6 +32,7 @@ pub trait Zero: Sized + Add<Self, Output = Self> {
 macro_rules! zero_impl {
     ($t:ty, $v:expr) => {
         impl Zero for $t {
+            const ZERO: $t = $v;
             #[inline]
             fn zero() -> $t { $v }
             #[inline]
@@ -52,12 +57,12 @@ zero_impl!(f32, 0.0f32);
 zero_impl!(f64, 0.0f64);
 
 impl<T: Zero> Zero for Wrapping<T> where Wrapping<T>: Add<Output=Wrapping<T>> {
+    
+
     fn is_zero(&self) -> bool {
         self.0.is_zero()
     }
-    fn zero() -> Self {
-        Wrapping(T::zero())
-    }
+    const ZERO: Self = Wrapping(T::ZERO);
 }
 
 
@@ -77,13 +82,18 @@ pub trait One: Sized + Mul<Self, Output = Self> {
     /// This function should return the same result at all times regardless of
     /// external mutable state, for example values stored in TLS or in
     /// `static mut`s.
-    // FIXME (#5527): This should be an associated constant
-    fn one() -> Self;
+    const ONE: Self;
+
+    #[inline]
+    fn one() -> Self {
+        Self::ONE
+    }
 }
 
 macro_rules! one_impl {
     ($t:ty, $v:expr) => {
         impl One for $t {
+            const ONE: $t = $v;
             #[inline]
             fn one() -> $t { $v }
         }
@@ -106,9 +116,7 @@ one_impl!(f32, 1.0f32);
 one_impl!(f64, 1.0f64);
 
 impl<T: One> One for Wrapping<T> where Wrapping<T>: Mul<Output=Wrapping<T>> {
-    fn one() -> Self {
-        Wrapping(T::one())
-    }
+    const ONE: Self = Wrapping(T::ONE);
 }
 
 // Some helper functions provided for backwards compatibility.

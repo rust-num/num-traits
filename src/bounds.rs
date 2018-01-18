@@ -5,21 +5,25 @@ use std::num::Wrapping;
 
 /// Numbers which have upper and lower bounds
 pub trait Bounded {
-    // FIXME (#5527): These should be associated constants
     /// returns the smallest finite number this type can represent
-    fn min_value() -> Self;
+    const MIN: Self;
+    #[inline]
+    fn min_value() -> Self where Self: Sized {
+        Self::MIN
+    }
     /// returns the largest finite number this type can represent
-    fn max_value() -> Self;
+    const MAX: Self;
+    #[inline]
+    fn max_value() -> Self where Self: Sized {
+        Self::MAX
+    }
 }
 
 macro_rules! bounded_impl {
     ($t:ty, $min:expr, $max:expr) => {
         impl Bounded for $t {
-            #[inline]
-            fn min_value() -> $t { $min }
-
-            #[inline]
-            fn max_value() -> $t { $max }
+            const MIN: $t = $min;
+            const MAX: $t = $max;
         }
     }
 }
@@ -37,8 +41,9 @@ bounded_impl!(i32,   i32::MIN,   i32::MAX);
 bounded_impl!(i64,   i64::MIN,   i64::MAX);
 
 impl<T: Bounded> Bounded for Wrapping<T> {
-    fn min_value() -> Self { Wrapping(T::min_value()) }
-    fn max_value() -> Self { Wrapping(T::max_value()) }
+
+    const MIN: Self = Wrapping(T::MIN);
+    const MAX: Self = Wrapping(T::MAX);
 }
 
 bounded_impl!(f32, f32::MIN, f32::MAX);
@@ -61,14 +66,8 @@ macro_rules! for_each_tuple {
 macro_rules! bounded_tuple {
     ( $($name:ident)* ) => (
         impl<$($name: Bounded,)*> Bounded for ($($name,)*) {
-            #[inline]
-            fn min_value() -> Self {
-                ($($name::min_value(),)*)
-            }
-            #[inline]
-            fn max_value() -> Self {
-                ($($name::max_value(),)*)
-            }
+            const MIN: Self = ($($name::MIN,)*);
+            const MAX: Self = ($($name::MAX,)*);
         }
     );
 }
