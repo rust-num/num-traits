@@ -273,7 +273,10 @@ pub trait Real
     /// Take the square root of a number.
     ///
     /// Returns NaN if `self` is a negative floating-point number.  
-    /// If `self` is negative, but not floating-point, the implementation may panic.
+    ///
+    /// # Panics
+    ///
+    /// If the implementing type doesn't support NaN, this method should panic if `self < 0`.
     ///
     /// ```
     /// use num_traits::real::Real;
@@ -320,6 +323,10 @@ pub trait Real
 
     /// Returns the natural logarithm of the number.
     ///
+    /// # Panics
+    ///
+    /// If `self <= 0` and this type does not support a NaN representation, this function should panic.
+    ///
     /// ```
     /// use num_traits::real::Real;
     ///
@@ -335,6 +342,10 @@ pub trait Real
     fn ln(self) -> Self;
 
     /// Returns the logarithm of the number with respect to an arbitrary base.
+    ///
+    /// # Panics
+    ///
+    /// If `self <= 0` and this type does not support a NaN representation, this function should panic.
     ///
     /// ```
     /// use num_traits::real::Real;
@@ -355,6 +366,10 @@ pub trait Real
 
     /// Returns the base 2 logarithm of the number.
     ///
+    /// # Panics
+    ///
+    /// If `self <= 0` and this type does not support a NaN representation, this function should panic.
+    ///
     /// ```
     /// use num_traits::real::Real;
     ///
@@ -368,6 +383,11 @@ pub trait Real
     fn log2(self) -> Self;
 
     /// Returns the base 10 logarithm of the number.
+    ///
+    /// # Panics
+    ///
+    /// If `self <= 0` and this type does not support a NaN representation, this function should panic.
+    ///
     ///
     /// ```
     /// use num_traits::real::Real;
@@ -535,6 +555,11 @@ pub trait Real
     /// the range [-pi/2, pi/2] or NaN if the number is outside the range
     /// [-1, 1].
     ///
+    /// # Panics
+    ///
+    /// If this type does not support a NaN representation, this function should panic
+    /// if the number is outside the range [-1, 1].
+    ///
     /// ```
     /// use num_traits::real::Real;
     /// use std::f64;
@@ -551,6 +576,11 @@ pub trait Real
     /// Computes the arccosine of a number. Return value is in radians in
     /// the range [0, pi] or NaN if the number is outside the range
     /// [-1, 1].
+    ///
+    /// # Panics
+    ///
+    /// If this type does not support a NaN representation, this function should panic
+    /// if the number is outside the range [-1, 1].
     ///
     /// ```
     /// use num_traits::real::Real;
@@ -644,6 +674,11 @@ pub trait Real
 
     /// Returns `ln(1+n)` (natural logarithm) more accurately than if
     /// the operations were performed separately.
+    ///
+    /// # Panics
+    ///
+    /// If this type does not support a NaN representation, this function should panic
+    /// if `self-1 <= 0`.
     ///
     /// ```
     /// use num_traits::real::Real;
