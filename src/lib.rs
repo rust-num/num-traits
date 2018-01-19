@@ -19,6 +19,7 @@ use std::fmt;
 
 pub use bounds::Bounded;
 pub use float::{Float, FloatConst};
+// pub use real::Real; // NOTE: Don't do this, it breaks `use num_traits::*;`.
 pub use identities::{Zero, One, zero, one};
 pub use ops::checked::*;
 pub use ops::wrapping::*;
@@ -33,6 +34,7 @@ pub mod sign;
 pub mod ops;
 pub mod bounds;
 pub mod float;
+pub mod real;
 pub mod cast;
 pub mod int;
 pub mod pow;
