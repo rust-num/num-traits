@@ -661,5 +661,5 @@ fn float_to_integer_checks_overflow() {
     // Specifically make sure we didn't silently let the overflow through
     // (This line is mostly for humans -- the robots should catch any problem
     // on the line above).
-    assert_ne!(source.to_i32(), Some(-2147483648));
+    assert!(source.to_i32() != Some(-2147483648));
 }
