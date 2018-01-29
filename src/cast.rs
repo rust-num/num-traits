@@ -655,9 +655,4 @@ fn float_to_integer_checks_overflow() {
 
     // Expect the overflow to be caught
     assert_eq!(source.to_i32(), None);
-
-    // Specifically make sure we didn't silently let the overflow through
-    // (This line is mostly for humans -- the robots should catch any problem
-    // on the line above).
-    assert!(source.to_i32() != Some(-2147483648));
 }
