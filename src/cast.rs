@@ -654,5 +654,5 @@ fn float_to_integer_checks_overflow() {
     let source: f64 = 1.0e+123f64;
 
     // Expect the overflow to be caught
-    assert_eq!(source.to_i32(), None);
+    assert_eq!(cast::<f64, i32>(source), None);
 }
