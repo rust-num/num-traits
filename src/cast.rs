@@ -240,17 +240,11 @@ macro_rules! impl_to_primitive_float_to_float {
 
 macro_rules! impl_to_primitive_float_to_signed_int {
     ($SrcT:ident, $DstT:ident, $slf:expr) => (
-        if size_of::<$SrcT>() <= size_of::<$DstT>() {
+        let t = $slf.trunc();
+        if t >= $DstT::MIN as $SrcT && t <= $DstT::MAX as $SrcT {
             Some($slf as $DstT)
         } else {
-            // Make sure the value is in range for the cast.
-            let n = $slf as $DstT;
-            let max_value: $DstT = ::std::$DstT::MAX;
-            if -max_value as $DstT <= n && n <= max_value as $DstT {
-                Some($slf as $DstT)
-            } else {
-                None
-            }
+            None
         }
     )
 }
@@ -657,4 +651,52 @@ fn float_to_integer_checks_overflow() {
 
     // Expect the overflow to be caught
     assert_eq!(cast::<f64, i32>(source), None);
+}
+
+#[test]
+fn test_cast_to_int() {
+    let big_f: f64 = 1.0e123;
+    let normal_f: f64 = 1.0;
+    let small_f: f64 = -1.0e123;
+    assert_eq!(None, cast::<f64, isize>(big_f));
+    assert_eq!(None, cast::<f64, i8>(big_f));
+    assert_eq!(None, cast::<f64, i16>(big_f));
+    assert_eq!(None, cast::<f64, i32>(big_f));
+    assert_eq!(None, cast::<f64, i64>(big_f));
+
+    assert_eq!(Some(normal_f as isize), cast::<f64, isize>(normal_f));
+    assert_eq!(Some(normal_f as i8), cast::<f64, i8>(normal_f));
+    assert_eq!(Some(normal_f as i16), cast::<f64, i16>(normal_f));
+    assert_eq!(Some(normal_f as i32), cast::<f64, i32>(normal_f));
+    assert_eq!(Some(normal_f as i64), cast::<f64, i64>(normal_f));
+
+    assert_eq!(None, cast::<f64, isize>(small_f));
+    assert_eq!(None, cast::<f64, i8>(small_f));
+    assert_eq!(None, cast::<f64, i16>(small_f));
+    assert_eq!(None, cast::<f64, i32>(small_f));
+    assert_eq!(None, cast::<f64, i64>(small_f));
+}
+
+#[test]
+fn test_cast_to_unsigned_int() {
+    let big_f: f64 = 1.0e123;
+    let normal_f: f64 = 1.0;
+    let small_f: f64 = -1.0e123;
+    assert_eq!(None, cast::<f64, usize>(big_f));
+    assert_eq!(None, cast::<f64, u8>(big_f));
+    assert_eq!(None, cast::<f64, u16>(big_f));
+    assert_eq!(None, cast::<f64, u32>(big_f));
+    assert_eq!(None, cast::<f64, u64>(big_f));
+
+    assert_eq!(Some(normal_f as usize), cast::<f64, usize>(normal_f));
+    assert_eq!(Some(normal_f as u8), cast::<f64, u8>(normal_f));
+    assert_eq!(Some(normal_f as u16), cast::<f64, u16>(normal_f));
+    assert_eq!(Some(normal_f as u32), cast::<f64, u32>(normal_f));
+    assert_eq!(Some(normal_f as u64), cast::<f64, u64>(normal_f));
+
+    assert_eq!(None, cast::<f64, usize>(small_f));
+    assert_eq!(None, cast::<f64, u8>(small_f));
+    assert_eq!(None, cast::<f64, u16>(small_f));
+    assert_eq!(None, cast::<f64, u32>(small_f));
+    assert_eq!(None, cast::<f64, u64>(small_f));
 }
