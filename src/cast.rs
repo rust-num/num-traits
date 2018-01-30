@@ -646,7 +646,7 @@ fn float_to_integer_checks_overflow() {
 }
 
 #[test]
-fn test_cast_to_int() {
+fn cast_to_int_checks_overflow() {
     let big_f: f64 = 1.0e123;
     let normal_f: f64 = 1.0;
     let small_f: f64 = -1.0e123;
@@ -670,7 +670,7 @@ fn test_cast_to_int() {
 }
 
 #[test]
-fn test_cast_to_unsigned_int() {
+fn cast_to_unsigned_int_checks_overflow() {
     let big_f: f64 = 1.0e123;
     let normal_f: f64 = 1.0;
     let small_f: f64 = -1.0e123;
