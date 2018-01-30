@@ -239,31 +239,25 @@ macro_rules! impl_to_primitive_float_to_float {
 }
 
 macro_rules! impl_to_primitive_float_to_signed_int {
-    ($SrcT:ident, $DstT:ident, $slf:expr) => (
+    ($SrcT:ident, $DstT:ident, $slf:expr) => ({
         let t = $slf.trunc();
-        if t >= $DstT::MIN as $SrcT && t <= $DstT::MAX as $SrcT {
+        if t >= $DstT::min_value() as $SrcT && t <= $DstT::max_value() as $SrcT {
             Some($slf as $DstT)
         } else {
             None
         }
-    )
+    })
 }
 
 macro_rules! impl_to_primitive_float_to_unsigned_int {
-    ($SrcT:ident, $DstT:ident, $slf:expr) => (
-        if size_of::<$SrcT>() <= size_of::<$DstT>() {
+    ($SrcT:ident, $DstT:ident, $slf:expr) => ({
+        let t = $slf.trunc();
+        if t >= $DstT::min_value() as $SrcT && t <= $DstT::max_value() as $SrcT {
             Some($slf as $DstT)
         } else {
-            // Make sure the value is in range for the cast.
-            let n = $slf as $DstT;
-            let max_value: $DstT = ::std::$DstT::MAX;
-            if n <= max_value as $DstT {
-                Some($slf as $DstT)
-            } else {
-                None
-            }
+            None
         }
-    )
+    })
 }
 
 macro_rules! impl_to_primitive_float {
