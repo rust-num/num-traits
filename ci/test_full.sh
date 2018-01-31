@@ -8,4 +8,6 @@ echo Testing num-traits on rustc ${TRAVIS_RUST_VERSION}
 cargo build --verbose
 cargo test --verbose
 
-# We have no features to test...
+# test `no_std`
+cargo build --verbose --no-default-features
+cargo test --verbose --no-default-features
