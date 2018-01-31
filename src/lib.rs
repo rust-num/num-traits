@@ -12,10 +12,16 @@
 
 #![doc(html_root_url = "https://docs.rs/num-traits/0.1")]
 
-use std::ops::{Add, Sub, Mul, Div, Rem};
-use std::ops::{AddAssign, SubAssign, MulAssign, DivAssign, RemAssign};
-use std::num::Wrapping;
-use std::fmt;
+#![deny(unconditional_recursion)]
+
+#![cfg_attr(not(feature = "std"), no_std)]
+#[cfg(feature = "std")]
+extern crate core;
+
+use core::ops::{Add, Sub, Mul, Div, Rem};
+use core::ops::{AddAssign, SubAssign, MulAssign, DivAssign, RemAssign};
+use core::num::Wrapping;
+use core::fmt;
 
 pub use bounds::Bounded;
 pub use float::{Float, FloatConst};
@@ -130,10 +136,10 @@ impl<T> NumAssignRef for T where T: NumAssign + for<'r> NumAssignOps<&'r T> {}
 macro_rules! int_trait_impl {
     ($name:ident for $($t:ty)*) => ($(
         impl $name for $t {
-            type FromStrRadixErr = ::std::num::ParseIntError;
+            type FromStrRadixErr = ::core::num::ParseIntError;
             #[inline]
             fn from_str_radix(s: &str, radix: u32)
-                              -> Result<Self, ::std::num::ParseIntError>
+                              -> Result<Self, ::core::num::ParseIntError>
             {
                 <$t>::from_str_radix(s, radix)
             }
@@ -159,7 +165,7 @@ pub enum FloatErrorKind {
     Empty,
     Invalid,
 }
-// FIXME: std::num::ParseFloatError is stable in 1.0, but opaque to us,
+// FIXME: core::num::ParseFloatError is stable in 1.0, but opaque to us,
 // so there's not really any way for us to reuse it.
 #[derive(Debug)]
 pub struct ParseFloatError {
@@ -317,8 +323,8 @@ macro_rules! float_trait_impl {
                         };
 
                         match (is_positive, exp) {
-                            (true,  Ok(exp)) => base.powi(exp as i32),
-                            (false, Ok(exp)) => 1.0 / base.powi(exp as i32),
+                            (true,  Ok(exp)) => Float::powi(base, exp as i32),
+                            (false, Ok(exp)) => 1.0 / Float::powi(base, exp as i32),
                             (_, Err(_))      => return Err(PFE { kind: Invalid }),
                         }
                     },
