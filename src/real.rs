@@ -10,6 +10,8 @@ use {Num, NumCast, Float};
 ///
 /// See [this Wikipedia article](https://en.wikipedia.org/wiki/Real_data_type)
 /// for a list of data types that could meaningfully implement this trait.
+///
+/// This trait is only available with the `std` feature.
 pub trait Real
     : Num
     + Copy

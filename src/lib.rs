@@ -24,7 +24,9 @@ use core::num::Wrapping;
 use core::fmt;
 
 pub use bounds::Bounded;
-pub use float::{Float, FloatConst};
+#[cfg(feature = "std")]
+pub use float::Float;
+pub use float::FloatConst;
 // pub use real::Real; // NOTE: Don't do this, it breaks `use num_traits::*;`.
 pub use identities::{Zero, One, zero, one};
 pub use ops::checked::*;
@@ -40,6 +42,7 @@ pub mod sign;
 pub mod ops;
 pub mod bounds;
 pub mod float;
+#[cfg(feature = "std")]
 pub mod real;
 pub mod cast;
 pub mod int;
@@ -187,7 +190,7 @@ impl fmt::Display for ParseFloatError {
 // with this implementation ourselves until we want to make a breaking change.
 // (would have to drop it from `Num` though)
 macro_rules! float_trait_impl {
-    ($name:ident for $($t:ty)*) => ($(
+    ($name:ident for $($t:ident)*) => ($(
         impl $name for $t {
             type FromStrRadixErr = ParseFloatError;
 
@@ -199,9 +202,9 @@ macro_rules! float_trait_impl {
 
                 // Special values
                 match src {
-                    "inf"   => return Ok(Float::infinity()),
-                    "-inf"  => return Ok(Float::neg_infinity()),
-                    "NaN"   => return Ok(Float::nan()),
+                    "inf"   => return Ok(core::$t::INFINITY),
+                    "-inf"  => return Ok(core::$t::NEG_INFINITY),
+                    "NaN"   => return Ok(core::$t::NAN),
                     _       => {},
                 }
 
@@ -242,15 +245,15 @@ macro_rules! float_trait_impl {
                             // if we've not seen any non-zero digits.
                             if prev_sig != 0.0 {
                                 if is_positive && sig <= prev_sig
-                                    { return Ok(Float::infinity()); }
+                                    { return Ok(core::$t::INFINITY); }
                                 if !is_positive && sig >= prev_sig
-                                    { return Ok(Float::neg_infinity()); }
+                                    { return Ok(core::$t::NEG_INFINITY); }
 
                                 // Detect overflow by reversing the shift-and-add process
                                 if is_positive && (prev_sig != (sig - digit as $t) / radix as $t)
-                                    { return Ok(Float::infinity()); }
+                                    { return Ok(core::$t::INFINITY); }
                                 if !is_positive && (prev_sig != (sig + digit as $t) / radix as $t)
-                                    { return Ok(Float::neg_infinity()); }
+                                    { return Ok(core::$t::NEG_INFINITY); }
                             }
                             prev_sig = sig;
                         },
@@ -286,9 +289,9 @@ macro_rules! float_trait_impl {
                                 };
                                 // Detect overflow by comparing to last value
                                 if is_positive && sig < prev_sig
-                                    { return Ok(Float::infinity()); }
+                                    { return Ok(core::$t::INFINITY); }
                                 if !is_positive && sig > prev_sig
-                                    { return Ok(Float::neg_infinity()); }
+                                    { return Ok(core::$t::NEG_INFINITY); }
                                 prev_sig = sig;
                             },
                             None => match c {
@@ -322,9 +325,15 @@ macro_rules! float_trait_impl {
                             None             => return Err(PFE { kind: Invalid }),
                         };
 
+                        #[cfg(feature = "std")]
+                        fn pow(base: $t, exp: usize) -> $t {
+                            Float::powi(base, exp as i32)
+                        }
+                        // otherwise uses the generic `pow` from the root
+
                         match (is_positive, exp) {
-                            (true,  Ok(exp)) => Float::powi(base, exp as i32),
-                            (false, Ok(exp)) => 1.0 / Float::powi(base, exp as i32),
+                            (true,  Ok(exp)) => pow(base, exp),
+                            (false, Ok(exp)) => 1.0 / pow(base, exp),
                             (_, Err(_))      => return Err(PFE { kind: Invalid }),
                         }
                     },

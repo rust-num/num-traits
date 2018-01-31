@@ -2,7 +2,7 @@ use core::ops::Neg;
 use core::{f32, f64};
 use core::num::Wrapping;
 
-use {Num, Float};
+use Num;
 
 /// Useful functions for signed numbers (i.e. numbers that can be negative).
 pub trait Signed: Sized + Num + Neg<Output = Self> {
@@ -103,8 +103,22 @@ macro_rules! signed_float_impl {
         impl Signed for $t {
             /// Computes the absolute value. Returns `NAN` if the number is `NAN`.
             #[inline]
+            #[cfg(feature = "std")]
             fn abs(&self) -> $t {
                 (*self).abs()
+            }
+
+            /// Computes the absolute value. Returns `NAN` if the number is `NAN`.
+            #[inline]
+            #[cfg(not(feature = "std"))]
+            fn abs(&self) -> $t {
+                if self.is_positive() {
+                    *self
+                } else if self.is_negative() {
+                    -*self
+                } else {
+                    $nan
+                }
             }
 
             /// The positive difference of two numbers. Returns `0.0` if the number is
@@ -121,8 +135,27 @@ macro_rules! signed_float_impl {
             /// - `-1.0` if the number is negative, `-0.0` or `NEG_INFINITY`
             /// - `NAN` if the number is NaN
             #[inline]
+            #[cfg(feature = "std")]
             fn signum(&self) -> $t {
+                use Float;
                 Float::signum(*self)
+            }
+
+            /// # Returns
+            ///
+            /// - `1.0` if the number is positive, `+0.0` or `INFINITY`
+            /// - `-1.0` if the number is negative, `-0.0` or `NEG_INFINITY`
+            /// - `NAN` if the number is NaN
+            #[inline]
+            #[cfg(not(feature = "std"))]
+            fn signum(&self) -> $t {
+                if self.is_positive() {
+                    1.0
+                } else if self.is_negative() {
+                    -1.0
+                } else {
+                    $nan
+                }
             }
 
             /// Returns `true` if the number is positive, including `+0.0` and `INFINITY`
