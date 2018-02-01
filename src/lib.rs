@@ -29,11 +29,11 @@ pub use float::Float;
 pub use float::FloatConst;
 // pub use real::Real; // NOTE: Don't do this, it breaks `use num_traits::*;`.
 pub use identities::{Zero, One, zero, one};
-pub use ops::checked::*;
-pub use ops::wrapping::*;
+pub use ops::checked::{CheckedAdd, CheckedSub, CheckedMul, CheckedDiv, CheckedShl, CheckedShr};
+pub use ops::wrapping::{WrappingAdd, WrappingMul, WrappingSub};
 pub use ops::saturating::Saturating;
 pub use sign::{Signed, Unsigned, abs, abs_sub, signum};
-pub use cast::*;
+pub use cast::{AsPrimitive, FromPrimitive, ToPrimitive, NumCast, cast};
 pub use int::PrimInt;
 pub use pow::{pow, checked_pow};
 
