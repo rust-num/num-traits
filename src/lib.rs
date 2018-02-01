@@ -10,7 +10,7 @@
 
 //! Numeric traits for generic mathematics
 
-#![doc(html_root_url = "https://docs.rs/num-traits/0.1")]
+#![doc(html_root_url = "https://docs.rs/num-traits/0.2")]
 
 #![deny(unconditional_recursion)]
 

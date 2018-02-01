@@ -8,7 +8,7 @@ categories = [ "algorithms", "science" ]
 license = "MIT/Apache-2.0"
 repository = "https://github.com/rust-num/num-traits"
 name = "num-traits"
-version = "0.1.42"
+version = "0.2.0-pre"
 readme = "README.md"
 
 [dependencies]

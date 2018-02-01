@@ -12,7 +12,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-num-traits = "0.1"
+num-traits = "0.2"
 ```
 
 and this to your crate root:
@@ -28,7 +28,7 @@ the default `std` feature.  Use this in `Cargo.toml`:
 
 ```toml
 [dependencies.num-traits]
-version = "0.1"
+version = "0.2"
 default-features = false
 ```
 
