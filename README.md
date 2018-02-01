@@ -21,6 +21,19 @@ and this to your crate root:
 extern crate num_traits;
 ```
 
+## Features
+
+This crate can be used without the standard library (`#![no_std]`) by disabling
+the default `std` feature.  Use this in `Cargo.toml`:
+
+```toml
+[dependencies.num-traits]
+version = "0.1"
+default-features = false
+```
+
+The `Float` and `Real` traits are only available when `std` is enabled.
+
 ## Releases
 
 Release notes are available in [RELEASES.md](RELEASES.md).
