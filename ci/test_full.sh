@@ -4,7 +4,7 @@ set -ex
 
 echo Testing num-traits on rustc ${TRAVIS_RUST_VERSION}
 
-# num-integer should build and test everywhere.
+# num-traits should build and test everywhere.
 cargo build --verbose
 cargo test --verbose
 
