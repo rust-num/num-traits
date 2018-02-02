@@ -9,6 +9,10 @@
 // except according to those terms.
 
 //! Numeric traits for generic mathematics
+//!
+//! ## Compatibility
+//!
+//! The `num-traits` crate is tested for rustc 1.8 and greater.
 
 #![doc(html_root_url = "https://docs.rs/num-traits/0.2")]
 
