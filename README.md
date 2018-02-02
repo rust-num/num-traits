@@ -12,7 +12,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-num-traits = "0.1"
+num-traits = "0.2"
 ```
 
 and this to your crate root:
@@ -20,6 +20,19 @@ and this to your crate root:
 ```rust
 extern crate num_traits;
 ```
+
+## Features
+
+This crate can be used without the standard library (`#![no_std]`) by disabling
+the default `std` feature.  Use this in `Cargo.toml`:
+
+```toml
+[dependencies.num-traits]
+version = "0.2"
+default-features = false
+```
+
+The `Float` and `Real` traits are only available when `std` is enabled.
 
 ## Releases
 

@@ -1,5 +1,6 @@
-use std::mem::size_of;
-use std::num::Wrapping;
+use core::f64;
+use core::mem::size_of;
+use core::num::Wrapping;
 
 use identities::Zero;
 use bounds::Bounded;
@@ -226,8 +227,10 @@ macro_rules! impl_to_primitive_float_to_float {
             // Make sure the value is in range for the cast.
             // NaN and +-inf are cast as they are.
             let n = $slf as f64;
-            let max_value: $DstT = ::std::$DstT::MAX;
-            if !n.is_finite() || (-max_value as f64 <= n && n <= max_value as f64) {
+            let max_value: $DstT = ::core::$DstT::MAX;
+            if n != n || n == f64::INFINITY || n == f64::NEG_INFINITY
+                || (-max_value as f64 <= n && n <= max_value as f64)
+            {
                 Some($slf as $DstT)
             } else {
                 None
@@ -522,8 +525,8 @@ impl_as_primitive!(bool => u8, i8, u16, i16, u32, i32, u64, isize, usize, i64);
 
 #[test]
 fn to_primitive_float() {
-    use std::f32;
-    use std::f64;
+    use core::f32;
+    use core::f64;
 
     let f32_toolarge = 1e39f64;
     assert_eq!(f32_toolarge.to_f32(), None);
