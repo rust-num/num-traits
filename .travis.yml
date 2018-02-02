@@ -14,6 +14,7 @@ notifications:
 branches:
   only:
     - master
+    - num-traits-0.1.x
     - next
     - staging
     - trying

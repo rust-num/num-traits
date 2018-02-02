@@ -8,7 +8,12 @@ categories = [ "algorithms", "science" ]
 license = "MIT/Apache-2.0"
 repository = "https://github.com/rust-num/num-traits"
 name = "num-traits"
-version = "0.1.42"
+version = "0.1.43"
 readme = "README.md"
 
-[dependencies]
+[lib]
+doctest = false # multiple rlib candidates for `num_traits` found
+
+[dependencies.num-traits]
+git = "https://github.com/rust-num/num-traits"
+version = "0.2.0-pre"
