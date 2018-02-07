@@ -6,6 +6,9 @@
 
 Numeric traits for generic mathematics in Rust.
 
+This version of the crate only exists to re-export compatible
+items from `num-traits` 0.2.  Please consider updating!
+
 ## Usage
 
 Add this to your `Cargo.toml`:
