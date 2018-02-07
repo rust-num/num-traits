@@ -4,7 +4,7 @@ use core::num::Wrapping;
 
 use Num;
 #[cfg(not(feature = "std"))]
-use float::CoreFloat;
+use float::FloatCore;
 
 /// Useful functions for signed numbers (i.e. numbers that can be negative).
 pub trait Signed: Sized + Num + Neg<Output = Self> {
@@ -124,8 +124,8 @@ macro_rules! signed_float_impl {
             /// - `NAN` if the number is NaN
             #[inline]
             fn signum(&self) -> $t {
-                use CoreFloat;
-                CoreFloat::signum(*self)
+                use FloatCore;
+                FloatCore::signum(*self)
             }
 
             /// Returns `true` if the number is positive, including `+0.0` and `INFINITY`

@@ -13,7 +13,7 @@ use NumCast;
 /// Generic trait for floating point numbers that works with `no_std`.
 ///
 /// This trait implements a subset of the `Float` trait.
-pub trait CoreFloat: Num + Neg<Output = Self> + PartialOrd + Copy {
+pub trait FloatCore: Num + Neg<Output = Self> + PartialOrd + Copy {
     /// Returns positive infinity.
     #[inline]
     fn infinity() -> Self;
@@ -56,8 +56,8 @@ pub trait CoreFloat: Num + Neg<Output = Self> + PartialOrd + Copy {
     #[inline]
     fn classify(self) -> FpCategory;
 
-    /// Computes the absolute value of `self`. Returns `CoreFloat::nan()` if the
-    /// number is `CoreFloat::nan()`.
+    /// Computes the absolute value of `self`. Returns `FloatCore::nan()` if the
+    /// number is `FloatCore::nan()`.
     #[inline]
     fn abs(self) -> Self {
         if self.is_sign_positive() {
@@ -71,9 +71,9 @@ pub trait CoreFloat: Num + Neg<Output = Self> + PartialOrd + Copy {
 
     /// Returns a number that represents the sign of `self`.
     ///
-    /// - `1.0` if the number is positive, `+0.0` or `CoreFloat::infinity()`
-    /// - `-1.0` if the number is negative, `-0.0` or `CoreFloat::neg_infinity()`
-    /// - `CoreFloat::nan()` if the number is `CoreFloat::nan()`
+    /// - `1.0` if the number is positive, `+0.0` or `FloatCore::infinity()`
+    /// - `-1.0` if the number is negative, `-0.0` or `FloatCore::neg_infinity()`
+    /// - `FloatCore::nan()` if the number is `FloatCore::nan()`
     #[inline]
     fn signum(self) -> Self {
         if self.is_sign_positive() {
@@ -86,14 +86,14 @@ pub trait CoreFloat: Num + Neg<Output = Self> + PartialOrd + Copy {
     }
 
     /// Returns `true` if `self` is positive, including `+0.0` and
-    /// `CoreFloat::infinity()`.
+    /// `FloatCore::infinity()`.
     #[inline]
     fn is_sign_positive(self) -> bool {
         self > Self::zero() || (Self::one() / self) == Self::infinity()
     }
 
     /// Returns `true` if `self` is negative, including `-0.0` and
-    /// `CoreFloat::neg_infinity()`.
+    /// `FloatCore::neg_infinity()`.
     #[inline]
     fn is_sign_negative(self) -> bool {
         self < Self::zero() || (Self::one() / self) == Self::neg_infinity()
@@ -155,7 +155,7 @@ pub trait CoreFloat: Num + Neg<Output = Self> + PartialOrd + Copy {
     fn to_radians(self) -> Self;
 }
 
-impl CoreFloat for f32 {
+impl FloatCore for f32 {
     fn infinity() -> Self {
         ::core::f32::INFINITY
     }
@@ -186,7 +186,7 @@ impl CoreFloat for f32 {
     }
 }
 
-impl CoreFloat for f64 {
+impl FloatCore for f64 {
     fn infinity() -> Self {
         ::core::f64::INFINITY
     }
@@ -1549,15 +1549,15 @@ mod tests {
 
     #[test]
     fn convert_deg_rad() {
-        use CoreFloat;
+        use FloatCore;
 
         for &(deg, rad) in &DEG_RAD_PAIRS {
-            assert!((CoreFloat::to_degrees(rad) - deg).abs() < 1e-6);
-            assert!((CoreFloat::to_radians(deg) - rad).abs() < 1e-6);
+            assert!((FloatCore::to_degrees(rad) - deg).abs() < 1e-6);
+            assert!((FloatCore::to_radians(deg) - rad).abs() < 1e-6);
 
             let (deg, rad) = (deg as f32, rad as f32);
-            assert!((CoreFloat::to_degrees(rad) - deg).abs() < 1e-6);
-            assert!((CoreFloat::to_radians(deg) - rad).abs() < 1e-6);
+            assert!((FloatCore::to_degrees(rad) - deg).abs() < 1e-6);
+            assert!((FloatCore::to_radians(deg) - rad).abs() < 1e-6);
         }
     }
 
