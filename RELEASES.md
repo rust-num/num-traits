@@ -1,3 +1,20 @@
+# Release 0.2.0
+
+- **breaking change**: There is now a `std` feature, enabled by default, along
+  with the implication that building *without* this feature makes this a
+  `#[no_std]` crate.
+  - The `Float` and `Real` traits are only available when `std` is enabled.
+  - Otherwise, the API is unchanged, and num-traits 0.1.43 now re-exports its
+    items from num-traits 0.2 for compatibility (the [semver-trick]).
+
+**Contributors**: @cuviper, @termoshtt, @vks
+
+[semver-trick]: https://github.com/dtolnay/semver-trick
+
+# Release 0.1.43
+
+- All items are now re-exported from num-traits 0.2 for compatibility.
+
 # Release 0.1.42
 
 - [num-traits now has its own source repository][num-356] at [rust-num/num-traits][home].
