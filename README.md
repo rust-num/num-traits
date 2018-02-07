@@ -32,7 +32,8 @@ version = "0.2"
 default-features = false
 ```
 
-The `Float` and `Real` traits are only available when `std` is enabled.
+The `Float` and `Real` traits are only available when `std` is enabled. The
+`FloatCore` trait is always available.
 
 ## Releases
 
