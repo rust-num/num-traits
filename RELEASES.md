@@ -1,6 +1,6 @@
 # Release 0.2.0
 
-- **breaking change**: There is now a `std` feature, enabled by default, along
+- **breaking change**: [There is now a `std` feature][30], enabled by default, along
   with the implication that building *without* this feature makes this a
   `#[no_std]` crate.
   - The `Float` and `Real` traits are only available when `std` is enabled.
@@ -10,10 +10,15 @@
 **Contributors**: @cuviper, @termoshtt, @vks
 
 [semver-trick]: https://github.com/dtolnay/semver-trick
+[30]: https://github.com/rust-num/num-traits/pull/30
+
 
 # Release 0.1.43
 
-- All items are now re-exported from num-traits 0.2 for compatibility.
+- All items are now [re-exported from num-traits 0.2][31] for compatibility.
+
+[31]: https://github.com/rust-num/num-traits/pull/31
+
 
 # Release 0.1.42
 
