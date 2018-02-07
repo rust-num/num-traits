@@ -1565,7 +1565,7 @@ mod tests {
 
     #[test]
     fn convert_deg_rad() {
-        use FloatCore;
+        use float::FloatCore;
 
         for &(deg, rad) in &DEG_RAD_PAIRS {
             assert!((FloatCore::to_degrees(rad) - deg).abs() < 1e-6);

@@ -124,7 +124,7 @@ macro_rules! signed_float_impl {
             /// - `NAN` if the number is NaN
             #[inline]
             fn signum(&self) -> $t {
-                use FloatCore;
+                use float::FloatCore;
                 FloatCore::signum(*self)
             }
 

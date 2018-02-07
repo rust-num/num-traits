@@ -26,8 +26,8 @@ use core::fmt;
 pub use bounds::Bounded;
 #[cfg(feature = "std")]
 pub use float::Float;
-pub use float::{FloatCore, FloatConst};
-// pub use real::Real; // NOTE: Don't do this, it breaks `use num_traits::*;`.
+pub use float::FloatConst;
+// pub use real::{FloatCore, Real}; // NOTE: Don't do this, it breaks `use num_traits::*;`.
 pub use identities::{Zero, One, zero, one};
 pub use ops::checked::{CheckedAdd, CheckedSub, CheckedMul, CheckedDiv, CheckedShl, CheckedShr};
 pub use ops::wrapping::{WrappingAdd, WrappingMul, WrappingSub};
