@@ -15,5 +15,4 @@ readme = "README.md"
 doctest = false # multiple rlib candidates for `num_traits` found
 
 [dependencies.num-traits]
-git = "https://github.com/rust-num/num-traits"
-version = "0.2.0-pre"
+version = "0.2.0"
