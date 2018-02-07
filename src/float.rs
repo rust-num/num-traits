@@ -15,15 +15,12 @@ use NumCast;
 /// This trait implements a subset of the `Float` trait.
 pub trait FloatCore: Num + Neg<Output = Self> + PartialOrd + Copy {
     /// Returns positive infinity.
-    #[inline]
     fn infinity() -> Self;
 
     /// Returns negative infinity.
-    #[inline]
     fn neg_infinity() -> Self;
 
     /// Returns NaN.
-    #[inline]
     fn nan() -> Self;
 
     /// Returns `true` if the number is NaN.
@@ -53,7 +50,6 @@ pub trait FloatCore: Num + Neg<Output = Self> + PartialOrd + Copy {
     /// Returns the floating point category of the number. If only one property
     /// is going to be tested, it is generally faster to use the specific
     /// predicate instead.
-    #[inline]
     fn classify(self) -> FpCategory;
 
     /// Computes the absolute value of `self`. Returns `FloatCore::nan()` if the
@@ -147,24 +143,29 @@ pub trait FloatCore: Num + Neg<Output = Self> + PartialOrd + Copy {
     }
 
     /// Converts to degrees, assuming the number is in radians.
-    #[inline]
     fn to_degrees(self) -> Self;
 
     /// Converts to radians, assuming the number is in degrees.
-    #[inline]
     fn to_radians(self) -> Self;
 }
 
 impl FloatCore for f32 {
+    #[inline]
     fn infinity() -> Self {
         ::core::f32::INFINITY
     }
+
+    #[inline]
     fn neg_infinity() -> Self {
         ::core::f32::NEG_INFINITY
     }
+
+    #[inline]
     fn nan() -> Self {
         ::core::f32::NAN
     }
+
+    #[inline]
     fn classify(self) -> FpCategory {
         const EXP_MASK: u32 = 0x7f800000;
         const MAN_MASK: u32 = 0x007fffff;
@@ -178,24 +179,35 @@ impl FloatCore for f32 {
             _ => FpCategory::Normal,
         }
     }
+
+    #[inline]
     fn to_degrees(self) -> Self {
         self * (180.0 / ::core::f32::consts::PI)
     }
+
+    #[inline]
     fn to_radians(self) -> Self {
         self * (::core::f32::consts::PI / 180.0)
     }
 }
 
 impl FloatCore for f64 {
+    #[inline]
     fn infinity() -> Self {
         ::core::f64::INFINITY
     }
+
+    #[inline]
     fn neg_infinity() -> Self {
         ::core::f64::NEG_INFINITY
     }
+
+    #[inline]
     fn nan() -> Self {
         ::core::f64::NAN
     }
+
+    #[inline]
     fn classify(self) -> FpCategory {
         const EXP_MASK: u64 = 0x7ff0000000000000;
         const MAN_MASK: u64 = 0x000fffffffffffff;
@@ -209,9 +221,13 @@ impl FloatCore for f64 {
             _ => FpCategory::Normal,
         }
     }
+
+    #[inline]
     fn to_degrees(self) -> Self {
         self * (180.0 / ::core::f64::consts::PI)
     }
+
+    #[inline]
     fn to_radians(self) -> Self {
         self * (::core::f64::consts::PI / 180.0)
     }
