@@ -1,4 +1,5 @@
 use core::ops::{Not, BitAnd, BitOr, BitXor, Shl, Shr};
+use core::fmt::{Debug, Display};
 
 use {Num, NumCast};
 use bounds::Bounded;
@@ -8,6 +9,8 @@ use ops::saturating::Saturating;
 pub trait PrimInt
     : Sized
     + Copy
+    + Display
+    + Debug
     + Num + NumCast
     + Bounded
     + PartialOrd + Ord + Eq
