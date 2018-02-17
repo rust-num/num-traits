@@ -1,5 +1,4 @@
 use core::ops::{Not, BitAnd, BitOr, BitXor, Shl, Shr};
-#[cfg(feature = "std")]
 use core::fmt::{Debug, Display};
 
 use {Num, NumCast};
