@@ -34,6 +34,7 @@ pub use float::FloatConst;
 // pub use real::{FloatCore, Real}; // NOTE: Don't do this, it breaks `use num_traits::*;`.
 pub use identities::{Zero, One, zero, one};
 pub use ops::inv::Inv;
+pub use ops::pow::Pow;
 pub use ops::checked::{CheckedAdd, CheckedSub, CheckedMul, CheckedDiv, CheckedShl, CheckedShr};
 pub use ops::wrapping::{WrappingAdd, WrappingMul, WrappingSub};
 pub use ops::saturating::Saturating;

@@ -3,27 +3,38 @@ pub trait Inv {
     /// The result after applying the operator.
     type Output;
 
-    /// Returns the multiplicative inverse of `Self`.
+    /// Returns the multiplicative inverse of `self`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use num_traits::{Inv, One};
+    ///
+    /// let x = 7.0;
+    /// let y = -0.0;
+    /// assert_eq!(x.inv() * x, One::one());
+    /// assert_eq!(y.inv() * y, One::one());
+    /// ```
     fn inv(self) -> Self::Output;
 }
 
-macro_rules! inv_impl {
-    ($t:ty, $out:ty, $fn:expr) => {
-        impl<'a> Inv for $t {
-            type Output = $out;
-
-            #[inline]
-            fn inv(self) -> $out {
-                ($fn)(self)
-            }
-        }
-    }
+impl Inv for f32 {
+    type Output = f32;
+    #[inline]
+    fn inv(self) -> f32 { 1.0 / self }
 }
-
-#[cfg(feature = "std")]
-mod float_impls {
-    inv_impl!(f32, f32, f32::recip);
-    inv_impl!(f64, f64, f64::recip);
-    inv_impl!(&'a f32, f32, f32::recip);
-    inv_impl!(&'a f64, f64, f64::recip);
+impl Inv for f64 {
+    type Output = f64;
+    #[inline]
+    fn inv(self) -> f64 { 1.0 / self }
+}
+impl<'a> Inv for &'a f32 {
+    type Output = f32;
+    #[inline]
+    fn inv(self) -> f32 { 1.0 / *self }
+}
+impl<'a> Inv for &'a f64 {
+    type Output = f64;
+    #[inline]
+    fn inv(self) -> f64 { 1.0 / *self }
 }
