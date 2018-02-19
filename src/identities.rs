@@ -79,6 +79,14 @@ pub trait One: Sized + Mul<Self, Output = Self> {
     /// `static mut`s.
     // FIXME (#5527): This should be an associated constant
     fn one() -> Self;
+
+    /// Returns `true` if `self` is equal to the multiplicative identity.
+    ///
+    /// Compatibility note: this method will be a requirement to implement in the future; new
+    /// implementors should provide it for future-compatibility.
+    fn is_one(&self) -> bool where Self: PartialEq {
+        *self == Self::one()
+    }
 }
 
 macro_rules! one_impl {
