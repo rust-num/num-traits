@@ -12,7 +12,7 @@ pub trait Pow<RHS> {
     ///
     /// ```
     /// use num_traits::Pow;
-    /// assert_eq!(10.pow(2), 100);
+    /// assert_eq!(Pow::pow(10u32, 2u32), 100);
     /// ```
     fn pow(self, rhs: RHS) -> Self::Output;
 }

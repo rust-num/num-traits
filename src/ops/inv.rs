@@ -8,12 +8,11 @@ pub trait Inv {
     /// # Examples
     ///
     /// ```
-    /// use num_traits::{Inv, One};
+    /// use std::f64::INFINITY;
+    /// use num_traits::Inv;
     ///
-    /// let x = 7.0;
-    /// let y = -0.0;
-    /// assert_eq!(x.inv() * x, One::one());
-    /// assert_eq!(y.inv() * y, One::one());
+    /// assert_eq!(7.0.inv() * 7.0, 1.0);
+    /// assert_eq!((-0.0).inv(), -INFINITY);
     /// ```
     fn inv(self) -> Self::Output;
 }
