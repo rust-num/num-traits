@@ -82,8 +82,9 @@ pub trait One: Sized + Mul<Self, Output = Self> {
 
     /// Returns `true` if `self` is equal to the multiplicative identity.
     ///
-    /// Compatibility note: this method will be a requirement to implement in the future; new
-    /// implementors should provide it for future-compatibility.
+    /// For performance reasons, it's best to implement this manually.
+    /// After a semver bump, this method will be required, and the
+    /// `where Self: PartialEq` bound will be removed.
     fn is_one(&self) -> bool where Self: PartialEq {
         *self == Self::one()
     }
