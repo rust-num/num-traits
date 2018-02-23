@@ -23,7 +23,6 @@ macro_rules! pow_impl {
         pow_impl!($t, u8);
         pow_impl!($t, u16);
         pow_impl!($t, u32);
-        pow_impl!($t, u64);
         pow_impl!($t, usize);
     };
     ($t:ty, $rhs:ty) => {
