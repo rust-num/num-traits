@@ -85,6 +85,7 @@ pub trait One: Sized + Mul<Self, Output = Self> {
     /// For performance reasons, it's best to implement this manually.
     /// After a semver bump, this method will be required, and the
     /// `where Self: PartialEq` bound will be removed.
+    #[inline]
     fn is_one(&self) -> bool where Self: PartialEq {
         *self == Self::one()
     }
