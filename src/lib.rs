@@ -42,6 +42,9 @@ pub use cast::{AsPrimitive, FromPrimitive, ToPrimitive, NumCast, cast};
 pub use int::PrimInt;
 pub use pow::{Pow, pow, checked_pow};
 
+#[macro_use]
+mod macros;
+
 pub mod identities;
 pub mod sign;
 pub mod ops;
