@@ -6,14 +6,12 @@ use core::num::FpCategory;
 #[cfg(feature = "std")]
 use std::f32;
 
-use {Num, ToPrimitive};
-#[cfg(feature = "std")]
-use NumCast;
+use {Num, NumCast, ToPrimitive};
 
 /// Generic trait for floating point numbers that works with `no_std`.
 ///
 /// This trait implements a subset of the `Float` trait.
-pub trait FloatCore: Num + Neg<Output = Self> + PartialOrd + Copy {
+pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     /// Returns positive infinity.
     fn infinity() -> Self;
 
