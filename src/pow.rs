@@ -21,19 +21,22 @@ pub trait Pow<RHS> {
 macro_rules! pow_impl {
     ($t:ty) => {
         pow_impl!($t, u8);
-        pow_impl!($t, u16);
-        pow_impl!($t, u32);
         pow_impl!($t, usize);
+
+        // FIXME: these should be possible
+        // pow_impl!($t, u16);
+        // pow_impl!($t, u32);
+        // pow_impl!($t, u64);
     };
     ($t:ty, $rhs:ty) => {
-        pow_impl!($t, $rhs, |x, p| pow(x, p as usize));
+        pow_impl!($t, $rhs, usize, pow);
     };
-    ($t:ty, $rhs:ty, $method:expr) => {
+    ($t:ty, $rhs:ty, $desired_rhs:ty, $method:expr) => {
         impl Pow<$rhs> for $t {
             type Output = $t;
             #[inline]
             fn pow(self, rhs: $rhs) -> $t {
-                ($method)(self, rhs)
+                ($method)(self, <$desired_rhs>::from(rhs))
             }
         }
 
@@ -41,7 +44,7 @@ macro_rules! pow_impl {
             type Output = $t;
             #[inline]
             fn pow(self, rhs: &'a $rhs) -> $t {
-                ($method)(self, *rhs)
+                ($method)(self, <$desired_rhs>::from(*rhs))
             }
         }
 
@@ -49,7 +52,7 @@ macro_rules! pow_impl {
             type Output = $t;
             #[inline]
             fn pow(self, rhs: $rhs) -> $t {
-                ($method)(*self, rhs)
+                ($method)(*self, <$desired_rhs>::from(rhs))
             }
         }
 
@@ -57,51 +60,51 @@ macro_rules! pow_impl {
             type Output = $t;
             #[inline]
             fn pow(self, rhs: &'a $rhs) -> $t {
-                ($method)(*self, *rhs)
+                ($method)(*self, <$desired_rhs>::from(*rhs))
             }
         }
     };
 }
 
-pow_impl!(u8, u8, |x: u8, p| x.pow(p as u32));
-pow_impl!(u8, u16, |x: u8, p| x.pow(p as u32));
-pow_impl!(u8, u32, u8::pow);
+pow_impl!(u8, u8, u32, u8::pow);
+pow_impl!(u8, u16, u32, u8::pow);
+pow_impl!(u8, u32, u32, u8::pow);
 pow_impl!(u8, usize);
-pow_impl!(i8, u8, |x: i8, p| x.pow(p as u32));
-pow_impl!(i8, u16, |x: i8, p| x.pow(p as u32));
-pow_impl!(i8, u32, i8::pow);
+pow_impl!(i8, u8, u32, i8::pow);
+pow_impl!(i8, u16, u32, i8::pow);
+pow_impl!(i8, u32, u32, i8::pow);
 pow_impl!(i8, usize);
-pow_impl!(u16, u8, |x: u16, p| x.pow(p as u32));
-pow_impl!(u16, u16, |x: u16, p| x.pow(p as u32));
-pow_impl!(u16, u32, u16::pow);
+pow_impl!(u16, u8, u32, u16::pow);
+pow_impl!(u16, u16, u32, u16::pow);
+pow_impl!(u16, u32, u32, u16::pow);
 pow_impl!(u16, usize);
-pow_impl!(i16, u8, |x: i16, p| x.pow(p as u32));
-pow_impl!(i16, u16, |x: i16, p| x.pow(p as u32));
-pow_impl!(i16, u32, i16::pow);
+pow_impl!(i16, u8, u32, i16::pow);
+pow_impl!(i16, u16, u32, i16::pow);
+pow_impl!(i16, u32, u32, i16::pow);
 pow_impl!(i16, usize);
-pow_impl!(u32, u8, |x: u32, p| x.pow(p as u32));
-pow_impl!(u32, u16, |x: u32, p| x.pow(p as u32));
-pow_impl!(u32, u32, u32::pow);
+pow_impl!(u32, u8, u32, u32::pow);
+pow_impl!(u32, u16, u32, u32::pow);
+pow_impl!(u32, u32, u32, u32::pow);
 pow_impl!(u32, usize);
-pow_impl!(i32, u8, |x: i32, p| x.pow(p as u32));
-pow_impl!(i32, u16, |x: i32, p| x.pow(p as u32));
-pow_impl!(i32, u32, i32::pow);
+pow_impl!(i32, u8, u32, i32::pow);
+pow_impl!(i32, u16, u32, i32::pow);
+pow_impl!(i32, u32, u32, i32::pow);
 pow_impl!(i32, usize);
-pow_impl!(u64, u8, |x: u64, p| x.pow(p as u32));
-pow_impl!(u64, u16, |x: u64, p| x.pow(p as u32));
-pow_impl!(u64, u32, u64::pow);
+pow_impl!(u64, u8, u32, u64::pow);
+pow_impl!(u64, u16, u32, u64::pow);
+pow_impl!(u64, u32, u32, u64::pow);
 pow_impl!(u64, usize);
-pow_impl!(i64, u8, |x: i64, p| x.pow(p as u32));
-pow_impl!(i64, u16, |x: i64, p| x.pow(p as u32));
-pow_impl!(i64, u32, i64::pow);
+pow_impl!(i64, u8, u32, i64::pow);
+pow_impl!(i64, u16, u32, i64::pow);
+pow_impl!(i64, u32, u32, i64::pow);
 pow_impl!(i64, usize);
-pow_impl!(usize, u8, |x: usize, p| x.pow(p as u32));
-pow_impl!(usize, u16, |x: usize, p| x.pow(p as u32));
-pow_impl!(usize, u32, usize::pow);
+pow_impl!(usize, u8, u32, usize::pow);
+pow_impl!(usize, u16, u32, usize::pow);
+pow_impl!(usize, u32, u32, usize::pow);
 pow_impl!(usize, usize);
-pow_impl!(isize, u8, |x: isize, p| x.pow(p as u32));
-pow_impl!(isize, u16, |x: isize, p| x.pow(p as u32));
-pow_impl!(isize, u32, isize::pow);
+pow_impl!(isize, u8, u32, isize::pow);
+pow_impl!(isize, u16, u32, isize::pow);
+pow_impl!(isize, u32, u32, isize::pow);
 pow_impl!(isize, usize);
 pow_impl!(Wrapping<u8>);
 pow_impl!(Wrapping<i8>);
@@ -114,25 +117,36 @@ pow_impl!(Wrapping<i64>);
 pow_impl!(Wrapping<usize>);
 pow_impl!(Wrapping<isize>);
 
+// FIXME: these should be possible
+// pow_impl!(u8, u64);
+// pow_impl!(i16, u64);
+// pow_impl!(i8, u64);
+// pow_impl!(u16, u64);
+// pow_impl!(u32, u64);
+// pow_impl!(i32, u64);
+// pow_impl!(u64, u64);
+// pow_impl!(i64, u64);
+// pow_impl!(usize, u64);
+// pow_impl!(isize, u64);
+
 #[cfg(feature = "std")]
 mod float_impls {
     use super::Pow;
 
-    pow_impl!(f32, i8, |x: f32, p| x.powi(p as i32));
-    pow_impl!(f32, u8, |x: f32, p| x.powi(p as i32));
-    pow_impl!(f32, i16, |x: f32, p| x.powi(p as i32));
-    pow_impl!(f32, u16, |x: f32, p| x.powi(p as i32));
-    pow_impl!(f32, i32, f32::powi);
-    pow_impl!(f64, i8, |x: f64, p| x.powi(p as i32));
-    pow_impl!(f64, u8, |x: f64, p| x.powi(p as i32));
-    pow_impl!(f64, i16, |x: f64, p| x.powi(p as i32));
-    pow_impl!(f64, u16, |x: f64, p| x.powi(p as i32));
-    pow_impl!(f64, i32, f64::powi);
-    pow_impl!(f32, f32, f32::powf);
-    pow_impl!(f64, f32, |x: f64, p| x.powf(p as f64));
-    pow_impl!(f64, f64, f64::powf);
+    pow_impl!(f32, i8, i32, f32::powi);
+    pow_impl!(f32, u8, i32, f32::powi);
+    pow_impl!(f32, i16, i32, f32::powi);
+    pow_impl!(f32, u16, i32, f32::powi);
+    pow_impl!(f32, i32, i32, f32::powi);
+    pow_impl!(f64, i8, i32, f64::powi);
+    pow_impl!(f64, u8, i32, f64::powi);
+    pow_impl!(f64, i16, i32, f64::powi);
+    pow_impl!(f64, u16, i32, f64::powi);
+    pow_impl!(f64, i32, i32, f64::powi);
+    pow_impl!(f32, f32, f32, f32::powf);
+    pow_impl!(f64, f32, f64, f64::powf);
+    pow_impl!(f64, f64, f64, f64::powf);
 }
-
 
 /// Raises a value to the power of exp, using exponentiation by squaring.
 ///
