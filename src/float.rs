@@ -166,6 +166,7 @@ impl FloatCore for f32 {
     }
 
     #[inline]
+    #[cfg(not(feature = "std"))]
     fn classify(self) -> FpCategory {
         const EXP_MASK: u32 = 0x7f800000;
         const MAN_MASK: u32 = 0x007fffff;
@@ -181,13 +182,34 @@ impl FloatCore for f32 {
     }
 
     #[inline]
+    #[cfg(not(feature = "std"))]
     fn to_degrees(self) -> Self {
         self * (180.0 / ::core::f32::consts::PI)
     }
 
     #[inline]
+    #[cfg(not(feature = "std"))]
     fn to_radians(self) -> Self {
         self * (::core::f32::consts::PI / 180.0)
+    }
+
+    #[cfg(feature = "std")]
+    forward! {
+        Self::is_nan(self) -> bool;
+        Self::is_infinite(self) -> bool;
+        Self::is_finite(self) -> bool;
+        Self::is_normal(self) -> bool;
+        Self::classify(self) -> FpCategory;
+        Self::abs(self) -> Self;
+        Self::signum(self) -> Self;
+        Self::is_sign_positive(self) -> bool;
+        Self::is_sign_negative(self) -> bool;
+        Self::min(self, other: Self) -> Self;
+        Self::max(self, other: Self) -> Self;
+        Self::recip(self) -> Self;
+        Self::powi(self, n: i32) -> Self;
+        Self::to_degrees(self) -> Self;
+        Self::to_radians(self) -> Self;
     }
 }
 
@@ -208,6 +230,7 @@ impl FloatCore for f64 {
     }
 
     #[inline]
+    #[cfg(not(feature = "std"))]
     fn classify(self) -> FpCategory {
         const EXP_MASK: u64 = 0x7ff0000000000000;
         const MAN_MASK: u64 = 0x000fffffffffffff;
@@ -223,13 +246,34 @@ impl FloatCore for f64 {
     }
 
     #[inline]
+    #[cfg(not(feature = "std"))]
     fn to_degrees(self) -> Self {
         self * (180.0 / ::core::f64::consts::PI)
     }
 
     #[inline]
+    #[cfg(not(feature = "std"))]
     fn to_radians(self) -> Self {
         self * (::core::f64::consts::PI / 180.0)
+    }
+
+    #[cfg(feature = "std")]
+    forward! {
+        Self::is_nan(self) -> bool;
+        Self::is_infinite(self) -> bool;
+        Self::is_finite(self) -> bool;
+        Self::is_normal(self) -> bool;
+        Self::classify(self) -> FpCategory;
+        Self::abs(self) -> Self;
+        Self::signum(self) -> Self;
+        Self::is_sign_positive(self) -> bool;
+        Self::is_sign_negative(self) -> bool;
+        Self::min(self, other: Self) -> Self;
+        Self::max(self, other: Self) -> Self;
+        Self::recip(self) -> Self;
+        Self::powi(self, n: i32) -> Self;
+        Self::to_degrees(self) -> Self;
+        Self::to_radians(self) -> Self;
     }
 }
 
