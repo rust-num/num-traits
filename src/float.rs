@@ -5,7 +5,7 @@ use core::num::FpCategory;
 use core::f32;
 use core::f64;
 
-use {Num, NumCast, ToPrimitive};
+use {Num, NumCast};
 
 /// Generic trait for floating point numbers that works with `no_std`.
 ///
@@ -218,11 +218,11 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     #[inline]
     fn powi(mut self, mut exp: i32) -> Self {
         if exp < 0 {
-            exp = -exp;
+            exp = exp.wrapping_neg();
             self = self.recip();
         }
         // It should always be possible to convert a positive `i32` to a `usize`.
-        super::pow(self, exp.to_usize().unwrap())
+        super::pow(self, exp as u32 as usize)
     }
 
     /// Converts to degrees, assuming the number is in radians.
