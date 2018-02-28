@@ -505,8 +505,8 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     }
 
     /// Returns `true` if `self` is positive, including `+0.0` and
-    /// `FloatCore::infinity()`, and with newer versions of Rust
-    /// even `FloatCore::nan()`.
+    /// `FloatCore::infinity()`, and since Rust 1.20 also
+    /// `FloatCore::nan()`.
     ///
     /// # Examples
     ///
@@ -532,8 +532,8 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     }
 
     /// Returns `true` if `self` is negative, including `-0.0` and
-    /// `FloatCore::neg_infinity()`, and with newer versions of Rust
-    /// even `-FloatCore::nan()`.
+    /// `FloatCore::neg_infinity()`, and since Rust 1.20 also
+    /// `-FloatCore::nan()`.
     ///
     /// # Examples
     ///
@@ -1196,7 +1196,7 @@ pub trait Float
     fn signum(self) -> Self;
 
     /// Returns `true` if `self` is positive, including `+0.0`,
-    /// `Float::infinity()`, and with newer versions of Rust `f64::NAN`.
+    /// `Float::infinity()`, and since Rust 1.20 also `Float::nan()`.
     ///
     /// ```
     /// use num_traits::Float;
@@ -1214,7 +1214,7 @@ pub trait Float
     fn is_sign_positive(self) -> bool;
 
     /// Returns `true` if `self` is negative, including `-0.0`,
-    /// `Float::neg_infinity()`, and with newer versions of Rust `-f64::NAN`.
+    /// `Float::neg_infinity()`, and since Rust 1.20 also `-Float::nan()`.
     ///
     /// ```
     /// use num_traits::Float;
