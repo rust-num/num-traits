@@ -65,6 +65,76 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     /// predicate instead.
     fn classify(self) -> FpCategory;
 
+    /// Returns the largest integer less than or equal to a number.
+    #[inline]
+    fn floor(self) -> Self {
+        let f = self.fract();
+        if f.is_nan() || f.is_zero() {
+            self
+        } else if self < Self::zero() {
+            self - f - Self::one()
+        } else {
+            self - f
+        }
+    }
+
+    /// Returns the smallest integer greater than or equal to a number.
+    #[inline]
+    fn ceil(self) -> Self {
+        let f = self.fract();
+        if f.is_nan() || f.is_zero() {
+            self
+        } else if self > Self::zero() {
+            self - f + Self::one()
+        } else {
+            self - f
+        }
+    }
+
+    /// Returns the nearest integer to a number. Round half-way cases away from `0.0`.
+    #[inline]
+    fn round(self) -> Self {
+        let one = Self::one();
+        let h = Self::from(0.5).expect("Unable to cast from 0.5");
+        let f = self.fract();
+        if f.is_nan() || f.is_zero() {
+            self
+        } else if self > Self::zero() {
+            if f < h {
+                self - f
+            } else {
+                self - f + one
+            }
+        } else {
+            if -f < h {
+                self - f
+            } else {
+                self - f - one
+            }
+        }
+    }
+
+    /// Return the integer part of a number.
+    #[inline]
+    fn trunc(self) -> Self {
+        let f = self.fract();
+        if f.is_nan() {
+            self
+        } else {
+            self - f
+        }
+    }
+
+    /// Returns the fractional part of a number.
+    #[inline]
+    fn fract(self) -> Self {
+        if self.is_zero() {
+            Self::zero()
+        } else {
+            self % Self::one()
+        }
+    }
+
     /// Computes the absolute value of `self`. Returns `FloatCore::nan()` if the
     /// number is `FloatCore::nan()`.
     #[inline]
@@ -238,6 +308,11 @@ impl FloatCore for f32 {
         Self::is_finite(self) -> bool;
         Self::is_normal(self) -> bool;
         Self::classify(self) -> FpCategory;
+        Self::floor(self) -> Self;
+        Self::ceil(self) -> Self;
+        Self::round(self) -> Self;
+        Self::trunc(self) -> Self;
+        Self::fract(self) -> Self;
         Self::abs(self) -> Self;
         Self::signum(self) -> Self;
         Self::is_sign_positive(self) -> bool;
@@ -327,6 +402,11 @@ impl FloatCore for f64 {
         Self::is_finite(self) -> bool;
         Self::is_normal(self) -> bool;
         Self::classify(self) -> FpCategory;
+        Self::floor(self) -> Self;
+        Self::ceil(self) -> Self;
+        Self::round(self) -> Self;
+        Self::trunc(self) -> Self;
+        Self::fract(self) -> Self;
         Self::abs(self) -> Self;
         Self::signum(self) -> Self;
         Self::is_sign_positive(self) -> bool;
