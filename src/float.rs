@@ -230,6 +230,11 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
 
     /// Converts to radians, assuming the number is in degrees.
     fn to_radians(self) -> Self;
+
+    /// Returns the mantissa, base 2 exponent, and sign as integers, respectively.
+    /// The original number can be recovered by `sign * mantissa * 2 ^ exponent`.
+    /// The floating point encoding is documented in the [Reference][floating-point].
+    fn integer_decode(self) -> (u64, i16, i8);
 }
 
 impl FloatCore for f32 {
@@ -271,6 +276,11 @@ impl FloatCore for f32 {
     #[inline]
     fn max_value() -> Self {
         ::core::f32::MAX
+    }
+
+    #[inline]
+    fn integer_decode(self) -> (u64, i16, i8) {
+        integer_decode_f32(self)
     }
 
     #[inline]
@@ -365,6 +375,11 @@ impl FloatCore for f64 {
     #[inline]
     fn max_value() -> Self {
         ::core::f64::MAX
+    }
+
+    #[inline]
+    fn integer_decode(self) -> (u64, i16, i8) {
+        integer_decode_f64(self)
     }
 
     #[inline]
@@ -1448,7 +1463,6 @@ macro_rules! float_impl {
     )
 }
 
-#[cfg(feature = "std")]
 fn integer_decode_f32(f: f32) -> (u64, i16, i8) {
     let bits: u32 = unsafe { mem::transmute(f) };
     let sign: i8 = if bits >> 31 == 0 {
@@ -1467,7 +1481,6 @@ fn integer_decode_f32(f: f32) -> (u64, i16, i8) {
     (mantissa as u64, exponent, sign)
 }
 
-#[cfg(feature = "std")]
 fn integer_decode_f64(f: f64) -> (u64, i16, i8) {
     let bits: u64 = unsafe { mem::transmute(f) };
     let sign: i8 = if bits >> 63 == 0 {
