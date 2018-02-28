@@ -1,3 +1,5 @@
+// not all are used in all features configurations
+#![allow(unused)]
 
 /// Forward a method to an inherent method or a base trait method.
 macro_rules! forward {
