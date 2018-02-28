@@ -2,9 +2,8 @@ use core::mem;
 use core::ops::Neg;
 use core::num::FpCategory;
 
-// Used for default implementation of `epsilon`
-#[cfg(feature = "std")]
-use std::f32;
+use core::f32;
+use core::f64;
 
 use {Num, NumCast, ToPrimitive};
 
@@ -238,44 +237,15 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
 }
 
 impl FloatCore for f32 {
-    #[inline]
-    fn infinity() -> Self {
-        ::core::f32::INFINITY
-    }
-
-    #[inline]
-    fn neg_infinity() -> Self {
-        ::core::f32::NEG_INFINITY
-    }
-
-    #[inline]
-    fn nan() -> Self {
-        ::core::f32::NAN
-    }
-
-    #[inline]
-    fn neg_zero() -> Self {
-        -0.0
-    }
-
-    #[inline]
-    fn min_value() -> Self {
-        ::core::f32::MIN
-    }
-
-    #[inline]
-    fn min_positive_value() -> Self {
-        ::core::f32::MIN_POSITIVE
-    }
-
-    #[inline]
-    fn epsilon() -> Self {
-        ::core::f32::EPSILON
-    }
-
-    #[inline]
-    fn max_value() -> Self {
-        ::core::f32::MAX
+    constant! {
+        infinity() -> f32::INFINITY;
+        neg_infinity() -> f32::NEG_INFINITY;
+        nan() -> f32::NAN;
+        neg_zero() -> -0.0;
+        min_value() -> f32::MIN;
+        min_positive_value() -> f32::MIN_POSITIVE;
+        epsilon() -> f32::EPSILON;
+        max_value() -> f32::MAX;
     }
 
     #[inline]
@@ -302,13 +272,13 @@ impl FloatCore for f32 {
     #[inline]
     #[cfg(not(feature = "std"))]
     fn to_degrees(self) -> Self {
-        self * (180.0 / ::core::f32::consts::PI)
+        self * (180.0 / f32::consts::PI)
     }
 
     #[inline]
     #[cfg(not(feature = "std"))]
     fn to_radians(self) -> Self {
-        self * (::core::f32::consts::PI / 180.0)
+        self * (f32::consts::PI / 180.0)
     }
 
     #[cfg(feature = "std")]
@@ -337,44 +307,15 @@ impl FloatCore for f32 {
 }
 
 impl FloatCore for f64 {
-    #[inline]
-    fn infinity() -> Self {
-        ::core::f64::INFINITY
-    }
-
-    #[inline]
-    fn neg_infinity() -> Self {
-        ::core::f64::NEG_INFINITY
-    }
-
-    #[inline]
-    fn nan() -> Self {
-        ::core::f64::NAN
-    }
-
-    #[inline]
-    fn neg_zero() -> Self {
-        -0.0
-    }
-
-    #[inline]
-    fn min_value() -> Self {
-        ::core::f64::MIN
-    }
-
-    #[inline]
-    fn min_positive_value() -> Self {
-        ::core::f64::MIN_POSITIVE
-    }
-
-    #[inline]
-    fn epsilon() -> Self {
-        ::core::f64::EPSILON
-    }
-
-    #[inline]
-    fn max_value() -> Self {
-        ::core::f64::MAX
+    constant! {
+        infinity() -> f64::INFINITY;
+        neg_infinity() -> f64::NEG_INFINITY;
+        nan() -> f64::NAN;
+        neg_zero() -> -0.0;
+        min_value() -> f64::MIN;
+        min_positive_value() -> f64::MIN_POSITIVE;
+        epsilon() -> f64::EPSILON;
+        max_value() -> f64::MAX;
     }
 
     #[inline]
@@ -401,13 +342,13 @@ impl FloatCore for f64 {
     #[inline]
     #[cfg(not(feature = "std"))]
     fn to_degrees(self) -> Self {
-        self * (180.0 / ::core::f64::consts::PI)
+        self * (180.0 / f64::consts::PI)
     }
 
     #[inline]
     #[cfg(not(feature = "std"))]
     fn to_radians(self) -> Self {
-        self * (::core::f64::consts::PI / 180.0)
+        self * (f64::consts::PI / 180.0)
     }
 
     #[cfg(feature = "std")]
@@ -1359,44 +1300,15 @@ pub trait Float
 macro_rules! float_impl {
     ($T:ident $decode:ident) => (
         impl Float for $T {
-            #[inline]
-            fn nan() -> Self {
-                ::std::$T::NAN
-            }
-
-            #[inline]
-            fn infinity() -> Self {
-                ::std::$T::INFINITY
-            }
-
-            #[inline]
-            fn neg_infinity() -> Self {
-                ::std::$T::NEG_INFINITY
-            }
-
-            #[inline]
-            fn neg_zero() -> Self {
-                -0.0
-            }
-
-            #[inline]
-            fn min_value() -> Self {
-                ::std::$T::MIN
-            }
-
-            #[inline]
-            fn min_positive_value() -> Self {
-                ::std::$T::MIN_POSITIVE
-            }
-
-            #[inline]
-            fn epsilon() -> Self {
-                ::std::$T::EPSILON
-            }
-
-            #[inline]
-            fn max_value() -> Self {
-                ::std::$T::MAX
+            constant! {
+                nan() -> $T::NAN;
+                infinity() -> $T::INFINITY;
+                neg_infinity() -> $T::NEG_INFINITY;
+                neg_zero() -> -0.0;
+                min_value() -> $T::MIN;
+                min_positive_value() -> $T::MIN_POSITIVE;
+                epsilon() -> $T::EPSILON;
+                max_value() -> $T::MAX;
             }
 
             #[inline]
@@ -1515,12 +1427,9 @@ macro_rules! float_const_impl {
     );
     (@float $T:ident, $($constant:ident,)+) => (
         impl FloatConst for $T {
-            $(
-                #[inline]
-                fn $constant() -> Self {
-                    ::core::$T::consts::$constant
-                }
-            )+
+            constant! {
+                $( $constant() -> $T::consts::$constant; )+
+            }
         }
     );
 }
