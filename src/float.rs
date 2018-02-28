@@ -1493,8 +1493,8 @@ mod tests {
             assert!((FloatCore::to_radians(deg) - rad).abs() < 1e-6);
 
             let (deg, rad) = (deg as f32, rad as f32);
-            assert!((FloatCore::to_degrees(rad) - deg).abs() < 1e-6);
-            assert!((FloatCore::to_radians(deg) - rad).abs() < 1e-6);
+            assert!((FloatCore::to_degrees(rad) - deg).abs() < 1e-5);
+            assert!((FloatCore::to_radians(deg) - rad).abs() < 1e-5);
         }
     }
 
@@ -1508,8 +1508,8 @@ mod tests {
             assert!((Float::to_radians(deg) - rad).abs() < 1e-6);
 
             let (deg, rad) = (deg as f32, rad as f32);
-            assert!((Float::to_degrees(rad) - deg).abs() < 1e-6);
-            assert!((Float::to_radians(deg) - rad).abs() < 1e-6);
+            assert!((Float::to_degrees(rad) - deg).abs() < 1e-5);
+            assert!((Float::to_radians(deg) - rad).abs() < 1e-5);
         }
     }
 }
