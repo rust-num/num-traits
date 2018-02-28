@@ -154,27 +154,28 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     /// - `FloatCore::nan()` if the number is `FloatCore::nan()`
     #[inline]
     fn signum(self) -> Self {
-        if self.is_sign_positive() {
-            return Self::one();
+        if self.is_nan() {
+            Self::nan()
+        } else if self.is_sign_negative() {
+            -Self::one()
+        } else {
+            Self::one()
         }
-        if self.is_sign_negative() {
-            return -Self::one();
-        }
-        Self::nan()
     }
 
     /// Returns `true` if `self` is positive, including `+0.0` and
     /// `FloatCore::infinity()`.
     #[inline]
     fn is_sign_positive(self) -> bool {
-        self > Self::zero() || (Self::one() / self) == Self::infinity()
+        !self.is_sign_negative()
     }
 
     /// Returns `true` if `self` is negative, including `-0.0` and
     /// `FloatCore::neg_infinity()`.
     #[inline]
     fn is_sign_negative(self) -> bool {
-        self < Self::zero() || (Self::one() / self) == Self::neg_infinity()
+        let (_, _, sign) = self.integer_decode();
+        sign < 0
     }
 
     /// Returns the minimum of the two numbers.
