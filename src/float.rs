@@ -21,6 +21,21 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     /// Returns NaN.
     fn nan() -> Self;
 
+    /// Returns `-0.0`.
+    fn neg_zero() -> Self;
+
+    /// Returns the smallest finite value that this type can represent.
+    fn min_value() -> Self;
+
+    /// Returns the smallest positive, normalized value that this type can represent.
+    fn min_positive_value() -> Self;
+
+    /// Returns epsilon, a small positive value.
+    fn epsilon() -> Self;
+
+    /// Returns the largest finite value that this type can represent.
+    fn max_value() -> Self;
+
     /// Returns `true` if the number is NaN.
     #[inline]
     fn is_nan(self) -> bool {
@@ -164,6 +179,31 @@ impl FloatCore for f32 {
     }
 
     #[inline]
+    fn neg_zero() -> Self {
+        -0.0
+    }
+
+    #[inline]
+    fn min_value() -> Self {
+        ::core::f32::MIN
+    }
+
+    #[inline]
+    fn min_positive_value() -> Self {
+        ::core::f32::MIN_POSITIVE
+    }
+
+    #[inline]
+    fn epsilon() -> Self {
+        ::core::f32::EPSILON
+    }
+
+    #[inline]
+    fn max_value() -> Self {
+        ::core::f32::MAX
+    }
+
+    #[inline]
     #[cfg(not(feature = "std"))]
     fn classify(self) -> FpCategory {
         const EXP_MASK: u32 = 0x7f800000;
@@ -225,6 +265,31 @@ impl FloatCore for f64 {
     #[inline]
     fn nan() -> Self {
         ::core::f64::NAN
+    }
+
+    #[inline]
+    fn neg_zero() -> Self {
+        -0.0
+    }
+
+    #[inline]
+    fn min_value() -> Self {
+        ::core::f64::MIN
+    }
+
+    #[inline]
+    fn min_positive_value() -> Self {
+        ::core::f64::MIN_POSITIVE
+    }
+
+    #[inline]
+    fn epsilon() -> Self {
+        ::core::f64::EPSILON
+    }
+
+    #[inline]
+    fn max_value() -> Self {
+        ::core::f64::MAX
     }
 
     #[inline]
