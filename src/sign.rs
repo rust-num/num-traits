@@ -1,9 +1,7 @@
 use core::ops::Neg;
-use core::{f32, f64};
 use core::num::Wrapping;
 
 use Num;
-#[cfg(not(feature = "std"))]
 use float::FloatCore;
 
 /// Useful functions for signed numbers (i.e. numbers that can be negative).
@@ -101,12 +99,12 @@ impl<T: Signed> Signed for Wrapping<T> where Wrapping<T>: Num + Neg<Output=Wrapp
 }
 
 macro_rules! signed_float_impl {
-    ($t:ty, $nan:expr, $inf:expr, $neg_inf:expr) => {
+    ($t:ty) => {
         impl Signed for $t {
             /// Computes the absolute value. Returns `NAN` if the number is `NAN`.
             #[inline]
             fn abs(&self) -> $t {
-                (*self).abs()
+                FloatCore::abs(*self)
             }
 
             /// The positive difference of two numbers. Returns `0.0` if the number is
@@ -124,23 +122,22 @@ macro_rules! signed_float_impl {
             /// - `NAN` if the number is NaN
             #[inline]
             fn signum(&self) -> $t {
-                use float::FloatCore;
                 FloatCore::signum(*self)
             }
 
             /// Returns `true` if the number is positive, including `+0.0` and `INFINITY`
             #[inline]
-            fn is_positive(&self) -> bool { *self > 0.0 || (1.0 / *self) == $inf }
+            fn is_positive(&self) -> bool { FloatCore::is_sign_positive(*self) }
 
             /// Returns `true` if the number is negative, including `-0.0` and `NEG_INFINITY`
             #[inline]
-            fn is_negative(&self) -> bool { *self < 0.0 || (1.0 / *self) == $neg_inf }
+            fn is_negative(&self) -> bool { FloatCore::is_sign_negative(*self) }
         }
     }
 }
 
-signed_float_impl!(f32, f32::NAN, f32::INFINITY, f32::NEG_INFINITY);
-signed_float_impl!(f64, f64::NAN, f64::INFINITY, f64::NEG_INFINITY);
+signed_float_impl!(f32);
+signed_float_impl!(f64);
 
 /// Computes the absolute value.
 ///
