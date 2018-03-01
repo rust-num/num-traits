@@ -1,4 +1,3 @@
-use core::f64;
 use core::mem::size_of;
 use core::num::Wrapping;
 
