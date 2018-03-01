@@ -1,8 +1,27 @@
+# Release 0.2.1
+
+- [The new `FloatCore` trait][32] offers a subset of `Float` for `#![no_std]` use.
+  [This includes everything][41] except the transcendental functions and FMA.
+- [The new `Inv` trait][37] returns the multiplicative inverse, or reciprocal.
+- [The new `Pow` trait][37] performs exponentiation, much like the existing `pow`
+  function, but with generic exponent types.
+- [The new `One::is_one` method][39] tests if a value equals 1.  Implementers
+  should override this method if there's a more efficient way to check for 1,
+  rather than comparing with a temporary `one()`.
+
+**Contributors**: @clarcharr, @cuviper, @vks
+
+[32]: https://github.com/rust-num/num-traits/pull/32
+[37]: https://github.com/rust-num/num-traits/pull/37
+[39]: https://github.com/rust-num/num-traits/pull/39
+[41]: https://github.com/rust-num/num-traits/pull/41
+
+
 # Release 0.2.0
 
 - **breaking change**: [There is now a `std` feature][30], enabled by default, along
   with the implication that building *without* this feature makes this a
-  `#[no_std]` crate.
+  `#![no_std]` crate.
   - The `Float` and `Real` traits are only available when `std` is enabled.
   - Otherwise, the API is unchanged, and num-traits 0.1.43 now re-exports its
     items from num-traits 0.2 for compatibility (the [semver-trick]).
