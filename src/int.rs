@@ -8,6 +8,7 @@ use ops::saturating::Saturating;
 pub trait PrimInt
     : Sized
     + Copy
+    + Default
     + Num + NumCast
     + Bounded
     + PartialOrd + Ord + Eq
