@@ -691,6 +691,19 @@ fn cast_to_unsigned_int_checks_overflow() {
     assert_eq!(None, cast::<f64, u64>(small_f));
 }
 
+#[cfg(all(test, feature = "std"))]
+fn dbg(args: ::core::fmt::Arguments) {
+    println!("{}", args);
+}
+
+#[cfg(all(test, not(feature = "std")))]
+fn dbg(_: ::core::fmt::Arguments) {}
+
+// Rust 1.8 doesn't handle cfg on macros correctly
+// #[cfg(test)]
+#[allow(unused)]
+macro_rules! dbg { ($($tok:tt)*) => { dbg(format_args!($($tok)*)) } }
+
 #[test]
 fn cast_float_to_int_edge_cases() {
     use core::mem::transmute;
@@ -720,7 +733,7 @@ fn cast_float_to_int_edge_cases() {
 
     macro_rules! test_edge {
         ($f:ident -> $($t:ident)+) => { $({
-            println!("testing cast edge cases for {} -> {}", stringify!($f), stringify!($t));
+            dbg!("testing cast edge cases for {} -> {}", stringify!($f), stringify!($t));
 
             let small = if $t::MIN == 0 || size_of::<$t>() < size_of::<$f>() {
                 $t::MIN as $f - 1.0
@@ -728,7 +741,7 @@ fn cast_float_to_int_edge_cases() {
                 ($t::MIN as $f).raw_offset(1).floor()
             };
             let fmin = small.raw_offset(-1);
-            println!("  testing min {}\n\tvs. {:.16}\n\tand {:.16}", $t::MIN, fmin, small);
+            dbg!("  testing min {}\n\tvs. {:.16}\n\tand {:.16}", $t::MIN, fmin, small);
             assert_eq!(Some($t::MIN), cast::<$f, $t>($t::MIN as $f));
             assert_eq!(Some($t::MIN), cast::<$f, $t>(fmin));
             assert_eq!(None, cast::<$f, $t>(small));
@@ -742,12 +755,12 @@ fn cast_float_to_int_edge_cases() {
                 (max, large)
             };
             let fmax = large.raw_offset(-1);
-            println!("  testing max {}\n\tvs. {:.16}\n\tand {:.16}", max, fmax, large);
+            dbg!("  testing max {}\n\tvs. {:.16}\n\tand {:.16}", max, fmax, large);
             assert_eq!(Some(max), cast::<$f, $t>(max as $f));
             assert_eq!(Some(max), cast::<$f, $t>(fmax));
             assert_eq!(None, cast::<$f, $t>(large));
 
-            println!("  testing non-finite values");
+            dbg!("  testing non-finite values");
             assert_eq!(None, cast::<$f, $t>($f::NAN));
             assert_eq!(None, cast::<$f, $t>($f::INFINITY));
             assert_eq!(None, cast::<$f, $t>($f::NEG_INFINITY));
