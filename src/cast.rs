@@ -223,112 +223,91 @@ impl_to_primitive_uint!(u32);
 impl_to_primitive_uint!(u64);
 
 macro_rules! impl_to_primitive_float_to_float {
-    ($SrcT:ident, $DstT:ident, $slf:expr) => ({
-        // Only finite values that are reducing size need to worry about overflow.
-        if size_of::<$SrcT>() > size_of::<$DstT>() && FloatCore::is_finite($slf) {
-            let n = $slf as f64;
-            if n < $DstT::MIN as f64 || n > $DstT::MAX as f64 {
-                return None;
+    ($SrcT:ident : $( fn $method:ident -> $DstT:ident ; )*) => {$(
+        #[inline]
+        fn $method(&self) -> Option<$DstT> {
+            // Only finite values that are reducing size need to worry about overflow.
+            if size_of::<$SrcT>() > size_of::<$DstT>() && FloatCore::is_finite(*self) {
+                let n = *self as f64;
+                if n < $DstT::MIN as f64 || n > $DstT::MAX as f64 {
+                    return None;
+                }
             }
+            // We can safely cast NaN, +-inf, and finite values in range.
+            Some(*self as $DstT)
         }
-        // We can safely cast NaN, +-inf, and finite values in range.
-        Some($slf as $DstT)
-    })
+    )*}
 }
 
 macro_rules! impl_to_primitive_float_to_signed_int {
-    ($SrcT:ident, $DstT:ident, $slf:expr) => ({
-        let t = $slf.trunc(); // round toward zero.
-        // MIN is a power of two, which we can cast and compare directly.
-        if t >= $DstT::MIN as $SrcT {
-            // The mantissa might not be able to represent all digits of MAX.
-            let sig_bits = size_of::<$DstT>() as u32 * 8 - 1;
-            let max = if sig_bits > $SrcT::MANTISSA_DIGITS {
-                let lost_bits = sig_bits - $SrcT::MANTISSA_DIGITS;
-                $DstT::MAX & !((1 << lost_bits) - 1)
-            } else {
-                $DstT::MAX
-            };
-            if t <= max as $SrcT {
-                return Some($slf as $DstT);
+    ($f:ident : $( fn $method:ident -> $i:ident ; )*) => {$(
+        #[inline]
+        fn $method(&self) -> Option<$i> {
+            let t = self.trunc(); // round toward zero.
+            // MIN is a power of two, which we can cast and compare directly.
+            if t >= $i::MIN as $f {
+                // The mantissa might not be able to represent all digits of MAX.
+                let sig_bits = size_of::<$i>() as u32 * 8 - 1;
+                let max = if sig_bits > $f::MANTISSA_DIGITS {
+                    let lost_bits = sig_bits - $f::MANTISSA_DIGITS;
+                    $i::MAX & !((1 << lost_bits) - 1)
+                } else {
+                    $i::MAX
+                };
+                if t <= max as $f {
+                    return Some(*self as $i);
+                }
             }
+            None
         }
-        None
-    })
+    )*}
 }
 
 macro_rules! impl_to_primitive_float_to_unsigned_int {
-    ($SrcT:ident, $DstT:ident, $slf:expr) => ({
-        let t = $slf.trunc(); // round toward zero.
-        if t >= 0.0 {
-            // The mantissa might not be able to represent all digits of MAX.
-            let sig_bits = size_of::<$DstT>() as u32 * 8;
-            let max = if sig_bits > $SrcT::MANTISSA_DIGITS {
-                let lost_bits = sig_bits - $SrcT::MANTISSA_DIGITS;
-                $DstT::MAX & !((1 << lost_bits) - 1)
-            } else {
-                $DstT::MAX
-            };
-            if t <= max as $SrcT {
-                return Some($slf as $DstT);
+    ($f:ident : $( fn $method:ident -> $u:ident ; )*) => {$(
+        #[inline]
+        fn $method(&self) -> Option<$u> {
+            let t = self.trunc(); // round toward zero.
+            if t >= 0.0 {
+                // The mantissa might not be able to represent all digits of MAX.
+                let sig_bits = size_of::<$u>() as u32 * 8;
+                let max = if sig_bits > $f::MANTISSA_DIGITS {
+                    let lost_bits = sig_bits - $f::MANTISSA_DIGITS;
+                    $u::MAX & !((1 << lost_bits) - 1)
+                } else {
+                    $u::MAX
+                };
+                if t <= max as $f {
+                    return Some(*self as $u);
+                }
             }
+            None
         }
-        None
-    })
+    )*}
 }
 
 macro_rules! impl_to_primitive_float {
     ($T:ident) => (
         impl ToPrimitive for $T {
-            #[inline]
-            fn to_isize(&self) -> Option<isize> {
-                impl_to_primitive_float_to_signed_int!($T, isize, *self)
-            }
-            #[inline]
-            fn to_i8(&self) -> Option<i8> {
-                impl_to_primitive_float_to_signed_int!($T, i8, *self)
-            }
-            #[inline]
-            fn to_i16(&self) -> Option<i16> {
-                impl_to_primitive_float_to_signed_int!($T, i16, *self)
-            }
-            #[inline]
-            fn to_i32(&self) -> Option<i32> {
-                impl_to_primitive_float_to_signed_int!($T, i32, *self)
-            }
-            #[inline]
-            fn to_i64(&self) -> Option<i64> {
-                impl_to_primitive_float_to_signed_int!($T, i64, *self)
+            impl_to_primitive_float_to_signed_int! { $T:
+                fn to_isize -> isize;
+                fn to_i8 -> i8;
+                fn to_i16 -> i16;
+                fn to_i32 -> i32;
+                fn to_i64 -> i64;
             }
 
-            #[inline]
-            fn to_usize(&self) -> Option<usize> {
-                impl_to_primitive_float_to_unsigned_int!($T, usize, *self)
-            }
-            #[inline]
-            fn to_u8(&self) -> Option<u8> {
-                impl_to_primitive_float_to_unsigned_int!($T, u8, *self)
-            }
-            #[inline]
-            fn to_u16(&self) -> Option<u16> {
-                impl_to_primitive_float_to_unsigned_int!($T, u16, *self)
-            }
-            #[inline]
-            fn to_u32(&self) -> Option<u32> {
-                impl_to_primitive_float_to_unsigned_int!($T, u32, *self)
-            }
-            #[inline]
-            fn to_u64(&self) -> Option<u64> {
-                impl_to_primitive_float_to_unsigned_int!($T, u64, *self)
+            impl_to_primitive_float_to_unsigned_int! { $T:
+                fn to_usize -> usize;
+                fn to_u8 -> u8;
+                fn to_u16 -> u16;
+                fn to_u32 -> u32;
+                fn to_u64 -> u64;
             }
 
-            #[inline]
-            fn to_f32(&self) -> Option<f32> {
-                impl_to_primitive_float_to_float!($T, f32, *self)
-            }
-            #[inline]
-            fn to_f64(&self) -> Option<f64> {
-                impl_to_primitive_float_to_float!($T, f64, *self)
+            impl_to_primitive_float_to_float! { $T:
+                fn to_f32 -> f32;
+                fn to_f64 -> f64;
             }
         }
     )
