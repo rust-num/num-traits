@@ -1,3 +1,6 @@
+use core::{i8, i16, i32, i64, isize};
+use core::{u8, u16, u32, u64, usize};
+use core::{f32, f64};
 use core::mem::size_of;
 use core::num::Wrapping;
 
@@ -220,43 +223,57 @@ impl_to_primitive_uint!(u32);
 impl_to_primitive_uint!(u64);
 
 macro_rules! impl_to_primitive_float_to_float {
-    ($SrcT:ident, $DstT:ident, $slf:expr) => (
-        if size_of::<$SrcT>() <= size_of::<$DstT>() {
-            Some($slf as $DstT)
-        } else {
-            // Make sure the value is in range for the cast.
-            // NaN and +-inf are cast as they are.
+    ($SrcT:ident, $DstT:ident, $slf:expr) => ({
+        // Only finite values that are reducing size need to worry about overflow.
+        if size_of::<$SrcT>() > size_of::<$DstT>() && FloatCore::is_finite($slf) {
             let n = $slf as f64;
-            let max_value: $DstT = ::core::$DstT::MAX;
-            if !FloatCore::is_finite(n) || (-max_value as f64 <= n && n <= max_value as f64)
-            {
-                Some($slf as $DstT)
-            } else {
-                None
+            if n < $DstT::MIN as f64 || n > $DstT::MAX as f64 {
+                return None;
             }
         }
-    )
+        // We can safely cast NaN, +-inf, and finite values in range.
+        Some($slf as $DstT)
+    })
 }
 
 macro_rules! impl_to_primitive_float_to_signed_int {
     ($SrcT:ident, $DstT:ident, $slf:expr) => ({
-        let t = $slf.trunc();
-        if t >= $DstT::min_value() as $SrcT && t <= $DstT::max_value() as $SrcT {
-            Some($slf as $DstT)
-        } else {
-            None
+        let t = $slf.trunc(); // round toward zero.
+        // MIN is a power of two, which we can cast and compare directly.
+        if t >= $DstT::MIN as $SrcT {
+            // The mantissa might not be able to represent all digits of MAX.
+            let sig_bits = size_of::<$DstT>() as u32 * 8 - 1;
+            let max = if sig_bits > $SrcT::MANTISSA_DIGITS {
+                let lost_bits = sig_bits - $SrcT::MANTISSA_DIGITS;
+                $DstT::MAX & !((1 << lost_bits) - 1)
+            } else {
+                $DstT::MAX
+            };
+            if t <= max as $SrcT {
+                return Some($slf as $DstT);
+            }
         }
+        None
     })
 }
 
 macro_rules! impl_to_primitive_float_to_unsigned_int {
     ($SrcT:ident, $DstT:ident, $slf:expr) => ({
-        let t = $slf.trunc();
-        if t >= $DstT::min_value() as $SrcT && t <= $DstT::max_value() as $SrcT {
-            Some($slf as $DstT)
-        } else {
-            None
+        let t = $slf.trunc(); // round toward zero.
+        if t >= 0.0 {
+            // The mantissa might not be able to represent all digits of MAX.
+            let sig_bits = size_of::<$DstT>() as u32 * 8;
+            let max = if sig_bits > $SrcT::MANTISSA_DIGITS {
+                let lost_bits = sig_bits - $SrcT::MANTISSA_DIGITS;
+                $DstT::MAX & !((1 << lost_bits) - 1)
+            } else {
+                $DstT::MAX
+            };
+            if t <= max as $SrcT {
+                return Some($slf as $DstT);
+            }
         }
+        None
     })
 }
 
