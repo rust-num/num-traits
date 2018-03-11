@@ -749,3 +749,52 @@ fn cast_float_to_int_edge_cases() {
     test_edge!(f64 -> isize i8 i16 i32 i64);
     test_edge!(f64 -> usize u8 u16 u32 u64);
 }
+
+#[test]
+fn cast_int_to_int_edge_cases() {
+    use core::cmp::Ordering::*;
+
+    macro_rules! test_edge {
+        ($f:ident -> $($t:ident)+) => { $({
+            fn test_edge() {
+                dbg!("testing cast edge cases for {} -> {}", stringify!($f), stringify!($t));
+
+                match ($f::MIN as i64).cmp(&($t::MIN as i64)) {
+                    Greater => {
+                        assert_eq!(Some($f::MIN as $t), cast::<$f, $t>($f::MIN));
+                    }
+                    Equal => {
+                        assert_eq!(Some($t::MIN), cast::<$f, $t>($f::MIN));
+                    }
+                    Less => {
+                        let min = $t::MIN as $f;
+                        assert_eq!(Some($t::MIN), cast::<$f, $t>(min));
+                        assert_eq!(None, cast::<$f, $t>(min - 1));
+                    }
+                }
+
+                match ($f::MAX as u64).cmp(&($t::MAX as u64)) {
+                    Greater => {
+                        let max = $t::MAX as $f;
+                        assert_eq!(Some($t::MAX), cast::<$f, $t>(max));
+                        assert_eq!(None, cast::<$f, $t>(max + 1));
+                    }
+                    Equal => {
+                        assert_eq!(Some($t::MAX), cast::<$f, $t>($f::MAX));
+                    }
+                    Less => {
+                        assert_eq!(Some($f::MAX as $t), cast::<$f, $t>($f::MAX));
+                    }
+                }
+            }
+            test_edge();
+        })+};
+        ($( $from:ident )+) => { $({
+            test_edge!($from -> isize i8 i16 i32 i64);
+            test_edge!($from -> usize u8 u16 u32 u64);
+        })+}
+    }
+
+    test_edge!(isize i8 i16 i32 i64);
+    test_edge!(usize u8 u16 u32 u64);
+}
