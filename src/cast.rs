@@ -711,3 +711,72 @@ fn cast_to_unsigned_int_checks_overflow() {
     assert_eq!(None, cast::<f64, u32>(small_f));
     assert_eq!(None, cast::<f64, u64>(small_f));
 }
+
+#[test]
+fn cast_float_to_int_edge_cases() {
+    use core::mem::transmute;
+
+    trait RawOffset: Sized {
+        type Raw;
+        fn raw_offset(self, offset: Self::Raw) -> Self;
+    }
+    impl RawOffset for f32 {
+        type Raw = i32;
+        fn raw_offset(self, offset: Self::Raw) -> Self {
+            unsafe {
+                let raw: Self::Raw = transmute(self);
+                transmute(raw + offset)
+            }
+        }
+    }
+    impl RawOffset for f64 {
+        type Raw = i64;
+        fn raw_offset(self, offset: Self::Raw) -> Self {
+            unsafe {
+                let raw: Self::Raw = transmute(self);
+                transmute(raw + offset)
+            }
+        }
+    }
+
+    macro_rules! test_edge {
+        ($f:ident -> $($t:ident)+) => { $({
+            println!("testing cast edge cases for {} -> {}", stringify!($f), stringify!($t));
+
+            let small = if $t::MIN == 0 || size_of::<$t>() < size_of::<$f>() {
+                $t::MIN as $f - 1.0
+            } else {
+                ($t::MIN as $f).raw_offset(1).floor()
+            };
+            let fmin = small.raw_offset(-1);
+            println!("  testing min {}\n\tvs. {:.16}\n\tand {:.16}", $t::MIN, fmin, small);
+            assert_eq!(Some($t::MIN), cast::<$f, $t>($t::MIN as $f));
+            assert_eq!(Some($t::MIN), cast::<$f, $t>(fmin));
+            assert_eq!(None, cast::<$f, $t>(small));
+
+            let (max, large) = if size_of::<$t>() < size_of::<$f>() {
+                ($t::MAX, $t::MAX as $f + 1.0)
+            } else {
+                let large = $t::MAX as $f; // rounds up!
+                let max = large.raw_offset(-1) as $t; // the next smallest possible
+                assert_eq!(max.count_ones(), $f::MANTISSA_DIGITS);
+                (max, large)
+            };
+            let fmax = large.raw_offset(-1);
+            println!("  testing max {}\n\tvs. {:.16}\n\tand {:.16}", max, fmax, large);
+            assert_eq!(Some(max), cast::<$f, $t>(max as $f));
+            assert_eq!(Some(max), cast::<$f, $t>(fmax));
+            assert_eq!(None, cast::<$f, $t>(large));
+
+            println!("  testing non-finite values");
+            assert_eq!(None, cast::<$f, $t>($f::NAN));
+            assert_eq!(None, cast::<$f, $t>($f::INFINITY));
+            assert_eq!(None, cast::<$f, $t>($f::NEG_INFINITY));
+        })+}
+    }
+
+    test_edge!(f32 -> isize i8 i16 i32 i64);
+    test_edge!(f32 -> usize u8 u16 u32 u64);
+    test_edge!(f64 -> isize i8 i16 i32 i64);
+    test_edge!(f64 -> usize u8 u16 u32 u64);
+}
