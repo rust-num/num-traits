@@ -1,8 +1,9 @@
+use core::{i8, i16, i32, i64, isize};
+use core::{u8, u16, u32, u64, usize};
+use core::{f32, f64};
 use core::mem::size_of;
 use core::num::Wrapping;
 
-use identities::Zero;
-use bounds::Bounded;
 use float::FloatCore;
 
 /// A generic trait for converting a value to a number.
@@ -76,62 +77,52 @@ pub trait ToPrimitive {
 }
 
 macro_rules! impl_to_primitive_int_to_int {
-    ($SrcT:ty, $DstT:ty, $slf:expr) => (
-        {
-            if size_of::<$SrcT>() <= size_of::<$DstT>() {
-                Some($slf as $DstT)
-            } else {
-                let n = $slf as i64;
-                let min_value: $DstT = Bounded::min_value();
-                let max_value: $DstT = Bounded::max_value();
-                if min_value as i64 <= n && n <= max_value as i64 {
-                    Some($slf as $DstT)
-                } else {
-                    None
-                }
-            }
-        }
-    )
-}
-
-macro_rules! impl_to_primitive_int_to_uint {
-    ($SrcT:ty, $DstT:ty, $slf:expr) => (
-        {
-            let zero: $SrcT = Zero::zero();
-            let max_value: $DstT = Bounded::max_value();
-            if zero <= $slf && $slf as u64 <= max_value as u64 {
-                Some($slf as $DstT)
+    ($SrcT:ident : $( fn $method:ident -> $DstT:ident ; )*) => {$(
+        #[inline]
+        fn $method(&self) -> Option<$DstT> {
+            let min = $DstT::MIN as $SrcT;
+            let max = $DstT::MAX as $SrcT;
+            if size_of::<$SrcT>() <= size_of::<$DstT>() || (min <= *self && *self <= max) {
+                Some(*self as $DstT)
             } else {
                 None
             }
         }
-    )
+    )*}
+}
+
+macro_rules! impl_to_primitive_int_to_uint {
+    ($SrcT:ident : $( fn $method:ident -> $DstT:ident ; )*) => {$(
+        #[inline]
+        fn $method(&self) -> Option<$DstT> {
+            let max = $DstT::MAX as u64;
+            if 0 <= *self && (size_of::<$SrcT>() < size_of::<$DstT>() || *self as u64 <= max) {
+                Some(*self as $DstT)
+            } else {
+                None
+            }
+        }
+    )*}
 }
 
 macro_rules! impl_to_primitive_int {
-    ($T:ty) => (
+    ($T:ident) => (
         impl ToPrimitive for $T {
-            #[inline]
-            fn to_isize(&self) -> Option<isize> { impl_to_primitive_int_to_int!($T, isize, *self) }
-            #[inline]
-            fn to_i8(&self) -> Option<i8> { impl_to_primitive_int_to_int!($T, i8, *self) }
-            #[inline]
-            fn to_i16(&self) -> Option<i16> { impl_to_primitive_int_to_int!($T, i16, *self) }
-            #[inline]
-            fn to_i32(&self) -> Option<i32> { impl_to_primitive_int_to_int!($T, i32, *self) }
-            #[inline]
-            fn to_i64(&self) -> Option<i64> { impl_to_primitive_int_to_int!($T, i64, *self) }
+            impl_to_primitive_int_to_int! { $T:
+                fn to_isize -> isize;
+                fn to_i8 -> i8;
+                fn to_i16 -> i16;
+                fn to_i32 -> i32;
+                fn to_i64 -> i64;
+            }
 
-            #[inline]
-            fn to_usize(&self) -> Option<usize> { impl_to_primitive_int_to_uint!($T, usize, *self) }
-            #[inline]
-            fn to_u8(&self) -> Option<u8> { impl_to_primitive_int_to_uint!($T, u8, *self) }
-            #[inline]
-            fn to_u16(&self) -> Option<u16> { impl_to_primitive_int_to_uint!($T, u16, *self) }
-            #[inline]
-            fn to_u32(&self) -> Option<u32> { impl_to_primitive_int_to_uint!($T, u32, *self) }
-            #[inline]
-            fn to_u64(&self) -> Option<u64> { impl_to_primitive_int_to_uint!($T, u64, *self) }
+            impl_to_primitive_int_to_uint! { $T:
+                fn to_usize -> usize;
+                fn to_u8 -> u8;
+                fn to_u16 -> u16;
+                fn to_u32 -> u32;
+                fn to_u64 -> u64;
+            }
 
             #[inline]
             fn to_f32(&self) -> Option<f32> { Some(*self as f32) }
@@ -148,62 +139,51 @@ impl_to_primitive_int!(i32);
 impl_to_primitive_int!(i64);
 
 macro_rules! impl_to_primitive_uint_to_int {
-    ($DstT:ty, $slf:expr) => (
-        {
-            let max_value: $DstT = Bounded::max_value();
-            if $slf as u64 <= max_value as u64 {
-                Some($slf as $DstT)
+    ($SrcT:ident : $( fn $method:ident -> $DstT:ident ; )*) => {$(
+        #[inline]
+        fn $method(&self) -> Option<$DstT> {
+            let max = $DstT::MAX as u64;
+            if size_of::<$SrcT>() < size_of::<$DstT>() || *self as u64 <= max {
+                Some(*self as $DstT)
             } else {
                 None
             }
         }
-    )
+    )*}
 }
 
 macro_rules! impl_to_primitive_uint_to_uint {
-    ($SrcT:ty, $DstT:ty, $slf:expr) => (
-        {
-            if size_of::<$SrcT>() <= size_of::<$DstT>() {
-                Some($slf as $DstT)
+    ($SrcT:ident : $( fn $method:ident -> $DstT:ident ; )*) => {$(
+        #[inline]
+        fn $method(&self) -> Option<$DstT> {
+            let max = $DstT::MAX as $SrcT;
+            if size_of::<$SrcT>() <= size_of::<$DstT>() || *self <= max {
+                Some(*self as $DstT)
             } else {
-                let zero: $SrcT = Zero::zero();
-                let max_value: $DstT = Bounded::max_value();
-                if zero <= $slf && $slf as u64 <= max_value as u64 {
-                    Some($slf as $DstT)
-                } else {
-                    None
-                }
+                None
             }
         }
-    )
+    )*}
 }
 
 macro_rules! impl_to_primitive_uint {
-    ($T:ty) => (
+    ($T:ident) => (
         impl ToPrimitive for $T {
-            #[inline]
-            fn to_isize(&self) -> Option<isize> { impl_to_primitive_uint_to_int!(isize, *self) }
-            #[inline]
-            fn to_i8(&self) -> Option<i8> { impl_to_primitive_uint_to_int!(i8, *self) }
-            #[inline]
-            fn to_i16(&self) -> Option<i16> { impl_to_primitive_uint_to_int!(i16, *self) }
-            #[inline]
-            fn to_i32(&self) -> Option<i32> { impl_to_primitive_uint_to_int!(i32, *self) }
-            #[inline]
-            fn to_i64(&self) -> Option<i64> { impl_to_primitive_uint_to_int!(i64, *self) }
-
-            #[inline]
-            fn to_usize(&self) -> Option<usize> {
-                impl_to_primitive_uint_to_uint!($T, usize, *self)
+            impl_to_primitive_uint_to_int! { $T:
+                fn to_isize -> isize;
+                fn to_i8 -> i8;
+                fn to_i16 -> i16;
+                fn to_i32 -> i32;
+                fn to_i64 -> i64;
             }
-            #[inline]
-            fn to_u8(&self) -> Option<u8> { impl_to_primitive_uint_to_uint!($T, u8, *self) }
-            #[inline]
-            fn to_u16(&self) -> Option<u16> { impl_to_primitive_uint_to_uint!($T, u16, *self) }
-            #[inline]
-            fn to_u32(&self) -> Option<u32> { impl_to_primitive_uint_to_uint!($T, u32, *self) }
-            #[inline]
-            fn to_u64(&self) -> Option<u64> { impl_to_primitive_uint_to_uint!($T, u64, *self) }
+
+            impl_to_primitive_uint_to_uint! { $T:
+                fn to_usize -> usize;
+                fn to_u8 -> u8;
+                fn to_u16 -> u16;
+                fn to_u32 -> u32;
+                fn to_u64 -> u64;
+            }
 
             #[inline]
             fn to_f32(&self) -> Option<f32> { Some(*self as f32) }
@@ -220,53 +200,99 @@ impl_to_primitive_uint!(u32);
 impl_to_primitive_uint!(u64);
 
 macro_rules! impl_to_primitive_float_to_float {
-    ($SrcT:ident, $DstT:ident, $slf:expr) => (
-        if size_of::<$SrcT>() <= size_of::<$DstT>() {
-            Some($slf as $DstT)
-        } else {
-            // Make sure the value is in range for the cast.
-            // NaN and +-inf are cast as they are.
-            let n = $slf as f64;
-            let max_value: $DstT = ::core::$DstT::MAX;
-            if !FloatCore::is_finite(n) || (-max_value as f64 <= n && n <= max_value as f64)
-            {
-                Some($slf as $DstT)
-            } else {
-                None
+    ($SrcT:ident : $( fn $method:ident -> $DstT:ident ; )*) => {$(
+        #[inline]
+        fn $method(&self) -> Option<$DstT> {
+            // Only finite values that are reducing size need to worry about overflow.
+            if size_of::<$SrcT>() > size_of::<$DstT>() && FloatCore::is_finite(*self) {
+                let n = *self as f64;
+                if n < $DstT::MIN as f64 || n > $DstT::MAX as f64 {
+                    return None;
+                }
             }
+            // We can safely cast NaN, +-inf, and finite values in range.
+            Some(*self as $DstT)
         }
-    )
+    )*}
+}
+
+macro_rules! impl_to_primitive_float_to_signed_int {
+    ($f:ident : $( fn $method:ident -> $i:ident ; )*) => {$(
+        #[inline]
+        fn $method(&self) -> Option<$i> {
+            // Float as int truncates toward zero, so we want to allow values
+            // in the exclusive range `(MIN-1, MAX+1)`.
+            if size_of::<$f>() > size_of::<$i>() {
+                // With a larger size, we can represent the range exactly.
+                const MIN_M1: $f = $i::MIN as $f - 1.0;
+                const MAX_P1: $f = $i::MAX as $f + 1.0;
+                if *self > MIN_M1 && *self < MAX_P1 {
+                    return Some(*self as $i);
+                }
+            } else {
+                // We can't represent `MIN-1` exactly, but there's no fractional part
+                // at this magnitude, so we can just use a `MIN` inclusive boundary.
+                const MIN: $f = $i::MIN as $f;
+                // We can't represent `MAX` exactly, but it will round up to exactly
+                // `MAX+1` (a power of two) when we cast it.
+                const MAX_P1: $f = $i::MAX as $f;
+                if *self >= MIN && *self < MAX_P1 {
+                    return Some(*self as $i);
+                }
+            }
+            None
+        }
+    )*}
+}
+
+macro_rules! impl_to_primitive_float_to_unsigned_int {
+    ($f:ident : $( fn $method:ident -> $u:ident ; )*) => {$(
+        #[inline]
+        fn $method(&self) -> Option<$u> {
+            // Float as int truncates toward zero, so we want to allow values
+            // in the exclusive range `(-1, MAX+1)`.
+            if size_of::<$f>() > size_of::<$u>() {
+                // With a larger size, we can represent the range exactly.
+                const MAX_P1: $f = $u::MAX as $f + 1.0;
+                if *self > -1.0 && *self < MAX_P1 {
+                    return Some(*self as $u);
+                }
+            } else {
+                // We can't represent `MAX` exactly, but it will round up to exactly
+                // `MAX+1` (a power of two) when we cast it.
+                const MAX_P1: $f = $u::MAX as $f;
+                if *self > -1.0 && *self < MAX_P1 {
+                    return Some(*self as $u);
+                }
+            }
+            None
+        }
+    )*}
 }
 
 macro_rules! impl_to_primitive_float {
     ($T:ident) => (
         impl ToPrimitive for $T {
-            #[inline]
-            fn to_isize(&self) -> Option<isize> { Some(*self as isize) }
-            #[inline]
-            fn to_i8(&self) -> Option<i8> { Some(*self as i8) }
-            #[inline]
-            fn to_i16(&self) -> Option<i16> { Some(*self as i16) }
-            #[inline]
-            fn to_i32(&self) -> Option<i32> { Some(*self as i32) }
-            #[inline]
-            fn to_i64(&self) -> Option<i64> { Some(*self as i64) }
+            impl_to_primitive_float_to_signed_int! { $T:
+                fn to_isize -> isize;
+                fn to_i8 -> i8;
+                fn to_i16 -> i16;
+                fn to_i32 -> i32;
+                fn to_i64 -> i64;
+            }
 
-            #[inline]
-            fn to_usize(&self) -> Option<usize> { Some(*self as usize) }
-            #[inline]
-            fn to_u8(&self) -> Option<u8> { Some(*self as u8) }
-            #[inline]
-            fn to_u16(&self) -> Option<u16> { Some(*self as u16) }
-            #[inline]
-            fn to_u32(&self) -> Option<u32> { Some(*self as u32) }
-            #[inline]
-            fn to_u64(&self) -> Option<u64> { Some(*self as u64) }
+            impl_to_primitive_float_to_unsigned_int! { $T:
+                fn to_usize -> usize;
+                fn to_u8 -> u8;
+                fn to_u16 -> u16;
+                fn to_u32 -> u32;
+                fn to_u64 -> u64;
+            }
 
-            #[inline]
-            fn to_f32(&self) -> Option<f32> { impl_to_primitive_float_to_float!($T, f32, *self) }
-            #[inline]
-            fn to_f64(&self) -> Option<f64> { impl_to_primitive_float_to_float!($T, f64, *self) }
+            impl_to_primitive_float_to_float! { $T:
+                fn to_f32 -> f32;
+                fn to_f64 -> f64;
+            }
         }
     )
 }
@@ -590,4 +616,192 @@ fn as_primitive() {
 
     let x: u8 = (768i16).as_();
     assert_eq!(x, 0);
+}
+
+#[test]
+fn float_to_integer_checks_overflow() {
+    // This will overflow an i32
+    let source: f64 = 1.0e+123f64;
+
+    // Expect the overflow to be caught
+    assert_eq!(cast::<f64, i32>(source), None);
+}
+
+#[test]
+fn cast_to_int_checks_overflow() {
+    let big_f: f64 = 1.0e123;
+    let normal_f: f64 = 1.0;
+    let small_f: f64 = -1.0e123;
+    assert_eq!(None, cast::<f64, isize>(big_f));
+    assert_eq!(None, cast::<f64, i8>(big_f));
+    assert_eq!(None, cast::<f64, i16>(big_f));
+    assert_eq!(None, cast::<f64, i32>(big_f));
+    assert_eq!(None, cast::<f64, i64>(big_f));
+
+    assert_eq!(Some(normal_f as isize), cast::<f64, isize>(normal_f));
+    assert_eq!(Some(normal_f as i8), cast::<f64, i8>(normal_f));
+    assert_eq!(Some(normal_f as i16), cast::<f64, i16>(normal_f));
+    assert_eq!(Some(normal_f as i32), cast::<f64, i32>(normal_f));
+    assert_eq!(Some(normal_f as i64), cast::<f64, i64>(normal_f));
+
+    assert_eq!(None, cast::<f64, isize>(small_f));
+    assert_eq!(None, cast::<f64, i8>(small_f));
+    assert_eq!(None, cast::<f64, i16>(small_f));
+    assert_eq!(None, cast::<f64, i32>(small_f));
+    assert_eq!(None, cast::<f64, i64>(small_f));
+}
+
+#[test]
+fn cast_to_unsigned_int_checks_overflow() {
+    let big_f: f64 = 1.0e123;
+    let normal_f: f64 = 1.0;
+    let small_f: f64 = -1.0e123;
+    assert_eq!(None, cast::<f64, usize>(big_f));
+    assert_eq!(None, cast::<f64, u8>(big_f));
+    assert_eq!(None, cast::<f64, u16>(big_f));
+    assert_eq!(None, cast::<f64, u32>(big_f));
+    assert_eq!(None, cast::<f64, u64>(big_f));
+
+    assert_eq!(Some(normal_f as usize), cast::<f64, usize>(normal_f));
+    assert_eq!(Some(normal_f as u8), cast::<f64, u8>(normal_f));
+    assert_eq!(Some(normal_f as u16), cast::<f64, u16>(normal_f));
+    assert_eq!(Some(normal_f as u32), cast::<f64, u32>(normal_f));
+    assert_eq!(Some(normal_f as u64), cast::<f64, u64>(normal_f));
+
+    assert_eq!(None, cast::<f64, usize>(small_f));
+    assert_eq!(None, cast::<f64, u8>(small_f));
+    assert_eq!(None, cast::<f64, u16>(small_f));
+    assert_eq!(None, cast::<f64, u32>(small_f));
+    assert_eq!(None, cast::<f64, u64>(small_f));
+}
+
+#[cfg(all(test, feature = "std"))]
+fn dbg(args: ::core::fmt::Arguments) {
+    println!("{}", args);
+}
+
+#[cfg(all(test, not(feature = "std")))]
+fn dbg(_: ::core::fmt::Arguments) {}
+
+// Rust 1.8 doesn't handle cfg on macros correctly
+// #[cfg(test)]
+#[allow(unused)]
+macro_rules! dbg { ($($tok:tt)*) => { dbg(format_args!($($tok)*)) } }
+
+#[test]
+fn cast_float_to_int_edge_cases() {
+    use core::mem::transmute;
+
+    trait RawOffset: Sized {
+        type Raw;
+        fn raw_offset(self, offset: Self::Raw) -> Self;
+    }
+    impl RawOffset for f32 {
+        type Raw = i32;
+        fn raw_offset(self, offset: Self::Raw) -> Self {
+            unsafe {
+                let raw: Self::Raw = transmute(self);
+                transmute(raw + offset)
+            }
+        }
+    }
+    impl RawOffset for f64 {
+        type Raw = i64;
+        fn raw_offset(self, offset: Self::Raw) -> Self {
+            unsafe {
+                let raw: Self::Raw = transmute(self);
+                transmute(raw + offset)
+            }
+        }
+    }
+
+    macro_rules! test_edge {
+        ($f:ident -> $($t:ident)+) => { $({
+            dbg!("testing cast edge cases for {} -> {}", stringify!($f), stringify!($t));
+
+            let small = if $t::MIN == 0 || size_of::<$t>() < size_of::<$f>() {
+                $t::MIN as $f - 1.0
+            } else {
+                ($t::MIN as $f).raw_offset(1).floor()
+            };
+            let fmin = small.raw_offset(-1);
+            dbg!("  testing min {}\n\tvs. {:.16}\n\tand {:.16}", $t::MIN, fmin, small);
+            assert_eq!(Some($t::MIN), cast::<$f, $t>($t::MIN as $f));
+            assert_eq!(Some($t::MIN), cast::<$f, $t>(fmin));
+            assert_eq!(None, cast::<$f, $t>(small));
+
+            let (max, large) = if size_of::<$t>() < size_of::<$f>() {
+                ($t::MAX, $t::MAX as $f + 1.0)
+            } else {
+                let large = $t::MAX as $f; // rounds up!
+                let max = large.raw_offset(-1) as $t; // the next smallest possible
+                assert_eq!(max.count_ones(), $f::MANTISSA_DIGITS);
+                (max, large)
+            };
+            let fmax = large.raw_offset(-1);
+            dbg!("  testing max {}\n\tvs. {:.16}\n\tand {:.16}", max, fmax, large);
+            assert_eq!(Some(max), cast::<$f, $t>(max as $f));
+            assert_eq!(Some(max), cast::<$f, $t>(fmax));
+            assert_eq!(None, cast::<$f, $t>(large));
+
+            dbg!("  testing non-finite values");
+            assert_eq!(None, cast::<$f, $t>($f::NAN));
+            assert_eq!(None, cast::<$f, $t>($f::INFINITY));
+            assert_eq!(None, cast::<$f, $t>($f::NEG_INFINITY));
+        })+}
+    }
+
+    test_edge!(f32 -> isize i8 i16 i32 i64);
+    test_edge!(f32 -> usize u8 u16 u32 u64);
+    test_edge!(f64 -> isize i8 i16 i32 i64);
+    test_edge!(f64 -> usize u8 u16 u32 u64);
+}
+
+#[test]
+fn cast_int_to_int_edge_cases() {
+    use core::cmp::Ordering::*;
+
+    macro_rules! test_edge {
+        ($f:ident -> $($t:ident)+) => { $({
+            fn test_edge() {
+                dbg!("testing cast edge cases for {} -> {}", stringify!($f), stringify!($t));
+
+                match ($f::MIN as i64).cmp(&($t::MIN as i64)) {
+                    Greater => {
+                        assert_eq!(Some($f::MIN as $t), cast::<$f, $t>($f::MIN));
+                    }
+                    Equal => {
+                        assert_eq!(Some($t::MIN), cast::<$f, $t>($f::MIN));
+                    }
+                    Less => {
+                        let min = $t::MIN as $f;
+                        assert_eq!(Some($t::MIN), cast::<$f, $t>(min));
+                        assert_eq!(None, cast::<$f, $t>(min - 1));
+                    }
+                }
+
+                match ($f::MAX as u64).cmp(&($t::MAX as u64)) {
+                    Greater => {
+                        let max = $t::MAX as $f;
+                        assert_eq!(Some($t::MAX), cast::<$f, $t>(max));
+                        assert_eq!(None, cast::<$f, $t>(max + 1));
+                    }
+                    Equal => {
+                        assert_eq!(Some($t::MAX), cast::<$f, $t>($f::MAX));
+                    }
+                    Less => {
+                        assert_eq!(Some($f::MAX as $t), cast::<$f, $t>($f::MAX));
+                    }
+                }
+            }
+            test_edge();
+        })+};
+        ($( $from:ident )+) => { $({
+            test_edge!($from -> isize i8 i16 i32 i64);
+            test_edge!($from -> usize u8 u16 u32 u64);
+        })+}
+    }
+
+    test_edge!(isize i8 i16 i32 i64);
+    test_edge!(usize u8 u16 u32 u64);
 }
