@@ -220,18 +220,23 @@ macro_rules! impl_to_primitive_float_to_signed_int {
     ($f:ident : $( fn $method:ident -> $i:ident ; )*) => {$(
         #[inline]
         fn $method(&self) -> Option<$i> {
-            let t = self.trunc(); // round toward zero.
-            // MIN is a power of two, which we can cast and compare directly.
-            if t >= $i::MIN as $f {
-                // The mantissa might not be able to represent all digits of MAX.
-                let sig_bits = size_of::<$i>() as u32 * 8 - 1;
-                let max = if sig_bits > $f::MANTISSA_DIGITS {
-                    let lost_bits = sig_bits - $f::MANTISSA_DIGITS;
-                    $i::MAX & !((1 << lost_bits) - 1)
-                } else {
-                    $i::MAX
-                };
-                if t <= max as $f {
+            // Float as int truncates toward zero, so we want to allow values
+            // in the exclusive range `(MIN-1, MAX+1)`.
+            if size_of::<$f>() > size_of::<$i>() {
+                // With a larger size, we can represent the range exactly.
+                const MIN_M1: $f = $i::MIN as $f - 1.0;
+                const MAX_P1: $f = $i::MAX as $f + 1.0;
+                if *self > MIN_M1 && *self < MAX_P1 {
+                    return Some(*self as $i);
+                }
+            } else {
+                // We can't represent `MIN-1` exactly, but there's no fractional part
+                // at this magnitude, so we can just use a `MIN` inclusive boundary.
+                const MIN: $f = $i::MIN as $f;
+                // We can't represent `MAX` exactly, but it will round up to exactly
+                // `MAX+1` (a power of two) when we cast it.
+                const MAX_P1: $f = $i::MAX as $f;
+                if *self >= MIN && *self < MAX_P1 {
                     return Some(*self as $i);
                 }
             }
@@ -244,17 +249,19 @@ macro_rules! impl_to_primitive_float_to_unsigned_int {
     ($f:ident : $( fn $method:ident -> $u:ident ; )*) => {$(
         #[inline]
         fn $method(&self) -> Option<$u> {
-            let t = self.trunc(); // round toward zero.
-            if t >= 0.0 {
-                // The mantissa might not be able to represent all digits of MAX.
-                let sig_bits = size_of::<$u>() as u32 * 8;
-                let max = if sig_bits > $f::MANTISSA_DIGITS {
-                    let lost_bits = sig_bits - $f::MANTISSA_DIGITS;
-                    $u::MAX & !((1 << lost_bits) - 1)
-                } else {
-                    $u::MAX
-                };
-                if t <= max as $f {
+            // Float as int truncates toward zero, so we want to allow values
+            // in the exclusive range `(-1, MAX+1)`.
+            if size_of::<$f>() > size_of::<$u>() {
+                // With a larger size, we can represent the range exactly.
+                const MAX_P1: $f = $u::MAX as $f + 1.0;
+                if *self > -1.0 && *self < MAX_P1 {
+                    return Some(*self as $u);
+                }
+            } else {
+                // We can't represent `MAX` exactly, but it will round up to exactly
+                // `MAX+1` (a power of two) when we cast it.
+                const MAX_P1: $f = $u::MAX as $f;
+                if *self > -1.0 && *self < MAX_P1 {
                     return Some(*self as $u);
                 }
             }
