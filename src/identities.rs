@@ -23,6 +23,12 @@ pub trait Zero: Sized + Add<Self, Output = Self> {
     /// Returns `true` if `self` is equal to the additive identity.
     #[inline]
     fn is_zero(&self) -> bool;
+
+    /// Returns `true` if `self` is not equal to the additive identity.
+    #[inline]
+    fn is_nonzero(&self) -> bool {
+        !self.is_zero()
+    }
 }
 
 macro_rules! zero_impl {
