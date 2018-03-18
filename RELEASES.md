@@ -1,3 +1,15 @@
+# Release 0.2.2
+
+- [Casting from floating point to integers now returns `None` on overflow][52],
+  avoiding [rustc's undefined behavior][rust-10184]. This applies to the `cast`
+  function and the traits `NumCast`, `FromPrimitive`, and `ToPrimitive`.
+
+**Contributors**: @apopiak, @cuviper, @dbarella
+
+[52]: https://github.com/rust-num/num-traits/pull/52
+[rust-10184]: https://github.com/rust-lang/rust/issues/10184
+
+
 # Release 0.2.1
 
 - [The new `FloatCore` trait][32] offers a subset of `Float` for `#![no_std]` use.
