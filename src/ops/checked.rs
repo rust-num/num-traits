@@ -1,4 +1,4 @@
-use core::ops::{Add, Sub, Mul, Div, Shl, Shr};
+use core::ops::{Add, Sub, Mul, Div, Rem, Shl, Shr};
 
 /// Performs addition that returns `None` instead of wrapping around on
 /// overflow.
