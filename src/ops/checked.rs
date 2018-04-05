@@ -111,8 +111,8 @@ macro_rules! checked_abs_impl {
     ($t:ty) => {
         impl CheckedAbs for $t {
             #[inline]
-            fn checked_abs(&self) -> Option<$t> {
-                <$t>::checked_abs(*self)
+            fn checked_abs(self) -> Option<$t> {
+                <$t>::checked_abs(self)
             }
         }
     }
@@ -120,7 +120,7 @@ macro_rules! checked_abs_impl {
 
 // CheckedAbs
 pub trait CheckedAbs: Sized {
-    fn checked_abs(&self) -> Option<i32>;
+    fn checked_abs(self) -> Option<i32>;
 }
 
 checked_abs_impl!(u8);
