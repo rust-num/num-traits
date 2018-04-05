@@ -90,6 +90,51 @@ checked_impl!(CheckedDiv, checked_div, i32);
 checked_impl!(CheckedDiv, checked_div, i64);
 checked_impl!(CheckedDiv, checked_div, isize);
 
+// CheckedRem
+pub trait CheckedRem: Sized + Rem<Self, Output=Self> {
+    fn checked_rem(&self, v: &Self) -> Option<Self>;
+}
+
+checked_impl!(CheckedRem, checked_rem, u8);
+checked_impl!(CheckedRem, checked_rem, u16);
+checked_impl!(CheckedRem, checked_rem, u32);
+checked_impl!(CheckedRem, checked_rem, u64);
+checked_impl!(CheckedRem, checked_rem, usize);
+
+checked_impl!(CheckedRem, checked_rem, i8);
+checked_impl!(CheckedRem, checked_rem, i16);
+checked_impl!(CheckedRem, checked_rem, i32);
+checked_impl!(CheckedRem, checked_rem, i64);
+checked_impl!(CheckedRem, checked_rem, isize);
+
+macro_rules! checked_abs_impl {
+    ($t:ty) => {
+        impl CheckedAbs for $t {
+            #[inline]
+            fn checked_abs(self) -> Option<$t> {
+                <$t>::checked_abs(*self)
+            }
+        }
+    }
+}
+
+// CheckedAbs
+pub trait CheckedAbs: Sized {
+    fn checked_abs(&self) -> Option<i32>;
+}
+
+checked_abs_impl!(u8);
+checked_abs_impl!(u16);
+checked_abs_impl!(u32);
+checked_abs_impl!(u64);
+checked_abs_impl!(usize);
+
+checked_abs_impl!(i8);
+checked_abs_impl!(i16);
+checked_abs_impl!(i32);
+checked_abs_impl!(i64);
+checked_abs_impl!(isize);
+
 /// Performs a left shift that returns `None` on overflow.
 pub trait CheckedShl: Sized + Shl<u32, Output=Self> {
     /// Shifts a number to the left, checking for overflow. If overflow happens,
