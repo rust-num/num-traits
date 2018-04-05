@@ -111,7 +111,7 @@ macro_rules! checked_abs_impl {
     ($t:ty) => {
         impl CheckedAbs for $t {
             #[inline]
-            fn checked_abs(self) -> Option<$t> {
+            fn checked_abs(&self) -> Option<$t> {
                 <$t>::checked_abs(*self)
             }
         }
