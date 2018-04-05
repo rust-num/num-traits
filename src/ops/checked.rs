@@ -1,4 +1,4 @@
-use core::ops::{Add, Sub, Mul, Div, Shl, Shr};
+use core::ops::{Add, Sub, Mul, Div, Rem, Shl, Shr};
 
 /// Performs addition that returns `None` instead of wrapping around on
 /// overflow.
@@ -89,6 +89,23 @@ checked_impl!(CheckedDiv, checked_div, i16);
 checked_impl!(CheckedDiv, checked_div, i32);
 checked_impl!(CheckedDiv, checked_div, i64);
 checked_impl!(CheckedDiv, checked_div, isize);
+
+// CheckedRem
+pub trait CheckedRem: Sized + Rem<Self, Output=Self> {
+    fn checked_rem(&self, v: &Self) -> Option<Self>;
+}
+
+checked_impl!(CheckedRem, checked_rem, u8);
+checked_impl!(CheckedRem, checked_rem, u16);
+checked_impl!(CheckedRem, checked_rem, u32);
+checked_impl!(CheckedRem, checked_rem, u64);
+checked_impl!(CheckedRem, checked_rem, usize);
+
+checked_impl!(CheckedRem, checked_rem, i8);
+checked_impl!(CheckedRem, checked_rem, i16);
+checked_impl!(CheckedRem, checked_rem, i32);
+checked_impl!(CheckedRem, checked_rem, i64);
+checked_impl!(CheckedRem, checked_rem, isize);
 
 /// Performs a left shift that returns `None` on overflow.
 pub trait CheckedShl: Sized + Shl<u32, Output=Self> {
