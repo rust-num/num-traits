@@ -1,4 +1,4 @@
-use core::ops::{Add, Div, Mul, Neg, Rem, Shl, Shr, Sub};
+use core::ops::{Add, Div, Mul, Rem, Shl, Shr, Sub};
 
 /// Performs addition that returns `None` instead of wrapping around on
 /// overflow.
@@ -119,9 +119,15 @@ macro_rules! checked_impl_one_para {
     }
 }
 
-pub trait CheckedNeg: Sized + Neg<Output = Self> {
+pub trait CheckedNeg: Sized {
     fn checked_neg(&self) -> Option<Self>;
 }
+
+checked_impl_one_para!(CheckedNeg, checked_neg, u8);
+checked_impl_one_para!(CheckedNeg, checked_neg, u16);
+checked_impl_one_para!(CheckedNeg, checked_neg, u32);
+checked_impl_one_para!(CheckedNeg, checked_neg, u64);
+checked_impl_one_para!(CheckedNeg, checked_neg, usize);
 
 checked_impl_one_para!(CheckedNeg, checked_neg, i8);
 checked_impl_one_para!(CheckedNeg, checked_neg, i16);
