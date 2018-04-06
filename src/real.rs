@@ -1,6 +1,6 @@
 use std::ops::Neg;
 
-use {Num, NumCast, Float};
+use {Float, Num, NumCast};
 
 // NOTE: These doctests have the same issue as those in src/float.rs.
 // They're testing the inherent methods directly, and not those of `Real`.
@@ -12,13 +12,7 @@ use {Num, NumCast, Float};
 /// for a list of data types that could meaningfully implement this trait.
 ///
 /// This trait is only available with the `std` feature.
-pub trait Real
-    : Num
-    + Copy
-    + NumCast
-    + PartialOrd
-    + Neg<Output = Self>
-{
+pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// Returns the smallest finite value that this type can represent.
     ///
     /// ```
@@ -272,7 +266,7 @@ pub trait Real
 
     /// Take the square root of a number.
     ///
-    /// Returns NaN if `self` is a negative floating-point number.  
+    /// Returns NaN if `self` is a negative floating-point number.
     ///
     /// # Panics
     ///

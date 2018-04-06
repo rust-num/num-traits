@@ -1,5 +1,5 @@
-use core::{i8, i16, i32, i64, isize};
-use core::{u8, u16, u32, u64, usize};
+use core::{isize, i16, i32, i64, i8};
+use core::{usize, u16, u32, u64, u8};
 use core::{f32, f64};
 use core::mem::size_of;
 use core::num::Wrapping;
@@ -402,28 +402,34 @@ macro_rules! impl_from_primitive {
 }
 
 impl_from_primitive!(isize, to_isize);
-impl_from_primitive!(i8,    to_i8);
-impl_from_primitive!(i16,   to_i16);
-impl_from_primitive!(i32,   to_i32);
-impl_from_primitive!(i64,   to_i64);
+impl_from_primitive!(i8, to_i8);
+impl_from_primitive!(i16, to_i16);
+impl_from_primitive!(i32, to_i32);
+impl_from_primitive!(i64, to_i64);
 impl_from_primitive!(usize, to_usize);
-impl_from_primitive!(u8,    to_u8);
-impl_from_primitive!(u16,   to_u16);
-impl_from_primitive!(u32,   to_u32);
-impl_from_primitive!(u64,   to_u64);
-impl_from_primitive!(f32,   to_f32);
-impl_from_primitive!(f64,   to_f64);
-
+impl_from_primitive!(u8, to_u8);
+impl_from_primitive!(u16, to_u16);
+impl_from_primitive!(u32, to_u32);
+impl_from_primitive!(u64, to_u64);
+impl_from_primitive!(f32, to_f32);
+impl_from_primitive!(f64, to_f64);
 
 impl<T: ToPrimitive> ToPrimitive for Wrapping<T> {
-    fn to_i64(&self) -> Option<i64> { self.0.to_i64() }
-    fn to_u64(&self) -> Option<u64> { self.0.to_u64() }
+    fn to_i64(&self) -> Option<i64> {
+        self.0.to_i64()
+    }
+    fn to_u64(&self) -> Option<u64> {
+        self.0.to_u64()
+    }
 }
 impl<T: FromPrimitive> FromPrimitive for Wrapping<T> {
-    fn from_u64(n: u64) -> Option<Self> { T::from_u64(n).map(Wrapping) }
-    fn from_i64(n: i64) -> Option<Self> { T::from_i64(n).map(Wrapping) }
+    fn from_u64(n: u64) -> Option<Self> {
+        T::from_u64(n).map(Wrapping)
+    }
+    fn from_i64(n: i64) -> Option<Self> {
+        T::from_i64(n).map(Wrapping)
+    }
 }
-
 
 /// Cast from one machine scalar to another.
 ///
@@ -461,18 +467,18 @@ macro_rules! impl_num_cast {
     )
 }
 
-impl_num_cast!(u8,    to_u8);
-impl_num_cast!(u16,   to_u16);
-impl_num_cast!(u32,   to_u32);
-impl_num_cast!(u64,   to_u64);
+impl_num_cast!(u8, to_u8);
+impl_num_cast!(u16, to_u16);
+impl_num_cast!(u32, to_u32);
+impl_num_cast!(u64, to_u64);
 impl_num_cast!(usize, to_usize);
-impl_num_cast!(i8,    to_i8);
-impl_num_cast!(i16,   to_i16);
-impl_num_cast!(i32,   to_i32);
-impl_num_cast!(i64,   to_i64);
+impl_num_cast!(i8, to_i8);
+impl_num_cast!(i16, to_i16);
+impl_num_cast!(i32, to_i32);
+impl_num_cast!(i64, to_i64);
 impl_num_cast!(isize, to_isize);
-impl_num_cast!(f32,   to_f32);
-impl_num_cast!(f64,   to_f64);
+impl_num_cast!(f32, to_f32);
+impl_num_cast!(f64, to_f64);
 
 impl<T: NumCast> NumCast for Wrapping<T> {
     fn from<U: ToPrimitive>(n: U) -> Option<Self> {
@@ -493,20 +499,20 @@ impl<T: NumCast> NumCast for Wrapping<T> {
 /// let three: i32 = (3.14159265f32).as_();
 /// assert_eq!(three, 3);
 /// ```
-/// 
+///
 /// # Safety
-/// 
+///
 /// Currently, some uses of the `as` operator are not entirely safe.
 /// In particular, it is undefined behavior if:
-/// 
+///
 /// - A truncated floating point value cannot fit in the target integer
 ///   type ([#10184](https://github.com/rust-lang/rust/issues/10184));
-/// 
+///
 /// ```ignore
 /// # use num_traits::AsPrimitive;
 /// let x: u8 = (1.04E+17).as_(); // UB
 /// ```
-/// 
+///
 /// - Or a floating point value does not fit in another floating
 ///   point type ([#15536](https://github.com/rust-lang/rust/issues/15536)).
 ///
@@ -514,10 +520,10 @@ impl<T: NumCast> NumCast for Wrapping<T> {
 /// # use num_traits::AsPrimitive;
 /// let x: f32 = (1e300f64).as_(); // UB
 /// ```
-/// 
+///
 pub trait AsPrimitive<T>: 'static + Copy
 where
-    T: 'static + Copy
+    T: 'static + Copy,
 {
     /// Convert a value to another, using the `as` operator.
     fn as_(self) -> T;

@@ -1,4 +1,4 @@
-use core::ops::{Not, BitAnd, BitOr, BitXor, Shl, Shr};
+use core::ops::{BitAnd, BitOr, BitXor, Not, Shl, Shr};
 
 use {Num, NumCast};
 use bounds::Bounded;
@@ -8,21 +8,23 @@ use ops::saturating::Saturating;
 pub trait PrimInt
     : Sized
     + Copy
-    + Num + NumCast
+    + Num
+    + NumCast
     + Bounded
-    + PartialOrd + Ord + Eq
-    + Not<Output=Self>
-    + BitAnd<Output=Self>
-    + BitOr<Output=Self>
-    + BitXor<Output=Self>
-    + Shl<usize, Output=Self>
-    + Shr<usize, Output=Self>
-    + CheckedAdd<Output=Self>
-    + CheckedSub<Output=Self>
-    + CheckedMul<Output=Self>
-    + CheckedDiv<Output=Self>
-    + Saturating
-{
+    + PartialOrd
+    + Ord
+    + Eq
+    + Not<Output = Self>
+    + BitAnd<Output = Self>
+    + BitOr<Output = Self>
+    + BitXor<Output = Self>
+    + Shl<usize, Output = Self>
+    + Shr<usize, Output = Self>
+    + CheckedAdd<Output = Self>
+    + CheckedSub<Output = Self>
+    + CheckedMul<Output = Self>
+    + CheckedDiv<Output = Self>
+    + Saturating {
     /// Returns the number of ones in the binary representation of `self`.
     ///
     /// # Examples
@@ -364,13 +366,13 @@ macro_rules! prim_int_impl {
 }
 
 // prim_int_impl!(type, signed, unsigned);
-prim_int_impl!(u8,    i8,    u8);
-prim_int_impl!(u16,   i16,   u16);
-prim_int_impl!(u32,   i32,   u32);
-prim_int_impl!(u64,   i64,   u64);
+prim_int_impl!(u8, i8, u8);
+prim_int_impl!(u16, i16, u16);
+prim_int_impl!(u32, i32, u32);
+prim_int_impl!(u64, i64, u64);
 prim_int_impl!(usize, isize, usize);
-prim_int_impl!(i8,    i8,    u8);
-prim_int_impl!(i16,   i16,   u16);
-prim_int_impl!(i32,   i32,   u32);
-prim_int_impl!(i64,   i64,   u64);
+prim_int_impl!(i8, i8, u8);
+prim_int_impl!(i16, i16, u16);
+prim_int_impl!(i32, i32, u32);
+prim_int_impl!(i64, i64, u64);
 prim_int_impl!(isize, isize, usize);
