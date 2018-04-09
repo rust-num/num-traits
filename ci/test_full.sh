@@ -11,3 +11,7 @@ cargo test --verbose
 # test `no_std`
 cargo build --verbose --no-default-features
 cargo test --verbose --no-default-features
+
+# test `i128`
+cargo build --verbose --features=i128
+cargo test --verbose --features=i128
