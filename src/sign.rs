@@ -186,6 +186,8 @@ macro_rules! empty_trait_impl {
 }
 
 empty_trait_impl!(Unsigned for usize u8 u16 u32 u64);
+#[cfg(feature = "i128")]
+empty_trait_impl!(Unsigned for u128 i128);
 
 impl<T: Unsigned> Unsigned for Wrapping<T> where Wrapping<T>: Num {}
 
