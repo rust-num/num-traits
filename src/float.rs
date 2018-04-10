@@ -771,7 +771,9 @@ impl FloatCore for f32 {
     #[inline]
     #[cfg(not(feature = "std"))]
     fn to_degrees(self) -> Self {
-        self * (180.0 / f32::consts::PI)
+        // Use a constant for better precision.
+        const PIS_IN_180: f32 = 57.2957795130823208767981548141051703_f32;
+        self * PIS_IN_180
     }
 
     #[inline]
@@ -841,6 +843,9 @@ impl FloatCore for f64 {
     #[inline]
     #[cfg(not(feature = "std"))]
     fn to_degrees(self) -> Self {
+        // The division here is correctly rounded with respect to the true
+        // value of 180/π. (This differs from f32, where a constant must be
+        // used to ensure a correctly rounded result.)
         self * (180.0 / f64::consts::PI)
     }
 
@@ -2007,5 +2012,10 @@ mod tests {
             assert!((Float::to_degrees(rad) - deg).abs() < 1e-5);
             assert!((Float::to_radians(deg) - rad).abs() < 1e-5);
         }
+    }
+
+    #[test]
+    fn to_degrees_rounding() {
+        assert_eq!(1_f32.to_degrees(), 57.2957795130823208767981548141051703);
     }
 }
