@@ -2015,6 +2015,9 @@ mod tests {
     }
 
     #[test]
+    // This fails with the forwarded `std` implementation in Rust 1.8.
+    // To avoid the failure, the test is limited to `no_std` builds.
+    #[cfg(not(feature = "std"))]
     fn to_degrees_rounding() {
         assert_eq!(1_f32.to_degrees(), 57.2957795130823208767981548141051703);
     }
