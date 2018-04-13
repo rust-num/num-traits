@@ -20,20 +20,28 @@ pub trait Inv {
 impl Inv for f32 {
     type Output = f32;
     #[inline]
-    fn inv(self) -> f32 { 1.0 / self }
+    fn inv(self) -> f32 {
+        1.0 / self
+    }
 }
 impl Inv for f64 {
     type Output = f64;
     #[inline]
-    fn inv(self) -> f64 { 1.0 / self }
+    fn inv(self) -> f64 {
+        1.0 / self
+    }
 }
 impl<'a> Inv for &'a f32 {
     type Output = f32;
     #[inline]
-    fn inv(self) -> f32 { 1.0 / *self }
+    fn inv(self) -> f32 {
+        1.0 / *self
+    }
 }
 impl<'a> Inv for &'a f64 {
     type Output = f64;
     #[inline]
-    fn inv(self) -> f64 { 1.0 / *self }
+    fn inv(self) -> f64 {
+        1.0 / *self
+    }
 }

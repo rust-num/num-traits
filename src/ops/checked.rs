@@ -1,8 +1,8 @@
-use core::ops::{Add, Sub, Mul, Div, Shl, Shr};
+use core::ops::{Add, Div, Mul, Rem, Shl, Shr, Sub};
 
 /// Performs addition that returns `None` instead of wrapping around on
 /// overflow.
-pub trait CheckedAdd: Sized + Add<Self, Output=Self> {
+pub trait CheckedAdd: Sized + Add<Self, Output = Self> {
     /// Adds two numbers, checking for overflow. If overflow happens, `None` is
     /// returned.
     fn checked_add(&self, v: &Self) -> Option<Self>;
@@ -32,7 +32,7 @@ checked_impl!(CheckedAdd, checked_add, i64);
 checked_impl!(CheckedAdd, checked_add, isize);
 
 /// Performs subtraction that returns `None` instead of wrapping around on underflow.
-pub trait CheckedSub: Sized + Sub<Self, Output=Self> {
+pub trait CheckedSub: Sized + Sub<Self, Output = Self> {
     /// Subtracts two numbers, checking for underflow. If underflow happens,
     /// `None` is returned.
     fn checked_sub(&self, v: &Self) -> Option<Self>;
@@ -52,7 +52,7 @@ checked_impl!(CheckedSub, checked_sub, isize);
 
 /// Performs multiplication that returns `None` instead of wrapping around on underflow or
 /// overflow.
-pub trait CheckedMul: Sized + Mul<Self, Output=Self> {
+pub trait CheckedMul: Sized + Mul<Self, Output = Self> {
     /// Multiplies two numbers, checking for underflow or overflow. If underflow
     /// or overflow happens, `None` is returned.
     fn checked_mul(&self, v: &Self) -> Option<Self>;
@@ -72,7 +72,7 @@ checked_impl!(CheckedMul, checked_mul, isize);
 
 /// Performs division that returns `None` instead of panicking on division by zero and instead of
 /// wrapping around on underflow and overflow.
-pub trait CheckedDiv: Sized + Div<Self, Output=Self> {
+pub trait CheckedDiv: Sized + Div<Self, Output = Self> {
     /// Divides two numbers, checking for underflow, overflow and division by
     /// zero. If any of that happens, `None` is returned.
     fn checked_div(&self, v: &Self) -> Option<Self>;
@@ -90,8 +90,53 @@ checked_impl!(CheckedDiv, checked_div, i32);
 checked_impl!(CheckedDiv, checked_div, i64);
 checked_impl!(CheckedDiv, checked_div, isize);
 
+// CheckedRem
+pub trait CheckedRem: Sized + Rem<Self, Output = Self> {
+    fn checked_rem(&self, v: &Self) -> Option<Self>;
+}
+
+checked_impl!(CheckedRem, checked_rem, u8);
+checked_impl!(CheckedRem, checked_rem, u16);
+checked_impl!(CheckedRem, checked_rem, u32);
+checked_impl!(CheckedRem, checked_rem, u64);
+checked_impl!(CheckedRem, checked_rem, usize);
+
+checked_impl!(CheckedRem, checked_rem, i8);
+checked_impl!(CheckedRem, checked_rem, i16);
+checked_impl!(CheckedRem, checked_rem, i32);
+checked_impl!(CheckedRem, checked_rem, i64);
+checked_impl!(CheckedRem, checked_rem, isize);
+
+// CheckedNeg
+macro_rules! checked_impl_one_para {
+    ($trait_name:ident, $method:ident, $t:ty) => {
+        impl $trait_name for $t {
+            #[inline]
+            fn $method(&self) -> Option<$t> {
+                <$t>::$method(*self)
+            }
+        }
+    }
+}
+
+pub trait CheckedNeg: Sized {
+    fn checked_neg(&self) -> Option<Self>;
+}
+
+checked_impl_one_para!(CheckedNeg, checked_neg, u8);
+checked_impl_one_para!(CheckedNeg, checked_neg, u16);
+checked_impl_one_para!(CheckedNeg, checked_neg, u32);
+checked_impl_one_para!(CheckedNeg, checked_neg, u64);
+checked_impl_one_para!(CheckedNeg, checked_neg, usize);
+
+checked_impl_one_para!(CheckedNeg, checked_neg, i8);
+checked_impl_one_para!(CheckedNeg, checked_neg, i16);
+checked_impl_one_para!(CheckedNeg, checked_neg, i32);
+checked_impl_one_para!(CheckedNeg, checked_neg, i64);
+checked_impl_one_para!(CheckedNeg, checked_neg, isize);
+
 /// Performs a left shift that returns `None` on overflow.
-pub trait CheckedShl: Sized + Shl<u32, Output=Self> {
+pub trait CheckedShl: Sized + Shl<u32, Output = Self> {
     /// Shifts a number to the left, checking for overflow. If overflow happens,
     /// `None` is returned.
     ///
@@ -132,7 +177,7 @@ checked_shift_impl!(CheckedShl, checked_shl, i64);
 checked_shift_impl!(CheckedShl, checked_shl, isize);
 
 /// Performs a right shift that returns `None` on overflow.
-pub trait CheckedShr: Sized + Shr<u32, Output=Self> {
+pub trait CheckedShr: Sized + Shr<u32, Output = Self> {
     /// Shifts a number to the left, checking for overflow. If overflow happens,
     /// `None` is returned.
     ///

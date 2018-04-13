@@ -586,7 +586,11 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
         if other.is_nan() {
             return self;
         }
-        if self < other { self } else { other }
+        if self < other {
+            self
+        } else {
+            other
+        }
     }
 
     /// Returns the maximum of the two numbers.
@@ -616,7 +620,11 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
         if other.is_nan() {
             return self;
         }
-        if self > other { self } else { other }
+        if self > other {
+            self
+        } else {
+            other
+        }
     }
 
     /// Returns the reciprocal (multiplicative inverse) of the number.
@@ -882,13 +890,7 @@ impl FloatCore for f64 {
 ///
 /// This trait is only available with the `std` feature.
 #[cfg(feature = "std")]
-pub trait Float
-    : Num
-    + Copy
-    + NumCast
-    + PartialOrd
-    + Neg<Output = Self>
-{
+pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// Returns the `NaN` value.
     ///
     /// ```
@@ -1770,7 +1772,6 @@ pub trait Float
     /// ```
     fn atanh(self) -> Self;
 
-
     /// Returns the mantissa, base 2 exponent, and sign as integers, respectively.
     /// The original number can be recovered by `sign * mantissa * 2 ^ exponent`.
     ///
@@ -1874,11 +1875,7 @@ macro_rules! float_impl {
 
 fn integer_decode_f32(f: f32) -> (u64, i16, i8) {
     let bits: u32 = unsafe { mem::transmute(f) };
-    let sign: i8 = if bits >> 31 == 0 {
-        1
-    } else {
-        -1
-    };
+    let sign: i8 = if bits >> 31 == 0 { 1 } else { -1 };
     let mut exponent: i16 = ((bits >> 23) & 0xff) as i16;
     let mantissa = if exponent == 0 {
         (bits & 0x7fffff) << 1
@@ -1892,11 +1889,7 @@ fn integer_decode_f32(f: f32) -> (u64, i16, i8) {
 
 fn integer_decode_f64(f: f64) -> (u64, i16, i8) {
     let bits: u64 = unsafe { mem::transmute(f) };
-    let sign: i8 = if bits >> 63 == 0 {
-        1
-    } else {
-        -1
-    };
+    let sign: i8 = if bits >> 63 == 0 { 1 } else { -1 };
     let mut exponent: i16 = ((bits >> 52) & 0x7ff) as i16;
     let mantissa = if exponent == 0 {
         (bits & 0xfffffffffffff) << 1
