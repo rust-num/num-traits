@@ -107,8 +107,7 @@ checked_impl!(CheckedRem, checked_rem, i32);
 checked_impl!(CheckedRem, checked_rem, i64);
 checked_impl!(CheckedRem, checked_rem, isize);
 
-// CheckedNeg
-macro_rules! checked_impl_one_para {
+macro_rules! checked_impl_unary {
     ($trait_name:ident, $method:ident, $t:ty) => {
         impl $trait_name for $t {
             #[inline]
@@ -123,17 +122,17 @@ pub trait CheckedNeg: Sized {
     fn checked_neg(&self) -> Option<Self>;
 }
 
-checked_impl_one_para!(CheckedNeg, checked_neg, u8);
-checked_impl_one_para!(CheckedNeg, checked_neg, u16);
-checked_impl_one_para!(CheckedNeg, checked_neg, u32);
-checked_impl_one_para!(CheckedNeg, checked_neg, u64);
-checked_impl_one_para!(CheckedNeg, checked_neg, usize);
+checked_impl_unary!(CheckedNeg, checked_neg, u8);
+checked_impl_unary!(CheckedNeg, checked_neg, u16);
+checked_impl_unary!(CheckedNeg, checked_neg, u32);
+checked_impl_unary!(CheckedNeg, checked_neg, u64);
+checked_impl_unary!(CheckedNeg, checked_neg, usize);
 
-checked_impl_one_para!(CheckedNeg, checked_neg, i8);
-checked_impl_one_para!(CheckedNeg, checked_neg, i16);
-checked_impl_one_para!(CheckedNeg, checked_neg, i32);
-checked_impl_one_para!(CheckedNeg, checked_neg, i64);
-checked_impl_one_para!(CheckedNeg, checked_neg, isize);
+checked_impl_unary!(CheckedNeg, checked_neg, i8);
+checked_impl_unary!(CheckedNeg, checked_neg, i16);
+checked_impl_unary!(CheckedNeg, checked_neg, i32);
+checked_impl_unary!(CheckedNeg, checked_neg, i64);
+checked_impl_unary!(CheckedNeg, checked_neg, isize);
 
 /// Performs a left shift that returns `None` on overflow.
 pub trait CheckedShl: Sized + Shl<u32, Output=Self> {
