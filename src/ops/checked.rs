@@ -140,7 +140,7 @@ macro_rules! checked_impl_unary {
 
 /// Performs negation that returns `None` if the result can't be represented.
 pub trait CheckedNeg: Sized {
-    /// Negates a number, returning `None` for results taht can't be represented, like signed `MIN`
+    /// Negates a number, returning `None` for results that can't be represented, like signed `MIN`
     /// values that can't be positive, or non-zero unsigned values that can't be negative.
     ///
     /// # Examples
