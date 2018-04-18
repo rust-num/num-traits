@@ -36,24 +36,24 @@ macro_rules! zero_impl {
     }
 }
 
-zero_impl!(usize, 0usize);
-zero_impl!(u8,    0u8);
-zero_impl!(u16,   0u16);
-zero_impl!(u32,   0u32);
-zero_impl!(u64,   0u64);
+zero_impl!(usize, 0);
+zero_impl!(u8,    0);
+zero_impl!(u16,   0);
+zero_impl!(u32,   0);
+zero_impl!(u64,   0);
 #[cfg(feature = "i128")]
-zero_impl!(u128,  0u128);
+zero_impl!(u128,  0);
 
-zero_impl!(isize, 0isize);
-zero_impl!(i8,    0i8);
-zero_impl!(i16,   0i16);
-zero_impl!(i32,   0i32);
-zero_impl!(i64,   0i64);
+zero_impl!(isize, 0);
+zero_impl!(i8,    0);
+zero_impl!(i16,   0);
+zero_impl!(i32,   0);
+zero_impl!(i64,   0);
 #[cfg(feature = "i128")]
-zero_impl!(i128,  0i128);
+zero_impl!(i128,  0);
 
-zero_impl!(f32, 0.0f32);
-zero_impl!(f64, 0.0f64);
+zero_impl!(f32, 0.0);
+zero_impl!(f64, 0.0);
 
 impl<T: Zero> Zero for Wrapping<T> where Wrapping<T>: Add<Output=Wrapping<T>> {
     fn is_zero(&self) -> bool {
@@ -104,24 +104,24 @@ macro_rules! one_impl {
     }
 }
 
-one_impl!(usize, 1usize);
-one_impl!(u8,    1u8);
-one_impl!(u16,   1u16);
-one_impl!(u32,   1u32);
-one_impl!(u64,   1u64);
+one_impl!(usize, 1);
+one_impl!(u8,    1);
+one_impl!(u16,   1);
+one_impl!(u32,   1);
+one_impl!(u64,   1);
 #[cfg(feature = "i128")]
-one_impl!(u64,   1u128);
+one_impl!(u128,   1);
 
-one_impl!(isize, 1isize);
-one_impl!(i8,    1i8);
-one_impl!(i16,   1i16);
-one_impl!(i32,   1i32);
-one_impl!(i64,   1i64);
+one_impl!(isize, 1);
+one_impl!(i8,    1);
+one_impl!(i16,   1);
+one_impl!(i32,   1);
+one_impl!(i64,   1);
 #[cfg(feature = "i128")]
-one_impl!(i64,   1i128);
+one_impl!(i128,   1);
 
-one_impl!(f32, 1.0f32);
-one_impl!(f64, 1.0f64);
+one_impl!(f32, 1.0);
+one_impl!(f64, 1.0);
 
 impl<T: One> One for Wrapping<T> where Wrapping<T>: Mul<Output=Wrapping<T>> {
     fn one() -> Self {
