@@ -13,5 +13,7 @@ cargo build --verbose --no-default-features
 cargo test --verbose --no-default-features
 
 # test `i128`
-cargo build --verbose --features=i128
-cargo test --verbose --features=i128
+if [[ "$TRAVIS_RUST_VERSION" =~ ^(nightly|beta)$ ]]; then
+    cargo build --verbose --features=i128
+    cargo test --verbose --features=i128
+fi
