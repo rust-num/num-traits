@@ -111,7 +111,7 @@ mod tests {
                         let x: $t = 3;
                         let b: $t = 4;
 
-                        assert_eq!(m.mul_add(x, b), (m*x + b));
+                        assert_eq!(MulAdd::mul_add(m, x, b), (m*x + b));
                     }
                 )+
             };
@@ -121,6 +121,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg(feature = "std")]
     fn mul_add_float() {
         macro_rules! test_mul_add {
             ($($t:ident)+) => {
@@ -132,7 +133,7 @@ mod tests {
                         let x: $t = 3.4;
                         let b: $t = 5.6;
 
-                        let abs_difference = (m.mul_add(x, b) - (m*x + b)).abs();
+                        let abs_difference = (MulAdd::mul_add(m, x, b) - (m*x + b)).abs();
 
                         assert!(abs_difference <= $t::EPSILON);
                     }
