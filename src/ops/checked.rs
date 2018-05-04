@@ -1,4 +1,4 @@
-use core::ops::{Add, Sub, Mul, Div, Shl, Shr};
+use core::ops::{Add, Sub, Mul, Div, Rem, Shl, Shr};
 
 /// Performs addition that returns `None` instead of wrapping around on
 /// overflow.
@@ -105,6 +105,87 @@ checked_impl!(CheckedDiv, checked_div, i64);
 checked_impl!(CheckedDiv, checked_div, isize);
 #[cfg(feature = "i128")]
 checked_impl!(CheckedDiv, checked_div, i128);
+
+/// Performs an integral remainder that returns `None` instead of panicking on division by zero and
+/// instead of wrapping around on underflow and overflow.
+pub trait CheckedRem: Sized + Rem<Self, Output = Self> {
+    /// Finds the remainder of dividing two numbers, checking for underflow, overflow and division
+    /// by zero. If any of that happens, `None` is returned.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use num_traits::CheckedRem;
+    /// use std::i32::MIN;
+    ///
+    /// assert_eq!(CheckedRem::checked_rem(&10, &7), Some(3));
+    /// assert_eq!(CheckedRem::checked_rem(&10, &-7), Some(3));
+    /// assert_eq!(CheckedRem::checked_rem(&-10, &7), Some(-3));
+    /// assert_eq!(CheckedRem::checked_rem(&-10, &-7), Some(-3));
+    ///
+    /// assert_eq!(CheckedRem::checked_rem(&10, &0), None);
+    ///
+    /// assert_eq!(CheckedRem::checked_rem(&MIN, &1), Some(0));
+    /// assert_eq!(CheckedRem::checked_rem(&MIN, &-1), None);
+    /// ```
+    fn checked_rem(&self, v: &Self) -> Option<Self>;
+}
+
+checked_impl!(CheckedRem, checked_rem, u8);
+checked_impl!(CheckedRem, checked_rem, u16);
+checked_impl!(CheckedRem, checked_rem, u32);
+checked_impl!(CheckedRem, checked_rem, u64);
+checked_impl!(CheckedRem, checked_rem, usize);
+
+checked_impl!(CheckedRem, checked_rem, i8);
+checked_impl!(CheckedRem, checked_rem, i16);
+checked_impl!(CheckedRem, checked_rem, i32);
+checked_impl!(CheckedRem, checked_rem, i64);
+checked_impl!(CheckedRem, checked_rem, isize);
+
+macro_rules! checked_impl_unary {
+    ($trait_name:ident, $method:ident, $t:ty) => {
+        impl $trait_name for $t {
+            #[inline]
+            fn $method(&self) -> Option<$t> {
+                <$t>::$method(*self)
+            }
+        }
+    }
+}
+
+/// Performs negation that returns `None` if the result can't be represented.
+pub trait CheckedNeg: Sized {
+    /// Negates a number, returning `None` for results that can't be represented, like signed `MIN`
+    /// values that can't be positive, or non-zero unsigned values that can't be negative.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use num_traits::CheckedNeg;
+    /// use std::i32::MIN;
+    ///
+    /// assert_eq!(CheckedNeg::checked_neg(&1_i32), Some(-1));
+    /// assert_eq!(CheckedNeg::checked_neg(&-1_i32), Some(1));
+    /// assert_eq!(CheckedNeg::checked_neg(&MIN), None);
+    ///
+    /// assert_eq!(CheckedNeg::checked_neg(&0_u32), Some(0));
+    /// assert_eq!(CheckedNeg::checked_neg(&1_u32), None);
+    /// ```
+    fn checked_neg(&self) -> Option<Self>;
+}
+
+checked_impl_unary!(CheckedNeg, checked_neg, u8);
+checked_impl_unary!(CheckedNeg, checked_neg, u16);
+checked_impl_unary!(CheckedNeg, checked_neg, u32);
+checked_impl_unary!(CheckedNeg, checked_neg, u64);
+checked_impl_unary!(CheckedNeg, checked_neg, usize);
+
+checked_impl_unary!(CheckedNeg, checked_neg, i8);
+checked_impl_unary!(CheckedNeg, checked_neg, i16);
+checked_impl_unary!(CheckedNeg, checked_neg, i32);
+checked_impl_unary!(CheckedNeg, checked_neg, i64);
+checked_impl_unary!(CheckedNeg, checked_neg, isize);
 
 /// Performs a left shift that returns `None` on overflow.
 pub trait CheckedShl: Sized + Shl<u32, Output=Self> {
