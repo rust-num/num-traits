@@ -37,6 +37,7 @@ pub use ops::inv::Inv;
 pub use ops::checked::{CheckedAdd, CheckedSub, CheckedMul, CheckedDiv,
                        CheckedRem, CheckedNeg, CheckedShl, CheckedShr};
 pub use ops::wrapping::{WrappingAdd, WrappingMul, WrappingSub};
+pub use ops::mul_add::{MulAdd, MulAddAssign};
 pub use ops::saturating::Saturating;
 pub use sign::{Signed, Unsigned, abs, abs_sub, signum};
 pub use cast::{AsPrimitive, FromPrimitive, ToPrimitive, NumCast, cast};
