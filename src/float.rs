@@ -2019,6 +2019,8 @@ mod tests {
     // To avoid the failure, the test is limited to `no_std` builds.
     #[cfg(not(feature = "std"))]
     fn to_degrees_rounding() {
-        assert_eq!(1_f32.to_degrees(), 57.2957795130823208767981548141051703);
+        use float::FloatCore;
+
+        assert_eq!(FloatCore::to_degrees(1_f32), 57.2957795130823208767981548141051703);
     }
 }
