@@ -106,8 +106,6 @@ pow_impl!(u128, u16, u32, u128::pow);
 #[cfg(feature = "i128")]
 pow_impl!(u128, u32, u32, u128::pow);
 #[cfg(feature = "i128")]
-pow_impl!(u128, u64, u64, u128::pow);
-#[cfg(feature = "i128")]
 pow_impl!(u128, usize);
 
 #[cfg(feature = "i128")]
@@ -116,8 +114,6 @@ pow_impl!(i128, u8, u32, i128::pow);
 pow_impl!(i128, u16, u32, i128::pow);
 #[cfg(feature = "i128")]
 pow_impl!(i128, u32, u32, i128::pow);
-#[cfg(feature = "i128")]
-pow_impl!(i128, u64, u64, i128::pow);
 #[cfg(feature = "i128")]
 pow_impl!(i128, usize);
 
