@@ -136,12 +136,16 @@ checked_impl!(CheckedRem, checked_rem, u16);
 checked_impl!(CheckedRem, checked_rem, u32);
 checked_impl!(CheckedRem, checked_rem, u64);
 checked_impl!(CheckedRem, checked_rem, usize);
+#[cfg(feature = "i128")]
+checked_impl!(CheckedRem, checked_rem, u128);
 
 checked_impl!(CheckedRem, checked_rem, i8);
 checked_impl!(CheckedRem, checked_rem, i16);
 checked_impl!(CheckedRem, checked_rem, i32);
 checked_impl!(CheckedRem, checked_rem, i64);
 checked_impl!(CheckedRem, checked_rem, isize);
+#[cfg(feature = "i128")]
+checked_impl!(CheckedRem, checked_rem, i128);
 
 macro_rules! checked_impl_unary {
     ($trait_name:ident, $method:ident, $t:ty) => {
@@ -180,12 +184,16 @@ checked_impl_unary!(CheckedNeg, checked_neg, u16);
 checked_impl_unary!(CheckedNeg, checked_neg, u32);
 checked_impl_unary!(CheckedNeg, checked_neg, u64);
 checked_impl_unary!(CheckedNeg, checked_neg, usize);
+#[cfg(feature = "i128")]
+checked_impl_unary!(CheckedNeg, checked_neg, u128);
 
 checked_impl_unary!(CheckedNeg, checked_neg, i8);
 checked_impl_unary!(CheckedNeg, checked_neg, i16);
 checked_impl_unary!(CheckedNeg, checked_neg, i32);
 checked_impl_unary!(CheckedNeg, checked_neg, i64);
 checked_impl_unary!(CheckedNeg, checked_neg, isize);
+#[cfg(feature = "i128")]
+checked_impl_unary!(CheckedNeg, checked_neg, i128);
 
 /// Performs a left shift that returns `None` on overflow.
 pub trait CheckedShl: Sized + Shl<u32, Output=Self> {
