@@ -1,6 +1,7 @@
 use core::{usize, u8, u16, u32, u64};
 use core::{isize, i8, i16, i32, i64};
 use core::{f32, f64};
+use core::cmp::Reverse;
 use core::num::Wrapping;
 
 /// Numbers which have upper and lower bounds
@@ -35,6 +36,11 @@ bounded_impl!(i8,    i8::MIN,    i8::MAX);
 bounded_impl!(i16,   i16::MIN,   i16::MAX);
 bounded_impl!(i32,   i32::MIN,   i32::MAX);
 bounded_impl!(i64,   i64::MIN,   i64::MAX);
+
+impl<T: Bounded> Bounded for Reverse<T> {
+    fn min_value() -> Self { Reverse(T::max_value()) }
+    fn max_value() -> Self { Reverse(T::min_value()) }
+}
 
 impl<T: Bounded> Bounded for Wrapping<T> {
     fn min_value() -> Self { Wrapping(T::min_value()) }
