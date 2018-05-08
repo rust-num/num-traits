@@ -16,3 +16,4 @@ readme = "README.md"
 [features]
 default = ["std"]
 std = []
+i128 = []

@@ -98,6 +98,25 @@ pow_impl!(i64, u8, u32, i64::pow);
 pow_impl!(i64, u16, u32, i64::pow);
 pow_impl!(i64, u32, u32, i64::pow);
 pow_impl!(i64, usize);
+
+#[cfg(feature = "i128")]
+pow_impl!(u128, u8, u32, u128::pow);
+#[cfg(feature = "i128")]
+pow_impl!(u128, u16, u32, u128::pow);
+#[cfg(feature = "i128")]
+pow_impl!(u128, u32, u32, u128::pow);
+#[cfg(feature = "i128")]
+pow_impl!(u128, usize);
+
+#[cfg(feature = "i128")]
+pow_impl!(i128, u8, u32, i128::pow);
+#[cfg(feature = "i128")]
+pow_impl!(i128, u16, u32, i128::pow);
+#[cfg(feature = "i128")]
+pow_impl!(i128, u32, u32, i128::pow);
+#[cfg(feature = "i128")]
+pow_impl!(i128, usize);
+
 pow_impl!(usize, u8, u32, usize::pow);
 pow_impl!(usize, u16, u32, usize::pow);
 pow_impl!(usize, u32, u32, usize::pow);
@@ -114,6 +133,10 @@ pow_impl!(Wrapping<u32>);
 pow_impl!(Wrapping<i32>);
 pow_impl!(Wrapping<u64>);
 pow_impl!(Wrapping<i64>);
+#[cfg(feature = "i128")]
+pow_impl!(Wrapping<u128>);
+#[cfg(feature = "i128")]
+pow_impl!(Wrapping<i128>);
 pow_impl!(Wrapping<usize>);
 pow_impl!(Wrapping<isize>);
 
