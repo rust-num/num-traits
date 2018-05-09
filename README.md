@@ -34,7 +34,9 @@ default-features = false
 ```
 
 The `Float` and `Real` traits are only available when `std` is enabled. The
-`FloatCore` trait is always available.
+`FloatCore` trait is always available.  `MulAdd` and `MulAddAssign` for `f32`
+and `f64` also require `std`, as do implementations of signed and floating-
+point exponents in `Pow`.
 
 Implementations for `i128` and `u128` are only available when `i128` is enabled.
 
