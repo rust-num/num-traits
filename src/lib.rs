@@ -18,9 +18,9 @@
 
 #![deny(unconditional_recursion)]
 
-#![cfg_attr(not(feature = "std"), no_std)]
+#![no_std]
 #[cfg(feature = "std")]
-extern crate core;
+extern crate std;
 
 use core::ops::{Add, Sub, Mul, Div, Rem};
 use core::ops::{AddAssign, SubAssign, MulAssign, DivAssign, RemAssign};

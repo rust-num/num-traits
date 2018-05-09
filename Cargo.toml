@@ -4,12 +4,15 @@ description = "Numeric traits for generic mathematics"
 documentation = "https://docs.rs/num-traits"
 homepage = "https://github.com/rust-num/num-traits"
 keywords = ["mathematics", "numerics"]
-categories = [ "algorithms", "science" ]
+categories = ["algorithms", "science", "no-std"]
 license = "MIT/Apache-2.0"
 repository = "https://github.com/rust-num/num-traits"
 name = "num-traits"
 version = "0.2.2"
 readme = "README.md"
+
+[package.metadata.docs.rs]
+all-features = true
 
 [dependencies]
 
