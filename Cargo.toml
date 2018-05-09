@@ -11,6 +11,9 @@ name = "num-traits"
 version = "0.2.2"
 readme = "README.md"
 
+[package.metadata.docs.rs]
+all-features = true
+
 [dependencies]
 
 [features]
