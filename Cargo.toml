@@ -10,9 +10,10 @@ repository = "https://github.com/rust-num/num-traits"
 name = "num-traits"
 version = "0.2.3"
 readme = "README.md"
+build = "build.rs"
 
 [package.metadata.docs.rs]
-all-features = true
+features = ["std"]
 
 [dependencies]
 

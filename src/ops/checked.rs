@@ -24,7 +24,7 @@ checked_impl!(CheckedAdd, checked_add, u16);
 checked_impl!(CheckedAdd, checked_add, u32);
 checked_impl!(CheckedAdd, checked_add, u64);
 checked_impl!(CheckedAdd, checked_add, usize);
-#[cfg(feature = "i128")]
+#[cfg(has_i128)]
 checked_impl!(CheckedAdd, checked_add, u128);
 
 checked_impl!(CheckedAdd, checked_add, i8);
@@ -32,7 +32,7 @@ checked_impl!(CheckedAdd, checked_add, i16);
 checked_impl!(CheckedAdd, checked_add, i32);
 checked_impl!(CheckedAdd, checked_add, i64);
 checked_impl!(CheckedAdd, checked_add, isize);
-#[cfg(feature = "i128")]
+#[cfg(has_i128)]
 checked_impl!(CheckedAdd, checked_add, i128);
 
 /// Performs subtraction that returns `None` instead of wrapping around on underflow.
@@ -47,7 +47,7 @@ checked_impl!(CheckedSub, checked_sub, u16);
 checked_impl!(CheckedSub, checked_sub, u32);
 checked_impl!(CheckedSub, checked_sub, u64);
 checked_impl!(CheckedSub, checked_sub, usize);
-#[cfg(feature = "i128")]
+#[cfg(has_i128)]
 checked_impl!(CheckedSub, checked_sub, u128);
 
 checked_impl!(CheckedSub, checked_sub, i8);
@@ -55,7 +55,7 @@ checked_impl!(CheckedSub, checked_sub, i16);
 checked_impl!(CheckedSub, checked_sub, i32);
 checked_impl!(CheckedSub, checked_sub, i64);
 checked_impl!(CheckedSub, checked_sub, isize);
-#[cfg(feature = "i128")]
+#[cfg(has_i128)]
 checked_impl!(CheckedSub, checked_sub, i128);
 
 /// Performs multiplication that returns `None` instead of wrapping around on underflow or
@@ -71,7 +71,7 @@ checked_impl!(CheckedMul, checked_mul, u16);
 checked_impl!(CheckedMul, checked_mul, u32);
 checked_impl!(CheckedMul, checked_mul, u64);
 checked_impl!(CheckedMul, checked_mul, usize);
-#[cfg(feature = "i128")]
+#[cfg(has_i128)]
 checked_impl!(CheckedMul, checked_mul, u128);
 
 checked_impl!(CheckedMul, checked_mul, i8);
@@ -79,7 +79,7 @@ checked_impl!(CheckedMul, checked_mul, i16);
 checked_impl!(CheckedMul, checked_mul, i32);
 checked_impl!(CheckedMul, checked_mul, i64);
 checked_impl!(CheckedMul, checked_mul, isize);
-#[cfg(feature = "i128")]
+#[cfg(has_i128)]
 checked_impl!(CheckedMul, checked_mul, i128);
 
 /// Performs division that returns `None` instead of panicking on division by zero and instead of
@@ -95,7 +95,7 @@ checked_impl!(CheckedDiv, checked_div, u16);
 checked_impl!(CheckedDiv, checked_div, u32);
 checked_impl!(CheckedDiv, checked_div, u64);
 checked_impl!(CheckedDiv, checked_div, usize);
-#[cfg(feature = "i128")]
+#[cfg(has_i128)]
 checked_impl!(CheckedDiv, checked_div, u128);
 
 checked_impl!(CheckedDiv, checked_div, i8);
@@ -103,7 +103,7 @@ checked_impl!(CheckedDiv, checked_div, i16);
 checked_impl!(CheckedDiv, checked_div, i32);
 checked_impl!(CheckedDiv, checked_div, i64);
 checked_impl!(CheckedDiv, checked_div, isize);
-#[cfg(feature = "i128")]
+#[cfg(has_i128)]
 checked_impl!(CheckedDiv, checked_div, i128);
 
 /// Performs an integral remainder that returns `None` instead of panicking on division by zero and
@@ -136,7 +136,7 @@ checked_impl!(CheckedRem, checked_rem, u16);
 checked_impl!(CheckedRem, checked_rem, u32);
 checked_impl!(CheckedRem, checked_rem, u64);
 checked_impl!(CheckedRem, checked_rem, usize);
-#[cfg(feature = "i128")]
+#[cfg(has_i128)]
 checked_impl!(CheckedRem, checked_rem, u128);
 
 checked_impl!(CheckedRem, checked_rem, i8);
@@ -144,7 +144,7 @@ checked_impl!(CheckedRem, checked_rem, i16);
 checked_impl!(CheckedRem, checked_rem, i32);
 checked_impl!(CheckedRem, checked_rem, i64);
 checked_impl!(CheckedRem, checked_rem, isize);
-#[cfg(feature = "i128")]
+#[cfg(has_i128)]
 checked_impl!(CheckedRem, checked_rem, i128);
 
 macro_rules! checked_impl_unary {
@@ -184,7 +184,7 @@ checked_impl_unary!(CheckedNeg, checked_neg, u16);
 checked_impl_unary!(CheckedNeg, checked_neg, u32);
 checked_impl_unary!(CheckedNeg, checked_neg, u64);
 checked_impl_unary!(CheckedNeg, checked_neg, usize);
-#[cfg(feature = "i128")]
+#[cfg(has_i128)]
 checked_impl_unary!(CheckedNeg, checked_neg, u128);
 
 checked_impl_unary!(CheckedNeg, checked_neg, i8);
@@ -192,7 +192,7 @@ checked_impl_unary!(CheckedNeg, checked_neg, i16);
 checked_impl_unary!(CheckedNeg, checked_neg, i32);
 checked_impl_unary!(CheckedNeg, checked_neg, i64);
 checked_impl_unary!(CheckedNeg, checked_neg, isize);
-#[cfg(feature = "i128")]
+#[cfg(has_i128)]
 checked_impl_unary!(CheckedNeg, checked_neg, i128);
 
 /// Performs a left shift that returns `None` on overflow.
@@ -229,7 +229,7 @@ checked_shift_impl!(CheckedShl, checked_shl, u16);
 checked_shift_impl!(CheckedShl, checked_shl, u32);
 checked_shift_impl!(CheckedShl, checked_shl, u64);
 checked_shift_impl!(CheckedShl, checked_shl, usize);
-#[cfg(feature = "i128")]
+#[cfg(has_i128)]
 checked_shift_impl!(CheckedShl, checked_shl, u128);
 
 checked_shift_impl!(CheckedShl, checked_shl, i8);
@@ -237,7 +237,7 @@ checked_shift_impl!(CheckedShl, checked_shl, i16);
 checked_shift_impl!(CheckedShl, checked_shl, i32);
 checked_shift_impl!(CheckedShl, checked_shl, i64);
 checked_shift_impl!(CheckedShl, checked_shl, isize);
-#[cfg(feature = "i128")]
+#[cfg(has_i128)]
 checked_shift_impl!(CheckedShl, checked_shl, i128);
 
 /// Performs a right shift that returns `None` on overflow.
@@ -263,7 +263,7 @@ checked_shift_impl!(CheckedShr, checked_shr, u16);
 checked_shift_impl!(CheckedShr, checked_shr, u32);
 checked_shift_impl!(CheckedShr, checked_shr, u64);
 checked_shift_impl!(CheckedShr, checked_shr, usize);
-#[cfg(feature = "i128")]
+#[cfg(has_i128)]
 checked_shift_impl!(CheckedShr, checked_shr, u128);
 
 checked_shift_impl!(CheckedShr, checked_shr, i8);
@@ -271,5 +271,5 @@ checked_shift_impl!(CheckedShr, checked_shr, i16);
 checked_shift_impl!(CheckedShr, checked_shr, i32);
 checked_shift_impl!(CheckedShr, checked_shr, i64);
 checked_shift_impl!(CheckedShr, checked_shr, isize);
-#[cfg(feature = "i128")]
+#[cfg(has_i128)]
 checked_shift_impl!(CheckedShr, checked_shr, i128);

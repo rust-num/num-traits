@@ -32,7 +32,7 @@ wrapping_impl!(WrappingAdd, wrapping_add, u16);
 wrapping_impl!(WrappingAdd, wrapping_add, u32);
 wrapping_impl!(WrappingAdd, wrapping_add, u64);
 wrapping_impl!(WrappingAdd, wrapping_add, usize);
-#[cfg(feature = "i128")]
+#[cfg(has_i128)]
 wrapping_impl!(WrappingAdd, wrapping_add, u128);
 
 wrapping_impl!(WrappingAdd, wrapping_add, i8);
@@ -40,7 +40,7 @@ wrapping_impl!(WrappingAdd, wrapping_add, i16);
 wrapping_impl!(WrappingAdd, wrapping_add, i32);
 wrapping_impl!(WrappingAdd, wrapping_add, i64);
 wrapping_impl!(WrappingAdd, wrapping_add, isize);
-#[cfg(feature = "i128")]
+#[cfg(has_i128)]
 wrapping_impl!(WrappingAdd, wrapping_add, i128);
 
 /// Performs subtraction that wraps around on overflow.
@@ -55,7 +55,7 @@ wrapping_impl!(WrappingSub, wrapping_sub, u16);
 wrapping_impl!(WrappingSub, wrapping_sub, u32);
 wrapping_impl!(WrappingSub, wrapping_sub, u64);
 wrapping_impl!(WrappingSub, wrapping_sub, usize);
-#[cfg(feature = "i128")]
+#[cfg(has_i128)]
 wrapping_impl!(WrappingSub, wrapping_sub, u128);
 
 wrapping_impl!(WrappingSub, wrapping_sub, i8);
@@ -63,7 +63,7 @@ wrapping_impl!(WrappingSub, wrapping_sub, i16);
 wrapping_impl!(WrappingSub, wrapping_sub, i32);
 wrapping_impl!(WrappingSub, wrapping_sub, i64);
 wrapping_impl!(WrappingSub, wrapping_sub, isize);
-#[cfg(feature = "i128")]
+#[cfg(has_i128)]
 wrapping_impl!(WrappingSub, wrapping_sub, i128);
 
 /// Performs multiplication that wraps around on overflow.
@@ -78,7 +78,7 @@ wrapping_impl!(WrappingMul, wrapping_mul, u16);
 wrapping_impl!(WrappingMul, wrapping_mul, u32);
 wrapping_impl!(WrappingMul, wrapping_mul, u64);
 wrapping_impl!(WrappingMul, wrapping_mul, usize);
-#[cfg(feature = "i128")]
+#[cfg(has_i128)]
 wrapping_impl!(WrappingMul, wrapping_mul, u128);
 
 wrapping_impl!(WrappingMul, wrapping_mul, i8);
@@ -86,7 +86,7 @@ wrapping_impl!(WrappingMul, wrapping_mul, i16);
 wrapping_impl!(WrappingMul, wrapping_mul, i32);
 wrapping_impl!(WrappingMul, wrapping_mul, i64);
 wrapping_impl!(WrappingMul, wrapping_mul, isize);
-#[cfg(feature = "i128")]
+#[cfg(has_i128)]
 wrapping_impl!(WrappingMul, wrapping_mul, i128);
 
 // Well this is a bit funny, but all the more appropriate.

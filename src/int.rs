@@ -368,13 +368,13 @@ prim_int_impl!(u8,    i8,    u8);
 prim_int_impl!(u16,   i16,   u16);
 prim_int_impl!(u32,   i32,   u32);
 prim_int_impl!(u64,   i64,   u64);
-#[cfg(feature = "i128")]
+#[cfg(has_i128)]
 prim_int_impl!(u128,  i128,  u128);
 prim_int_impl!(usize, isize, usize);
 prim_int_impl!(i8,    i8,    u8);
 prim_int_impl!(i16,   i16,   u16);
 prim_int_impl!(i32,   i32,   u32);
 prim_int_impl!(i64,   i64,   u64);
-#[cfg(feature = "i128")]
+#[cfg(has_i128)]
 prim_int_impl!(i128,  i128,  u128);
 prim_int_impl!(isize, isize, usize);
