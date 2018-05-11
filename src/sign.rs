@@ -74,7 +74,7 @@ macro_rules! signed_impl {
 
 signed_impl!(isize i8 i16 i32 i64);
 
-#[cfg(feature = "i128")]
+#[cfg(has_i128)]
 signed_impl!(i128);
 
 impl<T: Signed> Signed for Wrapping<T> where Wrapping<T>: Num + Neg<Output=Wrapping<T>>
@@ -186,7 +186,7 @@ macro_rules! empty_trait_impl {
 }
 
 empty_trait_impl!(Unsigned for usize u8 u16 u32 u64);
-#[cfg(feature = "i128")]
+#[cfg(has_i128)]
 empty_trait_impl!(Unsigned for u128);
 
 impl<T: Unsigned> Unsigned for Wrapping<T> where Wrapping<T>: Num {}

@@ -1,3 +1,13 @@
+# Release 0.2.4
+
+- [Support for 128-bit integers is now automatically detected and enabled.][69]
+  Setting the `i128` crate feature now causes the build script to panic if such
+  support is not detected.
+
+**Contributors**: @cuviper
+
+[69]: https://github.com/rust-num/num-traits/pull/69
+
 # Release 0.2.3
 
 - [The new `CheckedNeg` and `CheckedRem` traits][63] perform checked `Neg` and

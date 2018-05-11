@@ -160,7 +160,7 @@ macro_rules! int_trait_impl {
     )*)
 }
 int_trait_impl!(Num for usize u8 u16 u32 u64 isize i8 i16 i32 i64);
-#[cfg(feature = "i128")]
+#[cfg(has_i128)]
 int_trait_impl!(Num for u128 i128);
 
 impl<T: Num> Num for Wrapping<T>

@@ -67,7 +67,7 @@ macro_rules! mul_add_impl {
 }
 
 mul_add_impl!(MulAdd for isize usize i8 u8 i16 u16 i32 u32 i64 u64);
-#[cfg(feature = "i128")]
+#[cfg(has_i128)]
 mul_add_impl!(MulAdd for i128 u128);
 
 #[cfg(feature = "std")]
@@ -98,7 +98,7 @@ macro_rules! mul_add_assign_impl {
 }
 
 mul_add_assign_impl!(MulAddAssign for isize usize i8 u8 i16 u16 i32 u32 i64 u64);
-#[cfg(feature = "i128")]
+#[cfg(has_i128)]
 mul_add_assign_impl!(MulAddAssign for i128 u128);
 
 #[cfg(test)]
