@@ -215,8 +215,10 @@ pub trait Real
     fn is_sign_negative(self) -> bool;
 
     /// Fused multiply-add. Computes `(self * a) + b` with only one rounding
-    /// error. This produces a more accurate result with better performance than
-    /// a separate multiplication operation followed by an add.
+    /// error, yielding a more accurate result than an unfused multiply-add.
+    ///
+    /// Using `mul_add` can be more performant than an unfused multiply-add if
+    /// the target architecture has a dedicated `fma` CPU instruction.
     ///
     /// ```
     /// use num_traits::real::Real;
