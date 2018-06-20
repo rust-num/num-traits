@@ -13,25 +13,25 @@ pub trait ToPrimitive {
     /// Converts the value of `self` to an `isize`.
     #[inline]
     fn to_isize(&self) -> Option<isize> {
-        self.to_i64().and_then(|x| x.to_isize())
+        self.to_i64().as_ref().and_then(ToPrimitive::to_isize)
     }
 
     /// Converts the value of `self` to an `i8`.
     #[inline]
     fn to_i8(&self) -> Option<i8> {
-        self.to_i64().and_then(|x| x.to_i8())
+        self.to_i64().as_ref().and_then(ToPrimitive::to_i8)
     }
 
     /// Converts the value of `self` to an `i16`.
     #[inline]
     fn to_i16(&self) -> Option<i16> {
-        self.to_i64().and_then(|x| x.to_i16())
+        self.to_i64().as_ref().and_then(ToPrimitive::to_i16)
     }
 
     /// Converts the value of `self` to an `i32`.
     #[inline]
     fn to_i32(&self) -> Option<i32> {
-        self.to_i64().and_then(|x| x.to_i32())
+        self.to_i64().as_ref().and_then(ToPrimitive::to_i32)
     }
 
     /// Converts the value of `self` to an `i64`.
@@ -52,25 +52,25 @@ pub trait ToPrimitive {
     /// Converts the value of `self` to a `usize`.
     #[inline]
     fn to_usize(&self) -> Option<usize> {
-        self.to_u64().and_then(|x| x.to_usize())
+        self.to_u64().as_ref().and_then(ToPrimitive::to_usize)
     }
 
     /// Converts the value of `self` to an `u8`.
     #[inline]
     fn to_u8(&self) -> Option<u8> {
-        self.to_u64().and_then(|x| x.to_u8())
+        self.to_u64().as_ref().and_then(ToPrimitive::to_u8)
     }
 
     /// Converts the value of `self` to an `u16`.
     #[inline]
     fn to_u16(&self) -> Option<u16> {
-        self.to_u64().and_then(|x| x.to_u16())
+        self.to_u64().as_ref().and_then(ToPrimitive::to_u16)
     }
 
     /// Converts the value of `self` to an `u32`.
     #[inline]
     fn to_u32(&self) -> Option<u32> {
-        self.to_u64().and_then(|x| x.to_u32())
+        self.to_u64().as_ref().and_then(ToPrimitive::to_u32)
     }
 
     /// Converts the value of `self` to an `u64`.
@@ -92,13 +92,16 @@ pub trait ToPrimitive {
     /// Converts the value of `self` to an `f32`.
     #[inline]
     fn to_f32(&self) -> Option<f32> {
-        self.to_f64().and_then(|x| x.to_f32())
+        self.to_f64().as_ref().and_then(ToPrimitive::to_f32)
     }
 
     /// Converts the value of `self` to an `f64`.
     #[inline]
     fn to_f64(&self) -> Option<f64> {
-        self.to_i64().and_then(|x| x.to_f64())
+        match self.to_i64() {
+            Some(i) => i.to_f64(),
+            None => self.to_u64().as_ref().and_then(ToPrimitive::to_f64),
+        }
     }
 }
 
