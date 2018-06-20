@@ -9,6 +9,7 @@ extern crate std;
 extern crate num_traits;
 
 use num_traits::cast::*;
+use num_traits::Bounded;
 
 use core::{i8, i16, i32, i64, isize};
 use core::{u8, u16, u32, u64, usize};
@@ -16,6 +17,7 @@ use core::{f32, f64};
 #[cfg(has_i128)]
 use core::{i128, u128};
 
+use core::fmt::Debug;
 use core::mem;
 use core::num::Wrapping;
 
@@ -317,3 +319,40 @@ fn cast_int_to_128_edge_cases() {
     test_edge!(usize u8 u16 u32 u64 u128);
 }
 
+#[test]
+fn newtype_from_primitive() {
+    #[derive(PartialEq, Debug)]
+    struct New<T>(T);
+
+    // minimal impl
+    impl<T: FromPrimitive> FromPrimitive for New<T> {
+        fn from_i64(n: i64) -> Option<Self> {
+            T::from_i64(n).map(New)
+        }
+
+        fn from_u64(n: u64) -> Option<Self> {
+            T::from_u64(n).map(New)
+        }
+    }
+
+    macro_rules! assert_eq_from {
+        ($( $from:ident )+) => {$(
+            assert_eq!(T::$from(Bounded::min_value()).map(New),
+                       New::<T>::$from(Bounded::min_value()));
+            assert_eq!(T::$from(Bounded::max_value()).map(New),
+                       New::<T>::$from(Bounded::max_value()));
+        )+}
+    }
+
+    fn check<T: PartialEq + Debug + FromPrimitive>() {
+        assert_eq_from!(from_i8 from_i16 from_i32 from_i64 from_isize);
+        assert_eq_from!(from_u8 from_u16 from_u32 from_u64 from_usize);
+        assert_eq_from!(from_f32 from_f64);
+    }
+
+    macro_rules! check {
+        ($( $ty:ty )+) => {$( check::<$ty>(); )+}
+    }
+    check!(i8 i16 i32 i64 isize);
+    check!(u8 u16 u32 u64 usize);
+}

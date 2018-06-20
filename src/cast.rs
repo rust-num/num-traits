@@ -355,28 +355,28 @@ pub trait FromPrimitive: Sized {
     /// value cannot be represented by this value, the `None` is returned.
     #[inline]
     fn from_isize(n: isize) -> Option<Self> {
-        FromPrimitive::from_i64(n as i64)
+        n.to_i64().and_then(FromPrimitive::from_i64)
     }
 
     /// Convert an `i8` to return an optional value of this type. If the
     /// type cannot be represented by this value, the `None` is returned.
     #[inline]
     fn from_i8(n: i8) -> Option<Self> {
-        FromPrimitive::from_i64(n as i64)
+        FromPrimitive::from_i64(From::from(n))
     }
 
     /// Convert an `i16` to return an optional value of this type. If the
     /// type cannot be represented by this value, the `None` is returned.
     #[inline]
     fn from_i16(n: i16) -> Option<Self> {
-        FromPrimitive::from_i64(n as i64)
+        FromPrimitive::from_i64(From::from(n))
     }
 
     /// Convert an `i32` to return an optional value of this type. If the
     /// type cannot be represented by this value, the `None` is returned.
     #[inline]
     fn from_i32(n: i32) -> Option<Self> {
-        FromPrimitive::from_i64(n as i64)
+        FromPrimitive::from_i64(From::from(n))
     }
 
     /// Convert an `i64` to return an optional value of this type. If the
@@ -400,28 +400,28 @@ pub trait FromPrimitive: Sized {
     /// type cannot be represented by this value, the `None` is returned.
     #[inline]
     fn from_usize(n: usize) -> Option<Self> {
-        FromPrimitive::from_u64(n as u64)
+        n.to_u64().and_then(FromPrimitive::from_u64)
     }
 
     /// Convert an `u8` to return an optional value of this type. If the
     /// type cannot be represented by this value, the `None` is returned.
     #[inline]
     fn from_u8(n: u8) -> Option<Self> {
-        FromPrimitive::from_u64(n as u64)
+        FromPrimitive::from_u64(From::from(n))
     }
 
     /// Convert an `u16` to return an optional value of this type. If the
     /// type cannot be represented by this value, the `None` is returned.
     #[inline]
     fn from_u16(n: u16) -> Option<Self> {
-        FromPrimitive::from_u64(n as u64)
+        FromPrimitive::from_u64(From::from(n))
     }
 
     /// Convert an `u32` to return an optional value of this type. If the
     /// type cannot be represented by this value, the `None` is returned.
     #[inline]
     fn from_u32(n: u32) -> Option<Self> {
-        FromPrimitive::from_u64(n as u64)
+        FromPrimitive::from_u64(From::from(n))
     }
 
     /// Convert an `u64` to return an optional value of this type. If the
@@ -445,14 +445,17 @@ pub trait FromPrimitive: Sized {
     /// type cannot be represented by this value, the `None` is returned.
     #[inline]
     fn from_f32(n: f32) -> Option<Self> {
-        FromPrimitive::from_f64(n as f64)
+        FromPrimitive::from_f64(From::from(n))
     }
 
     /// Convert a `f64` to return an optional value of this type. If the
     /// type cannot be represented by this value, the `None` is returned.
     #[inline]
     fn from_f64(n: f64) -> Option<Self> {
-        FromPrimitive::from_i64(n as i64)
+        match n.to_i64() {
+            Some(i) => FromPrimitive::from_i64(i),
+            None => n.to_u64().and_then(FromPrimitive::from_u64),
+        }
     }
 }
 
@@ -460,6 +463,7 @@ macro_rules! impl_from_primitive {
     ($T:ty, $to_ty:ident) => (
         #[allow(deprecated)]
         impl FromPrimitive for $T {
+            #[inline] fn from_isize(n: isize) -> Option<$T> { n.$to_ty() }
             #[inline] fn from_i8(n: i8) -> Option<$T> { n.$to_ty() }
             #[inline] fn from_i16(n: i16) -> Option<$T> { n.$to_ty() }
             #[inline] fn from_i32(n: i32) -> Option<$T> { n.$to_ty() }
@@ -467,6 +471,7 @@ macro_rules! impl_from_primitive {
             #[cfg(has_i128)]
             #[inline] fn from_i128(n: i128) -> Option<$T> { n.$to_ty() }
 
+            #[inline] fn from_usize(n: usize) -> Option<$T> { n.$to_ty() }
             #[inline] fn from_u8(n: u8) -> Option<$T> { n.$to_ty() }
             #[inline] fn from_u16(n: u16) -> Option<$T> { n.$to_ty() }
             #[inline] fn from_u32(n: u32) -> Option<$T> { n.$to_ty() }
