@@ -1,3 +1,13 @@
+# Release 0.2.5
+
+- [Documentation for `mul_add` now clarifies that it's not always faster.][70]
+- [The default methods in `FromPrimitive` and `ToPrimitive` are more robust.][73]
+
+**Contributors**: @cuviper, @frewsxcv
+
+[70]: https://github.com/rust-num/num-traits/pull/70
+[73]: https://github.com/rust-num/num-traits/pull/73
+
 # Release 0.2.4
 
 - [Support for 128-bit integers is now automatically detected and enabled.][69]
