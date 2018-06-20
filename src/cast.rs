@@ -355,39 +355,39 @@ impl_to_primitive_float!(f64);
 /// A generic trait for converting a number to a value.
 pub trait FromPrimitive: Sized {
     /// Convert an `isize` to return an optional value of this type. If the
-    /// value cannot be represented by this value, the `None` is returned.
+    /// value cannot be represented by this value, then `None` is returned.
     #[inline]
     fn from_isize(n: isize) -> Option<Self> {
         n.to_i64().and_then(FromPrimitive::from_i64)
     }
 
     /// Convert an `i8` to return an optional value of this type. If the
-    /// type cannot be represented by this value, the `None` is returned.
+    /// type cannot be represented by this value, then `None` is returned.
     #[inline]
     fn from_i8(n: i8) -> Option<Self> {
         FromPrimitive::from_i64(From::from(n))
     }
 
     /// Convert an `i16` to return an optional value of this type. If the
-    /// type cannot be represented by this value, the `None` is returned.
+    /// type cannot be represented by this value, then `None` is returned.
     #[inline]
     fn from_i16(n: i16) -> Option<Self> {
         FromPrimitive::from_i64(From::from(n))
     }
 
     /// Convert an `i32` to return an optional value of this type. If the
-    /// type cannot be represented by this value, the `None` is returned.
+    /// type cannot be represented by this value, then `None` is returned.
     #[inline]
     fn from_i32(n: i32) -> Option<Self> {
         FromPrimitive::from_i64(From::from(n))
     }
 
     /// Convert an `i64` to return an optional value of this type. If the
-    /// type cannot be represented by this value, the `None` is returned.
+    /// type cannot be represented by this value, then `None` is returned.
     fn from_i64(n: i64) -> Option<Self>;
 
     /// Convert an `i128` to return an optional value of this type. If the
-    /// type cannot be represented by this value, the `None` is returned.
+    /// type cannot be represented by this value, then `None` is returned.
     ///
     /// This method is only available with feature `i128` enabled on Rust >= 1.26.
     ///
@@ -400,39 +400,39 @@ pub trait FromPrimitive: Sized {
     }
 
     /// Convert a `usize` to return an optional value of this type. If the
-    /// type cannot be represented by this value, the `None` is returned.
+    /// type cannot be represented by this value, then `None` is returned.
     #[inline]
     fn from_usize(n: usize) -> Option<Self> {
         n.to_u64().and_then(FromPrimitive::from_u64)
     }
 
     /// Convert an `u8` to return an optional value of this type. If the
-    /// type cannot be represented by this value, the `None` is returned.
+    /// type cannot be represented by this value, then `None` is returned.
     #[inline]
     fn from_u8(n: u8) -> Option<Self> {
         FromPrimitive::from_u64(From::from(n))
     }
 
     /// Convert an `u16` to return an optional value of this type. If the
-    /// type cannot be represented by this value, the `None` is returned.
+    /// type cannot be represented by this value, then `None` is returned.
     #[inline]
     fn from_u16(n: u16) -> Option<Self> {
         FromPrimitive::from_u64(From::from(n))
     }
 
     /// Convert an `u32` to return an optional value of this type. If the
-    /// type cannot be represented by this value, the `None` is returned.
+    /// type cannot be represented by this value, then `None` is returned.
     #[inline]
     fn from_u32(n: u32) -> Option<Self> {
         FromPrimitive::from_u64(From::from(n))
     }
 
     /// Convert an `u64` to return an optional value of this type. If the
-    /// type cannot be represented by this value, the `None` is returned.
+    /// type cannot be represented by this value, then `None` is returned.
     fn from_u64(n: u64) -> Option<Self>;
 
     /// Convert an `u128` to return an optional value of this type. If the
-    /// type cannot be represented by this value, the `None` is returned.
+    /// type cannot be represented by this value, then `None` is returned.
     ///
     /// This method is only available with feature `i128` enabled on Rust >= 1.26.
     ///
@@ -445,14 +445,14 @@ pub trait FromPrimitive: Sized {
     }
 
     /// Convert a `f32` to return an optional value of this type. If the
-    /// type cannot be represented by this value, the `None` is returned.
+    /// type cannot be represented by this value, then `None` is returned.
     #[inline]
     fn from_f32(n: f32) -> Option<Self> {
         FromPrimitive::from_f64(From::from(n))
     }
 
     /// Convert a `f64` to return an optional value of this type. If the
-    /// type cannot be represented by this value, the `None` is returned.
+    /// type cannot be represented by this value, then `None` is returned.
     #[inline]
     fn from_f64(n: f64) -> Option<Self> {
         match n.to_i64() {
