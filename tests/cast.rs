@@ -356,3 +356,41 @@ fn newtype_from_primitive() {
     check!(i8 i16 i32 i64 isize);
     check!(u8 u16 u32 u64 usize);
 }
+
+#[test]
+fn newtype_to_primitive() {
+    #[derive(PartialEq, Debug)]
+    struct New<T>(T);
+
+    // minimal impl
+    impl<T: ToPrimitive> ToPrimitive for New<T> {
+        fn to_i64(&self) -> Option<i64> {
+            self.0.to_i64()
+        }
+
+        fn to_u64(&self) -> Option<u64> {
+            self.0.to_u64()
+        }
+    }
+
+    macro_rules! assert_eq_to {
+        ($( $to:ident )+) => {$(
+            assert_eq!(T::$to(&Bounded::min_value()),
+                       New::<T>::$to(&New(Bounded::min_value())));
+            assert_eq!(T::$to(&Bounded::max_value()),
+                       New::<T>::$to(&New(Bounded::max_value())));
+        )+}
+    }
+
+    fn check<T: PartialEq + Debug + Bounded + ToPrimitive>() {
+        assert_eq_to!(to_i8 to_i16 to_i32 to_i64 to_isize);
+        assert_eq_to!(to_u8 to_u16 to_u32 to_u64 to_usize);
+        assert_eq_to!(to_f32 to_f64);
+    }
+
+    macro_rules! check {
+        ($( $ty:ty )+) => {$( check::<$ty>(); )+}
+    }
+    check!(i8 i16 i32 i64 isize);
+    check!(u8 u16 u32 u64 usize);
+}
