@@ -1,4 +1,4 @@
-# Release 0.2.5
+# Release 0.2.5 (2018-06-20)
 
 - [Documentation for `mul_add` now clarifies that it's not always faster.][70]
 - [The default methods in `FromPrimitive` and `ToPrimitive` are more robust.][73]
@@ -8,7 +8,7 @@
 [70]: https://github.com/rust-num/num-traits/pull/70
 [73]: https://github.com/rust-num/num-traits/pull/73
 
-# Release 0.2.4
+# Release 0.2.4 (2018-05-11)
 
 - [Support for 128-bit integers is now automatically detected and enabled.][69]
   Setting the `i128` crate feature now causes the build script to panic if such
@@ -18,7 +18,7 @@
 
 [69]: https://github.com/rust-num/num-traits/pull/69
 
-# Release 0.2.3
+# Release 0.2.3 (2018-05-10)
 
 - [The new `CheckedNeg` and `CheckedRem` traits][63] perform checked `Neg` and
   `Rem`, returning `Some(output)` or `None` on overflow.
@@ -41,7 +41,7 @@
 [63]: https://github.com/rust-num/num-traits/pull/63
 [rust#47919]: https://github.com/rust-lang/rust/pull/47919
 
-# Release 0.2.2
+# Release 0.2.2 (2018-03-18)
 
 - [Casting from floating point to integers now returns `None` on overflow][52],
   avoiding [rustc's undefined behavior][rust-10184]. This applies to the `cast`
@@ -53,7 +53,7 @@
 [rust-10184]: https://github.com/rust-lang/rust/issues/10184
 
 
-# Release 0.2.1
+# Release 0.2.1 (2018-03-01)
 
 - [The new `FloatCore` trait][32] offers a subset of `Float` for `#![no_std]` use.
   [This includes everything][41] except the transcendental functions and FMA.
@@ -72,7 +72,7 @@
 [41]: https://github.com/rust-num/num-traits/pull/41
 
 
-# Release 0.2.0
+# Release 0.2.0 (2018-02-06)
 
 - **breaking change**: [There is now a `std` feature][30], enabled by default, along
   with the implication that building *without* this feature makes this a
@@ -87,14 +87,14 @@
 [30]: https://github.com/rust-num/num-traits/pull/30
 
 
-# Release 0.1.43
+# Release 0.1.43 (2018-02-06)
 
 - All items are now [re-exported from num-traits 0.2][31] for compatibility.
 
 [31]: https://github.com/rust-num/num-traits/pull/31
 
 
-# Release 0.1.42
+# Release 0.1.42 (2018-01-22)
 
 - [num-traits now has its own source repository][num-356] at [rust-num/num-traits][home].
 - [`ParseFloatError` now implements `Display`][22].
