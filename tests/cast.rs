@@ -11,11 +11,11 @@ extern crate num_traits;
 use num_traits::cast::*;
 use num_traits::Bounded;
 
-use core::{i8, i16, i32, i64, isize};
-use core::{u8, u16, u32, u64, usize};
 use core::{f32, f64};
 #[cfg(has_i128)]
 use core::{i128, u128};
+use core::{i16, i32, i64, i8, isize};
+use core::{u16, u32, u64, u8, usize};
 
 use core::fmt::Debug;
 use core::mem;
