@@ -1,6 +1,6 @@
-use core::ops::Mul;
 use core::num::Wrapping;
-use {One, CheckedMul};
+use core::ops::Mul;
+use {CheckedMul, One};
 
 /// Binary operator for raising a value to a power.
 pub trait Pow<RHS> {
@@ -183,13 +183,17 @@ mod float_impls {
 /// ```
 #[inline]
 pub fn pow<T: Clone + One + Mul<T, Output = T>>(mut base: T, mut exp: usize) -> T {
-    if exp == 0 { return T::one() }
+    if exp == 0 {
+        return T::one();
+    }
 
     while exp & 1 == 0 {
         base = base.clone() * base;
         exp >>= 1;
     }
-    if exp == 1 { return base }
+    if exp == 1 {
+        return base;
+    }
 
     let mut acc = base.clone();
     while exp > 1 {
@@ -217,19 +221,27 @@ pub fn pow<T: Clone + One + Mul<T, Output = T>>(mut base: T, mut exp: usize) -> 
 /// ```
 #[inline]
 pub fn checked_pow<T: Clone + One + CheckedMul>(mut base: T, mut exp: usize) -> Option<T> {
-    if exp == 0 { return Some(T::one()) }
+    if exp == 0 {
+        return Some(T::one());
+    }
 
     macro_rules! optry {
-        ( $ expr : expr ) => {
-            if let Some(val) = $expr { val } else { return None }
-        }
+        ($expr:expr) => {
+            if let Some(val) = $expr {
+                val
+            } else {
+                return None;
+            }
+        };
     }
 
     while exp & 1 == 0 {
         base = optry!(base.checked_mul(&base));
         exp >>= 1;
     }
-    if exp == 1 { return Some(base) }
+    if exp == 1 {
+        return Some(base);
+    }
 
     let mut acc = base.clone();
     while exp > 1 {

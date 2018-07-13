@@ -1,8 +1,8 @@
-use core::ops::Neg;
 use core::num::Wrapping;
+use core::ops::Neg;
 
-use Num;
 use float::FloatCore;
+use Num;
 
 /// Useful functions for signed numbers (i.e. numbers that can be negative).
 pub trait Signed: Sized + Num + Neg<Output = Self> {
@@ -77,7 +77,9 @@ signed_impl!(isize i8 i16 i32 i64);
 #[cfg(has_i128)]
 signed_impl!(i128);
 
-impl<T: Signed> Signed for Wrapping<T> where Wrapping<T>: Num + Neg<Output=Wrapping<T>>
+impl<T: Signed> Signed for Wrapping<T>
+where
+    Wrapping<T>: Num + Neg<Output = Wrapping<T>>,
 {
     #[inline]
     fn abs(&self) -> Self {
@@ -95,10 +97,14 @@ impl<T: Signed> Signed for Wrapping<T> where Wrapping<T>: Num + Neg<Output=Wrapp
     }
 
     #[inline]
-    fn is_positive(&self) -> bool { self.0.is_positive() }
+    fn is_positive(&self) -> bool {
+        self.0.is_positive()
+    }
 
     #[inline]
-    fn is_negative(&self) -> bool { self.0.is_negative() }
+    fn is_negative(&self) -> bool {
+        self.0.is_negative()
+    }
 }
 
 macro_rules! signed_float_impl {
@@ -115,7 +121,11 @@ macro_rules! signed_float_impl {
             /// and `other` is returned.
             #[inline]
             fn abs_sub(&self, other: &$t) -> $t {
-                if *self <= *other { 0. } else { *self - *other }
+                if *self <= *other {
+                    0.
+                } else {
+                    *self - *other
+                }
             }
 
             /// # Returns
@@ -130,13 +140,17 @@ macro_rules! signed_float_impl {
 
             /// Returns `true` if the number is positive, including `+0.0` and `INFINITY`
             #[inline]
-            fn is_positive(&self) -> bool { FloatCore::is_sign_positive(*self) }
+            fn is_positive(&self) -> bool {
+                FloatCore::is_sign_positive(*self)
+            }
 
             /// Returns `true` if the number is negative, including `-0.0` and `NEG_INFINITY`
             #[inline]
-            fn is_negative(&self) -> bool { FloatCore::is_sign_negative(*self) }
+            fn is_negative(&self) -> bool {
+                FloatCore::is_sign_negative(*self)
+            }
         }
-    }
+    };
 }
 
 signed_float_impl!(f32);
@@ -174,7 +188,10 @@ pub fn abs_sub<T: Signed>(x: T, y: T) -> T {
 /// * `0` if the number is zero
 /// * `1` if the number is positive
 /// * `-1` if the number is negative
-#[inline(always)] pub fn signum<T: Signed>(value: T) -> T { value.signum() }
+#[inline(always)]
+pub fn signum<T: Signed>(value: T) -> T {
+    value.signum()
+}
 
 /// A trait for values which cannot be negative
 pub trait Unsigned: Num {}
@@ -189,7 +206,11 @@ empty_trait_impl!(Unsigned for usize u8 u16 u32 u64);
 #[cfg(has_i128)]
 empty_trait_impl!(Unsigned for u128);
 
-impl<T: Unsigned> Unsigned for Wrapping<T> where Wrapping<T>: Num {}
+impl<T: Unsigned> Unsigned for Wrapping<T>
+where
+    Wrapping<T>: Num,
+{
+}
 
 #[test]
 fn unsigned_wrapping_is_unsigned() {

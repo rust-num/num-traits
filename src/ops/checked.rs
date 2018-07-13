@@ -1,8 +1,8 @@
-use core::ops::{Add, Sub, Mul, Div, Rem, Shl, Shr};
+use core::ops::{Add, Div, Mul, Rem, Shl, Shr, Sub};
 
 /// Performs addition that returns `None` instead of wrapping around on
 /// overflow.
-pub trait CheckedAdd: Sized + Add<Self, Output=Self> {
+pub trait CheckedAdd: Sized + Add<Self, Output = Self> {
     /// Adds two numbers, checking for overflow. If overflow happens, `None` is
     /// returned.
     fn checked_add(&self, v: &Self) -> Option<Self>;
@@ -16,7 +16,7 @@ macro_rules! checked_impl {
                 <$t>::$method(*self, *v)
             }
         }
-    }
+    };
 }
 
 checked_impl!(CheckedAdd, checked_add, u8);
@@ -36,7 +36,7 @@ checked_impl!(CheckedAdd, checked_add, isize);
 checked_impl!(CheckedAdd, checked_add, i128);
 
 /// Performs subtraction that returns `None` instead of wrapping around on underflow.
-pub trait CheckedSub: Sized + Sub<Self, Output=Self> {
+pub trait CheckedSub: Sized + Sub<Self, Output = Self> {
     /// Subtracts two numbers, checking for underflow. If underflow happens,
     /// `None` is returned.
     fn checked_sub(&self, v: &Self) -> Option<Self>;
@@ -60,7 +60,7 @@ checked_impl!(CheckedSub, checked_sub, i128);
 
 /// Performs multiplication that returns `None` instead of wrapping around on underflow or
 /// overflow.
-pub trait CheckedMul: Sized + Mul<Self, Output=Self> {
+pub trait CheckedMul: Sized + Mul<Self, Output = Self> {
     /// Multiplies two numbers, checking for underflow or overflow. If underflow
     /// or overflow happens, `None` is returned.
     fn checked_mul(&self, v: &Self) -> Option<Self>;
@@ -84,7 +84,7 @@ checked_impl!(CheckedMul, checked_mul, i128);
 
 /// Performs division that returns `None` instead of panicking on division by zero and instead of
 /// wrapping around on underflow and overflow.
-pub trait CheckedDiv: Sized + Div<Self, Output=Self> {
+pub trait CheckedDiv: Sized + Div<Self, Output = Self> {
     /// Divides two numbers, checking for underflow, overflow and division by
     /// zero. If any of that happens, `None` is returned.
     fn checked_div(&self, v: &Self) -> Option<Self>;
@@ -155,7 +155,7 @@ macro_rules! checked_impl_unary {
                 <$t>::$method(*self)
             }
         }
-    }
+    };
 }
 
 /// Performs negation that returns `None` if the result can't be represented.
@@ -196,7 +196,7 @@ checked_impl_unary!(CheckedNeg, checked_neg, isize);
 checked_impl_unary!(CheckedNeg, checked_neg, i128);
 
 /// Performs a left shift that returns `None` on overflow.
-pub trait CheckedShl: Sized + Shl<u32, Output=Self> {
+pub trait CheckedShl: Sized + Shl<u32, Output = Self> {
     /// Shifts a number to the left, checking for overflow. If overflow happens,
     /// `None` is returned.
     ///
@@ -221,7 +221,7 @@ macro_rules! checked_shift_impl {
                 <$t>::$method(*self, rhs)
             }
         }
-    }
+    };
 }
 
 checked_shift_impl!(CheckedShl, checked_shl, u8);
@@ -241,7 +241,7 @@ checked_shift_impl!(CheckedShl, checked_shl, isize);
 checked_shift_impl!(CheckedShl, checked_shl, i128);
 
 /// Performs a right shift that returns `None` on overflow.
-pub trait CheckedShr: Sized + Shr<u32, Output=Self> {
+pub trait CheckedShr: Sized + Shr<u32, Output = Self> {
     /// Shifts a number to the left, checking for overflow. If overflow happens,
     /// `None` is returned.
     ///
