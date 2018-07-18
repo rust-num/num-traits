@@ -1,6 +1,6 @@
 use core::num::Wrapping;
 use core::ops::Mul;
-use {CheckedMul, Zero, One};
+use {CheckedMul, One, Zero};
 
 /// Binary operator for raising a value to a power.
 pub trait Pow<RHS> {
@@ -189,7 +189,7 @@ pub fn pow<T: Clone + Zero + One + Mul<T, Output = T>>(mut base: T, mut exp: usi
             panic!("0⁰ is undefined")
         } else {
             T::one()
-        }
+        };
     }
 
     while exp & 1 == 0 {
@@ -229,11 +229,7 @@ pub fn pow<T: Clone + Zero + One + Mul<T, Output = T>>(mut base: T, mut exp: usi
 #[inline]
 pub fn checked_pow<T: Clone + Zero + One + CheckedMul>(mut base: T, mut exp: usize) -> Option<T> {
     if exp == 0 {
-        return if base.is_zero() {
-            None
-        } else {
-            Some(T::one())
-        }
+        return if base.is_zero() { None } else { Some(T::one()) };
     }
 
     macro_rules! optry {
