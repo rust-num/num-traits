@@ -1,6 +1,6 @@
 use core::num::Wrapping;
 use core::ops::Mul;
-use {CheckedMul, One};
+use {CheckedMul, One, Zero};
 
 /// Binary operator for raising a value to a power.
 pub trait Pow<RHS> {
@@ -172,6 +172,7 @@ mod float_impls {
 }
 
 /// Raises a value to the power of exp, using exponentiation by squaring.
+/// Panics if pow(0, 0) (0⁰ is undefined)
 ///
 /// # Example
 ///
@@ -182,9 +183,13 @@ mod float_impls {
 /// assert_eq!(pow(6u8, 3), 216);
 /// ```
 #[inline]
-pub fn pow<T: Clone + One + Mul<T, Output = T>>(mut base: T, mut exp: usize) -> T {
+pub fn pow<T: Clone + Zero + One + Mul<T, Output = T>>(mut base: T, mut exp: usize) -> T {
     if exp == 0 {
-        return T::one();
+        return if base.is_zero() {
+            panic!("pow(0, 0) is undefined")
+        } else {
+            T::one()
+        };
     }
 
     while exp & 1 == 0 {
@@ -207,6 +212,7 @@ pub fn pow<T: Clone + One + Mul<T, Output = T>>(mut base: T, mut exp: usize) -> 
 }
 
 /// Raises a value to the power of exp, returning `None` if an overflow occurred.
+/// Also returns None if checked_pow(0, 0) was entered (0⁰ is undefined)
 ///
 /// Otherwise same as the `pow` function.
 ///
@@ -218,11 +224,12 @@ pub fn pow<T: Clone + One + Mul<T, Output = T>>(mut base: T, mut exp: usize) -> 
 /// assert_eq!(checked_pow(2i8, 4), Some(16));
 /// assert_eq!(checked_pow(7i8, 8), None);
 /// assert_eq!(checked_pow(7u32, 8), Some(5_764_801));
+/// assert_eq!(checked_pow(0i8, 0), None); //undefined
 /// ```
 #[inline]
-pub fn checked_pow<T: Clone + One + CheckedMul>(mut base: T, mut exp: usize) -> Option<T> {
+pub fn checked_pow<T: Clone + Zero + One + CheckedMul>(mut base: T, mut exp: usize) -> Option<T> {
     if exp == 0 {
-        return Some(T::one());
+        return if base.is_zero() { None } else { Some(T::one()) };
     }
 
     macro_rules! optry {
@@ -252,4 +259,22 @@ pub fn checked_pow<T: Clone + One + CheckedMul>(mut base: T, mut exp: usize) -> 
         }
     }
     Some(acc)
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn pow_3_3() {
+        assert_eq!(super::checked_pow(3, 3), Some(27));
+        assert_eq!(super::pow(3, 3), 27);
+    }
+    #[test]
+    fn checked_pow_0_0() {
+        assert_eq!(super::checked_pow(0, 0), None);
+    }
+    #[test]
+    #[should_panic]
+    fn pow_0_0() {
+        super::pow(0, 0);
+    }
 }
