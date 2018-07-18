@@ -186,7 +186,7 @@ mod float_impls {
 pub fn pow<T: Clone + Zero + One + Mul<T, Output = T>>(mut base: T, mut exp: usize) -> T {
     if exp == 0 {
         return if base.is_zero() {
-            panic!("0⁰ is undefined")
+            panic!("pow(0, 0) is undefined")
         } else {
             T::one()
         };
