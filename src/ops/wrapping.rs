@@ -1,5 +1,5 @@
 use core::num::Wrapping;
-use core::ops::{Add, Mul, Sub};
+use core::ops::{Add, Mul, Shl, Shr, Sub};
 
 macro_rules! wrapping_impl {
     ($trait_name:ident, $method:ident, $t:ty) => {
@@ -89,6 +89,87 @@ wrapping_impl!(WrappingMul, wrapping_mul, isize);
 #[cfg(has_i128)]
 wrapping_impl!(WrappingMul, wrapping_mul, i128);
 
+macro_rules! wrapping_shift_impl {
+    ($trait_name:ident, $method:ident, $t:ty) => {
+        impl $trait_name for $t {
+            #[inline]
+            fn $method(&self, rhs: u32) -> $t {
+                <$t>::$method(*self, rhs)
+            }
+        }
+    };
+}
+
+/// Performs a left shift that does not panic.
+pub trait WrappingShl: Sized + Shl<usize, Output = Self> {
+    /// Panic-free bitwise shift-left; yields `self << mask(rhs)`,
+    /// where `mask` removes any high order bits of `rhs` that would
+    /// cause the shift to exceed the bitwidth of the type.
+    ///
+    /// ```
+    /// use num_traits::WrappingShl;
+    ///
+    /// let x: u16 = 0x0001;
+    ///
+    /// assert_eq!(WrappingShl::wrapping_shl(&x, 0),  0x0001);
+    /// assert_eq!(WrappingShl::wrapping_shl(&x, 1),  0x0002);
+    /// assert_eq!(WrappingShl::wrapping_shl(&x, 15), 0x8000);
+    /// assert_eq!(WrappingShl::wrapping_shl(&x, 16), 0x0001);
+    /// ```
+    fn wrapping_shl(&self, rhs: u32) -> Self;
+}
+
+wrapping_shift_impl!(WrappingShl, wrapping_shl, u8);
+wrapping_shift_impl!(WrappingShl, wrapping_shl, u16);
+wrapping_shift_impl!(WrappingShl, wrapping_shl, u32);
+wrapping_shift_impl!(WrappingShl, wrapping_shl, u64);
+wrapping_shift_impl!(WrappingShl, wrapping_shl, usize);
+#[cfg(has_i128)]
+wrapping_shift_impl!(WrappingShl, wrapping_shl, u128);
+
+wrapping_shift_impl!(WrappingShl, wrapping_shl, i8);
+wrapping_shift_impl!(WrappingShl, wrapping_shl, i16);
+wrapping_shift_impl!(WrappingShl, wrapping_shl, i32);
+wrapping_shift_impl!(WrappingShl, wrapping_shl, i64);
+wrapping_shift_impl!(WrappingShl, wrapping_shl, isize);
+#[cfg(has_i128)]
+wrapping_shift_impl!(WrappingShl, wrapping_shl, i128);
+
+/// Performs a right shift that does not panic.
+pub trait WrappingShr: Sized + Shr<usize, Output = Self> {
+    /// Panic-free bitwise shift-right; yields `self >> mask(rhs)`,
+    /// where `mask` removes any high order bits of `rhs` that would
+    /// cause the shift to exceed the bitwidth of the type.
+    ///
+    /// ```
+    /// use num_traits::WrappingShr;
+    ///
+    /// let x: u16 = 0x8000;
+    ///
+    /// assert_eq!(WrappingShr::wrapping_shr(&x, 0),  0x8000);
+    /// assert_eq!(WrappingShr::wrapping_shr(&x, 1),  0x4000);
+    /// assert_eq!(WrappingShr::wrapping_shr(&x, 15), 0x0001);
+    /// assert_eq!(WrappingShr::wrapping_shr(&x, 16), 0x8000);
+    /// ```
+    fn wrapping_shr(&self, rhs: u32) -> Self;
+}
+
+wrapping_shift_impl!(WrappingShr, wrapping_shr, u8);
+wrapping_shift_impl!(WrappingShr, wrapping_shr, u16);
+wrapping_shift_impl!(WrappingShr, wrapping_shr, u32);
+wrapping_shift_impl!(WrappingShr, wrapping_shr, u64);
+wrapping_shift_impl!(WrappingShr, wrapping_shr, usize);
+#[cfg(has_i128)]
+wrapping_shift_impl!(WrappingShr, wrapping_shr, u128);
+
+wrapping_shift_impl!(WrappingShr, wrapping_shr, i8);
+wrapping_shift_impl!(WrappingShr, wrapping_shr, i16);
+wrapping_shift_impl!(WrappingShr, wrapping_shr, i32);
+wrapping_shift_impl!(WrappingShr, wrapping_shr, i64);
+wrapping_shift_impl!(WrappingShr, wrapping_shr, isize);
+#[cfg(has_i128)]
+wrapping_shift_impl!(WrappingShr, wrapping_shr, i128);
+
 // Well this is a bit funny, but all the more appropriate.
 impl<T: WrappingAdd> WrappingAdd for Wrapping<T>
 where
@@ -114,6 +195,22 @@ where
         Wrapping(self.0.wrapping_mul(&v.0))
     }
 }
+impl<T: WrappingShl> WrappingShl for Wrapping<T>
+where
+    Wrapping<T>: Shl<usize, Output = Wrapping<T>>,
+{
+    fn wrapping_shl(&self, rhs: u32) -> Self {
+        Wrapping(self.0.wrapping_shl(rhs))
+    }
+}
+impl<T: WrappingShr> WrappingShr for Wrapping<T>
+where
+    Wrapping<T>: Shr<usize, Output = Wrapping<T>>,
+{
+    fn wrapping_shr(&self, rhs: u32) -> Self {
+        Wrapping(self.0.wrapping_shr(rhs))
+    }
+}
 
 #[test]
 fn test_wrapping_traits() {
@@ -126,12 +223,22 @@ fn test_wrapping_traits() {
     fn wrapping_mul<T: WrappingMul>(a: T, b: T) -> T {
         a.wrapping_mul(&b)
     }
+    fn wrapping_shl<T: WrappingShl>(a: T, b: u32) -> T {
+        a.wrapping_shl(b)
+    }
+    fn wrapping_shr<T: WrappingShr>(a: T, b: u32) -> T {
+        a.wrapping_shr(b)
+    }
     assert_eq!(wrapping_add(255, 1), 0u8);
     assert_eq!(wrapping_sub(0, 1), 255u8);
     assert_eq!(wrapping_mul(255, 2), 254u8);
+    assert_eq!(wrapping_shl(255, 8), 255u8);
+    assert_eq!(wrapping_shr(255, 8), 255u8);
     assert_eq!(wrapping_add(255, 1), (Wrapping(255u8) + Wrapping(1u8)).0);
     assert_eq!(wrapping_sub(0, 1), (Wrapping(0u8) - Wrapping(1u8)).0);
     assert_eq!(wrapping_mul(255, 2), (Wrapping(255u8) * Wrapping(2u8)).0);
+    assert_eq!(wrapping_shl(255, 8), (Wrapping(255u8) << 8).0);
+    assert_eq!(wrapping_shr(255, 8), (Wrapping(255u8) >> 8).0);
 }
 
 #[test]
@@ -150,4 +257,16 @@ fn wrapping_is_wrappingsub() {
 fn wrapping_is_wrappingmul() {
     fn require_wrappingmul<T: WrappingMul>(_: &T) {}
     require_wrappingmul(&Wrapping(42));
+}
+
+#[test]
+fn wrapping_is_wrappingshl() {
+    fn require_wrappingshl<T: WrappingShl>(_: &T) {}
+    require_wrappingshl(&Wrapping(42));
+}
+
+#[test]
+fn wrapping_is_wrappingshr() {
+    fn require_wrappingshr<T: WrappingShr>(_: &T) {}
+    require_wrappingshr(&Wrapping(42));
 }
