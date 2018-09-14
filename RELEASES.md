@@ -1,3 +1,16 @@
+# Release 0.2.6 (2018-09-13)
+
+- [Documented that `pow(0, 0)` returns `1`][79].  Mathematically, this is not
+  strictly defined, but the current behavior is a pragmatic choice that has
+  precedent in Rust `core` for the primitives and in many other languages.
+- [The new `WrappingShl` and `WrappingShr` traits][81] will wrap the shift count
+  if it exceeds the bit size of the type.
+
+**Contributors**: @cuviper, @edmccard, @meltinglava
+
+[79]: https://github.com/rust-num/num-traits/pull/79
+[81]: https://github.com/rust-num/num-traits/pull/81
+
 # Release 0.2.5 (2018-06-20)
 
 - [Documentation for `mul_add` now clarifies that it's not always faster.][70]
