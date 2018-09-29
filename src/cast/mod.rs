@@ -1,3 +1,5 @@
+pub mod safe;
+
 use core::mem::size_of;
 use core::num::Wrapping;
 use core::{f32, f64};
