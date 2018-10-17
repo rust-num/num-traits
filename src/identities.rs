@@ -29,6 +29,18 @@ pub trait Zero: Sized + Add<Self, Output = Self> {
     fn is_zero(&self) -> bool;
 }
 
+/// Supplimentary trait for [`Zero`](trait.Zero.html) types which can be
+/// expressed as compile-time constants.
+///
+/// This is implemented for all primitive types, and should be implemented
+/// wherever possible. Implementors must ensure that `ZeroConst::ZERO` is
+/// the same value produced by [`Zero::zero()`](trait.Zero.html#tymethod.zero).
+#[cfg(has_associated_consts)]
+pub trait ZeroConst: Zero {
+    /// Additive identity: see [`Zero::zero()`](trait.Zero.html#tymethod.zero).
+    const ZERO: Self;
+}
+
 macro_rules! zero_impl {
     ($t:ty, $v:expr) => {
         impl Zero for $t {
@@ -44,24 +56,38 @@ macro_rules! zero_impl {
     };
 }
 
-zero_impl!(usize, 0);
-zero_impl!(u8, 0);
-zero_impl!(u16, 0);
-zero_impl!(u32, 0);
-zero_impl!(u64, 0);
-#[cfg(has_i128)]
-zero_impl!(u128, 0);
+#[cfg(has_associated_consts)]
+macro_rules! zero_const_impl {
+    ($t:ty, $v:expr) => {
+        zero_impl!($t, $v);
+        impl ZeroConst for $t {
+            const ZERO: $t = $v;
+        }
+    };
+}
+#[cfg(not(has_associated_consts))]
+macro_rules! zero_const_impl {
+    ($t:ty, $v:expr) => { zero_impl!($t, $v); };
+}
 
-zero_impl!(isize, 0);
-zero_impl!(i8, 0);
-zero_impl!(i16, 0);
-zero_impl!(i32, 0);
-zero_impl!(i64, 0);
+zero_const_impl!(usize, 0);
+zero_const_impl!(u8, 0);
+zero_const_impl!(u16, 0);
+zero_const_impl!(u32, 0);
+zero_const_impl!(u64, 0);
 #[cfg(has_i128)]
-zero_impl!(i128, 0);
+zero_const_impl!(u128, 0);
 
-zero_impl!(f32, 0.0);
-zero_impl!(f64, 0.0);
+zero_const_impl!(isize, 0);
+zero_const_impl!(i8, 0);
+zero_const_impl!(i16, 0);
+zero_const_impl!(i32, 0);
+zero_const_impl!(i64, 0);
+#[cfg(has_i128)]
+zero_const_impl!(i128, 0);
+
+zero_const_impl!(f32, 0.0);
+zero_const_impl!(f64, 0.0);
 
 impl<T: Zero> Zero for Wrapping<T>
 where
@@ -78,6 +104,14 @@ where
     fn zero() -> Self {
         Wrapping(T::zero())
     }
+}
+
+#[cfg(has_associated_consts)]
+impl<T: ZeroConst> ZeroConst for Wrapping<T>
+where
+    Wrapping<T>: Zero,
+{
+    const ZERO: Self = Wrapping(T::ZERO);
 }
 
 /// Defines a multiplicative identity element for `Self`.
@@ -118,6 +152,18 @@ pub trait One: Sized + Mul<Self, Output = Self> {
     }
 }
 
+/// Supplimentary trait for [`One`](trait.One.html) types which can be
+/// expressed as compile-time constants.
+///
+/// This is implemented for all primitive types, and should be implemented
+/// wherever possible. Implementors must ensure that `OneConst::ONE` is
+/// the same value produced by [`One::one()`](trait.One.html#tymethod.one).
+#[cfg(has_associated_consts)]
+pub trait OneConst: One {
+    /// Multiplicative identity: see [`One::one`](trait.One.html#tymethod.one).
+    const ONE: Self;
+}
+
 macro_rules! one_impl {
     ($t:ty, $v:expr) => {
         impl One for $t {
@@ -133,24 +179,39 @@ macro_rules! one_impl {
     };
 }
 
-one_impl!(usize, 1);
-one_impl!(u8, 1);
-one_impl!(u16, 1);
-one_impl!(u32, 1);
-one_impl!(u64, 1);
-#[cfg(has_i128)]
-one_impl!(u128, 1);
+#[cfg(has_associated_consts)]
+macro_rules! one_const_impl {
+    ($t:ty, $v:expr) => {
+        one_impl!($t, $v);
+        impl OneConst for $t {
+            const ONE: $t = $v;
+        }
+    };
+}
+#[cfg(not(has_associated_consts))]
+macro_rules! one_const_impl {
+    ($t:ty, $v:expr) => { one_impl!($t, $v); };
+}
 
-one_impl!(isize, 1);
-one_impl!(i8, 1);
-one_impl!(i16, 1);
-one_impl!(i32, 1);
-one_impl!(i64, 1);
-#[cfg(has_i128)]
-one_impl!(i128, 1);
 
-one_impl!(f32, 1.0);
-one_impl!(f64, 1.0);
+one_const_impl!(usize, 1);
+one_const_impl!(u8, 1);
+one_const_impl!(u16, 1);
+one_const_impl!(u32, 1);
+one_const_impl!(u64, 1);
+#[cfg(has_i128)]
+one_const_impl!(u128, 1);
+
+one_const_impl!(isize, 1);
+one_const_impl!(i8, 1);
+one_const_impl!(i16, 1);
+one_const_impl!(i32, 1);
+one_const_impl!(i64, 1);
+#[cfg(has_i128)]
+one_const_impl!(i128, 1);
+
+one_const_impl!(f32, 1.0);
+one_const_impl!(f64, 1.0);
 
 impl<T: One> One for Wrapping<T>
 where
@@ -165,6 +226,14 @@ where
     }
 }
 
+#[cfg(has_associated_consts)]
+impl<T: OneConst> OneConst for Wrapping<T>
+where
+    Wrapping<T>: One,
+{
+    const ONE: Self = Wrapping(T::ONE);
+}
+
 // Some helper functions provided for backwards compatibility.
 
 /// Returns the additive identity, `0`.
@@ -177,6 +246,23 @@ pub fn zero<T: Zero>() -> T {
 #[inline(always)]
 pub fn one<T: One>() -> T {
     One::one()
+}
+
+#[test]
+#[cfg(has_associated_consts)]
+fn const_identies() {
+    macro_rules! test_zero_one {
+        ($zero:expr, $one:expr; $($t:ty),+) => {
+            $(
+                assert_eq!(<$t as ZeroConst>::ZERO, $zero);
+                assert_eq!(<$t as ZeroConst>::ZERO, <$t as Zero>::zero());
+                assert_eq!(<$t as OneConst>::ONE, $one);
+                assert_eq!(<$t as OneConst>::ONE, <$t as One>::one());
+            )+
+        }
+    }
+    test_zero_one!(0, 1; isize, i8, i16, i32, i64, usize, u8, u16, u32, u64);
+    test_zero_one!(0.0, 1.0; f32, f64);
 }
 
 #[test]

@@ -8,6 +8,16 @@ fn main() {
     } else if env::var_os("CARGO_FEATURE_I128").is_some() {
         panic!("i128 support was not detected!");
     }
+
+    if probe("fn main() {
+        struct TestDrop(); impl Drop for TestDrop { fn drop(&mut self) {} }
+        trait TestConst { const TEST: Self; }
+        impl TestConst for TestDrop { const TEST: TestDrop = TestDrop(); }
+    }") {
+        println!("cargo:rustc-cfg=has_associated_consts");
+    } else if env::var_os("CARGO_FEATURE_ASSOCIATED_CONSTS").is_some() {
+        panic!("associated constant support was not detected!");
+    }
 }
 
 /// Test if a code snippet can be compiled

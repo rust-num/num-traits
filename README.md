@@ -42,6 +42,10 @@ Implementations for `i128` and `u128` are only available with Rust 1.26 and
 later.  The build script automatically detects this, but you can make it
 mandatory by enabling the `i128` crate feature.
 
+Similarly, additional traits making use of associated constants are available
+with Rust 1.22 and later. Again, the build script automatically detects this,
+but you can make it mandatory by enabling the `associated_consts` crate feature.
+
 ## Releases
 
 Release notes are available in [RELEASES.md](RELEASES.md).
