@@ -895,7 +895,8 @@ impl FloatCore for f64 {
 ///
 /// This trait is only available with the `std` feature.
 #[cfg(feature = "std")]
-pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
+pub trait Float where Self: Num + Copy + NumCast + Neg<Output = Self> {
+    type Typo;
     /// Returns the `NaN` value.
     ///
     /// ```
@@ -1779,6 +1780,42 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// ```
     fn atanh(self) -> Self;
 
+    /// Returns the real part of the float.
+    ///
+    /// ```
+    /// use num_traits::Float;
+    ///
+    /// let n = 0.5f64;
+    ///
+    /// assert!(n.real() > 0.4f64);
+    /// ```
+    #[inline]
+    fn real(self) -> Self::Typo;
+    
+    /// Returns the imaginary part of the float which equals to zero.
+    ///
+    /// ```
+    /// use num_traits::Float;
+    ///
+    /// let n = 2.7f64;
+    ///
+    /// assert!(n.imag() == 0.0f64);
+    /// ```
+    #[inline]
+    fn imag(self) -> Self::Typo;
+
+    /// Computes the argument of the float.Float
+    /// 
+    /// ```
+    /// use num_traits::Float;
+    /// 
+    /// let n = 0.8f32;
+    /// 
+    /// assert_eq!(n.arg(), 0.0f32);
+    /// ```
+    #[inline]
+    fn arg(self) -> Self::Typo;
+
     /// Returns the mantissa, base 2 exponent, and sign as integers, respectively.
     /// The original number can be recovered by `sign * mantissa * 2 ^ exponent`.
     ///
@@ -1805,6 +1842,7 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
 macro_rules! float_impl {
     ($T:ident $decode:ident) => {
         impl Float for $T {
+            type Typo = $T;
             constant! {
                 nan() -> $T::NAN;
                 infinity() -> $T::INFINITY;
@@ -1825,6 +1863,25 @@ macro_rules! float_impl {
             #[inline]
             fn integer_decode(self) -> (u64, i16, i8) {
                 $decode(self)
+            }
+
+            #[inline]
+            fn real(self) -> Self::Typo {
+                self
+            }
+
+            #[inline]
+            fn imag(self) -> Self::Typo {
+                0.0
+            }
+
+            #[inline]
+            fn arg(self) -> Self::Typo {
+                if self >= 0.0 {
+                    0.0
+                } else {
+                    1.0.asin() * 2.0
+                }
             }
 
             forward! {
@@ -2020,5 +2077,12 @@ mod tests {
             FloatCore::to_degrees(1_f32),
             57.2957795130823208767981548141051703
         );
+    }
+
+    #[test]
+    fn realret() {
+        use float::Float;
+
+        assert_eq!(Float::imag(0.5f64), 0.0f64);
     }
 }

@@ -90,13 +90,12 @@ pub trait NumOps<Rhs = Self, Output = Self>:
 {
 }
 
-impl<T, Rhs, Output> NumOps<Rhs, Output> for T
-where
+impl<T, Rhs, Output> NumOps<Rhs, Output> for T where
     T: Add<Rhs, Output = Output>
         + Sub<Rhs, Output = Output>
         + Mul<Rhs, Output = Output>
         + Div<Rhs, Output = Output>
-        + Rem<Rhs, Output = Output>,
+        + Rem<Rhs, Output = Output>
 {
 }
 
@@ -105,22 +104,14 @@ where
 ///
 /// This is automatically implemented for types which implement the operators.
 pub trait NumRef: Num + for<'r> NumOps<&'r Self> {}
-impl<T> NumRef for T
-where
-    T: Num + for<'r> NumOps<&'r T>,
-{
-}
+impl<T> NumRef for T where T: Num + for<'r> NumOps<&'r T> {}
 
 /// The trait for references which implement numeric operations, taking the
 /// second operand either by value or by reference.
 ///
 /// This is automatically implemented for types which implement the operators.
 pub trait RefNum<Base>: NumOps<Base, Base> + for<'r> NumOps<&'r Base, Base> {}
-impl<T, Base> RefNum<Base> for T
-where
-    T: NumOps<Base, Base> + for<'r> NumOps<&'r Base, Base>,
-{
-}
+impl<T, Base> RefNum<Base> for T where T: NumOps<Base, Base> + for<'r> NumOps<&'r Base, Base> {}
 
 /// The trait for types implementing numeric assignment operators (like `+=`).
 ///
@@ -130,9 +121,8 @@ pub trait NumAssignOps<Rhs = Self>:
 {
 }
 
-impl<T, Rhs> NumAssignOps<Rhs> for T
-where
-    T: AddAssign<Rhs> + SubAssign<Rhs> + MulAssign<Rhs> + DivAssign<Rhs> + RemAssign<Rhs>,
+impl<T, Rhs> NumAssignOps<Rhs> for T where
+    T: AddAssign<Rhs> + SubAssign<Rhs> + MulAssign<Rhs> + DivAssign<Rhs> + RemAssign<Rhs>
 {
 }
 
@@ -140,22 +130,14 @@ where
 ///
 /// This is automatically implemented for types which implement the operators.
 pub trait NumAssign: Num + NumAssignOps {}
-impl<T> NumAssign for T
-where
-    T: Num + NumAssignOps,
-{
-}
+impl<T> NumAssign for T where T: Num + NumAssignOps {}
 
 /// The trait for `NumAssign` types which also implement assignment operations
 /// taking the second operand by reference.
 ///
 /// This is automatically implemented for types which implement the operators.
 pub trait NumAssignRef: NumAssign + for<'r> NumAssignOps<&'r Self> {}
-impl<T> NumAssignRef for T
-where
-    T: NumAssign + for<'r> NumAssignOps<&'r T>,
-{
-}
+impl<T> NumAssignRef for T where T: NumAssign + for<'r> NumAssignOps<&'r T> {}
 
 macro_rules! int_trait_impl {
     ($name:ident for $($t:ty)*) => ($(

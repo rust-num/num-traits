@@ -11,6 +11,7 @@ name = "num-traits"
 version = "0.2.6"
 readme = "README.md"
 build = "build.rs"
+exclude = ["/ci/*", "/.travis.yml", "/bors.toml"]
 
 [package.metadata.docs.rs]
 features = ["std"]

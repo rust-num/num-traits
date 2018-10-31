@@ -13,6 +13,7 @@ use {Float, Num, NumCast};
 ///
 /// This trait is only available with the `std` feature.
 pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
+    type Typo;
     /// Returns the smallest finite value that this type can represent.
     ///
     /// ```
@@ -775,9 +776,61 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// assert!(abs_difference < 1.0e-10);
     /// ```
     fn atanh(self) -> Self;
+    
+    /// Returns the real part of the float.
+    ///
+    /// ```
+    /// use num_traits::Float;
+    ///
+    /// let n = 0.5f64;
+    ///
+    /// assert!(n.real() > 0.4f64);
+    /// ```
+    fn real(self) -> Self::Typo;
+
+    /// Returns the imaginary part of the float which equals to zero.
+    ///
+    /// ```
+    /// use num_traits::Float;
+    ///
+    /// let n = 2.7f64;
+    ///
+    /// assert!(n.imag() == 0.0f64);
+    /// ```
+    fn imag(self) -> Self::Typo;
+
+    /// Computes the argument of the float.Float
+    /// 
+    /// ```
+    /// use num_traits::Float;
+    /// 
+    /// let n = 0.8f32;
+    /// 
+    /// assert_eq!(n.arg(), 0.0f32);
+    /// ```
+    fn arg(self) -> Self::Typo;
 }
 
-impl<T: Float> Real for T {
+impl<T: Float + PartialOrd> Real for T {
+    type Typo = T;
+    #[inline]
+    fn real(self) -> T {
+        self
+    }
+    #[inline]
+    fn imag(self) -> T {
+        T::neg_zero()
+    }
+
+    #[inline]
+    fn arg(self) -> Self::Typo {
+        if self >= T::from(0).unwrap() {
+            T::from(0).unwrap()
+        } else {
+            T::from(3.14159265358979323846264338327950288_f64).unwrap()
+        }
+    }
+
     forward! {
         Float::min_value() -> Self;
         Float::min_positive_value() -> Self;
