@@ -15,40 +15,47 @@ use Float;
 /// for a list of data types that could meaningfully implement this trait.
 ///
 /// This trait is only available with the `std` feature, or with the `libm` feature otherwise.
+#[doc(test(attr(cfg(any(feature = "std", feature = "libm")))))]
 pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// Returns the smallest finite value that this type can represent.
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
     /// let x: f64 = Real::min_value();
     ///
     /// assert_eq!(x, f64::MIN);
+    /// # }
     /// ```
     fn min_value() -> Self;
 
     /// Returns the smallest positive, normalized value that this type can represent.
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
     /// let x: f64 = Real::min_positive_value();
     ///
     /// assert_eq!(x, f64::MIN_POSITIVE);
+    /// # }
     /// ```
     fn min_positive_value() -> Self;
 
     /// Returns epsilon, a small positive value.
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
     /// let x: f64 = Real::epsilon();
     ///
     /// assert_eq!(x, f64::EPSILON);
+    /// # }
     /// ```
     ///
     /// # Panics
@@ -60,17 +67,20 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// Returns the largest finite value that this type can represent.
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
     /// let x: f64 = Real::max_value();
     /// assert_eq!(x, f64::MAX);
+    /// # }
     /// ```
     fn max_value() -> Self;
 
     /// Returns the largest integer less than or equal to a number.
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     ///
     /// let f = 3.99;
@@ -78,12 +88,14 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     ///
     /// assert_eq!(f.floor(), 3.0);
     /// assert_eq!(g.floor(), 3.0);
+    /// # }
     /// ```
     fn floor(self) -> Self;
 
     /// Returns the smallest integer greater than or equal to a number.
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     ///
     /// let f = 3.01;
@@ -91,6 +103,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     ///
     /// assert_eq!(f.ceil(), 4.0);
     /// assert_eq!(g.ceil(), 4.0);
+    /// # }
     /// ```
     fn ceil(self) -> Self;
 
@@ -98,6 +111,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// `0.0`.
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     ///
     /// let f = 3.3;
@@ -105,12 +119,14 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     ///
     /// assert_eq!(f.round(), 3.0);
     /// assert_eq!(g.round(), -3.0);
+    /// # }
     /// ```
     fn round(self) -> Self;
 
     /// Return the integer part of a number.
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     ///
     /// let f = 3.3;
@@ -118,12 +134,14 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     ///
     /// assert_eq!(f.trunc(), 3.0);
     /// assert_eq!(g.trunc(), -3.0);
+    /// # }
     /// ```
     fn trunc(self) -> Self;
 
     /// Returns the fractional part of a number.
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     ///
     /// let x = 3.5;
@@ -133,6 +151,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     ///
     /// assert!(abs_difference_x < 1e-10);
     /// assert!(abs_difference_y < 1e-10);
+    /// # }
     /// ```
     fn fract(self) -> Self;
 
@@ -140,6 +159,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// number is `Float::nan()`.
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
@@ -153,6 +173,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// assert!(abs_difference_y < 1e-10);
     ///
     /// assert!(::num_traits::Float::is_nan(f64::NAN.abs()));
+    /// # }
     /// ```
     fn abs(self) -> Self;
 
@@ -163,6 +184,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// - `Float::nan()` if the number is `Float::nan()`
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
@@ -172,6 +194,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// assert_eq!(f64::NEG_INFINITY.signum(), -1.0);
     ///
     /// assert!(f64::NAN.signum().is_nan());
+    /// # }
     /// ```
     fn signum(self) -> Self;
 
@@ -179,6 +202,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// `Float::infinity()`, and with newer versions of Rust `f64::NAN`.
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
@@ -190,6 +214,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// assert!(f.is_sign_positive());
     /// assert!(!g.is_sign_positive());
     /// assert!(!neg_nan.is_sign_positive());
+    /// # }
     /// ```
     fn is_sign_positive(self) -> bool;
 
@@ -197,6 +222,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// `Float::neg_infinity()`, and with newer versions of Rust `-f64::NAN`.
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
@@ -208,6 +234,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// assert!(!f.is_sign_negative());
     /// assert!(g.is_sign_negative());
     /// assert!(!nan.is_sign_negative());
+    /// # }
     /// ```
     fn is_sign_negative(self) -> bool;
 
@@ -218,6 +245,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// the target architecture has a dedicated `fma` CPU instruction.
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     ///
     /// let m = 10.0;
@@ -228,18 +256,21 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// let abs_difference = (m.mul_add(x, b) - (m*x + b)).abs();
     ///
     /// assert!(abs_difference < 1e-10);
+    /// # }
     /// ```
     fn mul_add(self, a: Self, b: Self) -> Self;
 
     /// Take the reciprocal (inverse) of a number, `1/x`.
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     ///
     /// let x = 2.0;
     /// let abs_difference = (x.recip() - (1.0/x)).abs();
     ///
     /// assert!(abs_difference < 1e-10);
+    /// # }
     /// ```
     fn recip(self) -> Self;
 
@@ -248,24 +279,28 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// Using this function is generally faster than using `powf`
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     ///
     /// let x = 2.0;
     /// let abs_difference = (x.powi(2) - x*x).abs();
     ///
     /// assert!(abs_difference < 1e-10);
+    /// # }
     /// ```
     fn powi(self, n: i32) -> Self;
 
     /// Raise a number to a real number power.
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     ///
     /// let x = 2.0;
     /// let abs_difference = (x.powf(2.0) - x*x).abs();
     ///
     /// assert!(abs_difference < 1e-10);
+    /// # }
     /// ```
     fn powf(self, n: Self) -> Self;
 
@@ -278,6 +313,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// If the implementing type doesn't support NaN, this method should panic if `self < 0`.
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     ///
     /// let positive = 4.0;
@@ -287,12 +323,14 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     ///
     /// assert!(abs_difference < 1e-10);
     /// assert!(::num_traits::Float::is_nan(negative.sqrt()));
+    /// # }
     /// ```
     fn sqrt(self) -> Self;
 
     /// Returns `e^(self)`, (the exponential function).
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     ///
     /// let one = 1.0;
@@ -303,12 +341,14 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// let abs_difference = (e.ln() - 1.0).abs();
     ///
     /// assert!(abs_difference < 1e-10);
+    /// # }
     /// ```
     fn exp(self) -> Self;
 
     /// Returns `2^(self)`.
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     ///
     /// let f = 2.0;
@@ -317,6 +357,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// let abs_difference = (f.exp2() - 4.0).abs();
     ///
     /// assert!(abs_difference < 1e-10);
+    /// # }
     /// ```
     fn exp2(self) -> Self;
 
@@ -327,6 +368,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// If `self <= 0` and this type does not support a NaN representation, this function should panic.
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     ///
     /// let one = 1.0;
@@ -337,6 +379,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// let abs_difference = (e.ln() - 1.0).abs();
     ///
     /// assert!(abs_difference < 1e-10);
+    /// # }
     /// ```
     fn ln(self) -> Self;
 
@@ -347,6 +390,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// If `self <= 0` and this type does not support a NaN representation, this function should panic.
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     ///
     /// let ten = 10.0;
@@ -360,6 +404,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     ///
     /// assert!(abs_difference_10 < 1e-10);
     /// assert!(abs_difference_2 < 1e-10);
+    /// # }
     /// ```
     fn log(self, base: Self) -> Self;
 
@@ -370,6 +415,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// If `self <= 0` and this type does not support a NaN representation, this function should panic.
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     ///
     /// let two = 2.0;
@@ -378,6 +424,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// let abs_difference = (two.log2() - 1.0).abs();
     ///
     /// assert!(abs_difference < 1e-10);
+    /// # }
     /// ```
     fn log2(self) -> Self;
 
@@ -389,6 +436,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     ///
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     ///
     /// let ten = 10.0;
@@ -397,12 +445,14 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// let abs_difference = (ten.log10() - 1.0).abs();
     ///
     /// assert!(abs_difference < 1e-10);
+    /// # }
     /// ```
     fn log10(self) -> Self;
 
     /// Converts radians to degrees.
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use std::f64::consts;
     ///
     /// let angle = consts::PI;
@@ -410,12 +460,14 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// let abs_difference = (angle.to_degrees() - 180.0).abs();
     ///
     /// assert!(abs_difference < 1e-10);
+    /// # }
     /// ```
     fn to_degrees(self) -> Self;
 
     /// Converts degrees to radians.
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use std::f64::consts;
     ///
     /// let angle = 180.0_f64;
@@ -423,30 +475,35 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// let abs_difference = (angle.to_radians() - consts::PI).abs();
     ///
     /// assert!(abs_difference < 1e-10);
+    /// # }
     /// ```
     fn to_radians(self) -> Self;
 
     /// Returns the maximum of the two numbers.
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     ///
     /// let x = 1.0;
     /// let y = 2.0;
     ///
     /// assert_eq!(x.max(y), y);
+    /// # }
     /// ```
     fn max(self, other: Self) -> Self;
 
     /// Returns the minimum of the two numbers.
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     ///
     /// let x = 1.0;
     /// let y = 2.0;
     ///
     /// assert_eq!(x.min(y), x);
+    /// # }
     /// ```
     fn min(self, other: Self) -> Self;
 
@@ -456,6 +513,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// * Else: `self - other`
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     ///
     /// let x = 3.0;
@@ -466,12 +524,14 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     ///
     /// assert!(abs_difference_x < 1e-10);
     /// assert!(abs_difference_y < 1e-10);
+    /// # }
     /// ```
     fn abs_sub(self, other: Self) -> Self;
 
     /// Take the cubic root of a number.
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     ///
     /// let x = 8.0;
@@ -480,6 +540,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// let abs_difference = (x.cbrt() - 2.0).abs();
     ///
     /// assert!(abs_difference < 1e-10);
+    /// # }
     /// ```
     fn cbrt(self) -> Self;
 
@@ -487,6 +548,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// legs of length `x` and `y`.
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     ///
     /// let x = 2.0;
@@ -496,12 +558,14 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// let abs_difference = (x.hypot(y) - (x.powi(2) + y.powi(2)).sqrt()).abs();
     ///
     /// assert!(abs_difference < 1e-10);
+    /// # }
     /// ```
     fn hypot(self, other: Self) -> Self;
 
     /// Computes the sine of a number (in radians).
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
@@ -510,12 +574,14 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// let abs_difference = (x.sin() - 1.0).abs();
     ///
     /// assert!(abs_difference < 1e-10);
+    /// # }
     /// ```
     fn sin(self) -> Self;
 
     /// Computes the cosine of a number (in radians).
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
@@ -524,12 +590,14 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// let abs_difference = (x.cos() - 1.0).abs();
     ///
     /// assert!(abs_difference < 1e-10);
+    /// # }
     /// ```
     fn cos(self) -> Self;
 
     /// Computes the tangent of a number (in radians).
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
@@ -537,6 +605,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// let abs_difference = (x.tan() - 1.0).abs();
     ///
     /// assert!(abs_difference < 1e-14);
+    /// # }
     /// ```
     fn tan(self) -> Self;
 
@@ -550,6 +619,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// if the number is outside the range [-1, 1].
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
@@ -559,6 +629,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// let abs_difference = (f.sin().asin() - f64::consts::PI / 2.0).abs();
     ///
     /// assert!(abs_difference < 1e-10);
+    /// # }
     /// ```
     fn asin(self) -> Self;
 
@@ -572,6 +643,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// if the number is outside the range [-1, 1].
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
@@ -581,6 +653,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// let abs_difference = (f.cos().acos() - f64::consts::PI / 4.0).abs();
     ///
     /// assert!(abs_difference < 1e-10);
+    /// # }
     /// ```
     fn acos(self) -> Self;
 
@@ -588,6 +661,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// range [-pi/2, pi/2];
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     ///
     /// let f = 1.0;
@@ -596,6 +670,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// let abs_difference = (f.tan().atan() - 1.0).abs();
     ///
     /// assert!(abs_difference < 1e-10);
+    /// # }
     /// ```
     fn atan(self) -> Self;
 
@@ -607,6 +682,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// * `y < 0`: `arctan(y/x) - pi` -> `(-pi, -pi/2)`
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
@@ -625,6 +701,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     ///
     /// assert!(abs_difference_1 < 1e-10);
     /// assert!(abs_difference_2 < 1e-10);
+    /// # }
     /// ```
     fn atan2(self, other: Self) -> Self;
 
@@ -632,6 +709,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// `(sin(x), cos(x))`.
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
@@ -643,6 +721,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     ///
     /// assert!(abs_difference_0 < 1e-10);
     /// assert!(abs_difference_0 < 1e-10);
+    /// # }
     /// ```
     fn sin_cos(self) -> (Self, Self);
 
@@ -650,6 +729,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// number is close to zero.
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     ///
     /// let x = 7.0;
@@ -658,6 +738,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// let abs_difference = (x.ln().exp_m1() - 6.0).abs();
     ///
     /// assert!(abs_difference < 1e-10);
+    /// # }
     /// ```
     fn exp_m1(self) -> Self;
 
@@ -670,6 +751,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// if `self-1 <= 0`.
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
@@ -679,12 +761,14 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// let abs_difference = (x.ln_1p() - 1.0).abs();
     ///
     /// assert!(abs_difference < 1e-10);
+    /// # }
     /// ```
     fn ln_1p(self) -> Self;
 
     /// Hyperbolic sine function.
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
@@ -697,12 +781,14 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// let abs_difference = (f - g).abs();
     ///
     /// assert!(abs_difference < 1e-10);
+    /// # }
     /// ```
     fn sinh(self) -> Self;
 
     /// Hyperbolic cosine function.
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
@@ -715,12 +801,14 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     ///
     /// // Same result
     /// assert!(abs_difference < 1.0e-10);
+    /// # }
     /// ```
     fn cosh(self) -> Self;
 
     /// Hyperbolic tangent function.
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
@@ -733,12 +821,14 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// let abs_difference = (f - g).abs();
     ///
     /// assert!(abs_difference < 1.0e-10);
+    /// # }
     /// ```
     fn tanh(self) -> Self;
 
     /// Inverse hyperbolic sine function.
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     ///
     /// let x = 1.0;
@@ -747,12 +837,14 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// let abs_difference = (f - x).abs();
     ///
     /// assert!(abs_difference < 1.0e-10);
+    /// # }
     /// ```
     fn asinh(self) -> Self;
 
     /// Inverse hyperbolic cosine function.
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     ///
     /// let x = 1.0;
@@ -761,12 +853,14 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// let abs_difference = (f - x).abs();
     ///
     /// assert!(abs_difference < 1.0e-10);
+    /// # }
     /// ```
     fn acosh(self) -> Self;
 
     /// Inverse hyperbolic tangent function.
     ///
     /// ```
+    /// # #[cfg(any(feature = "std", feature = "libm"))] {
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
@@ -776,6 +870,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// let abs_difference = (f - e).abs();
     ///
     /// assert!(abs_difference < 1.0e-10);
+    /// # }
     /// ```
     fn atanh(self) -> Self;
 }
