@@ -1,6 +1,9 @@
 use core::ops::Neg;
 
-use {Float, Num, NumCast};
+use {Num, NumCast};
+
+#[cfg(any(feature = "std", feature = "libm"))]
+use Float;
 
 // NOTE: These doctests have the same issue as those in src/float.rs.
 // They're testing the inherent methods directly, and not those of `Real`.
@@ -777,6 +780,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     fn atanh(self) -> Self;
 }
 
+#[cfg(any(feature = "std", feature = "libm"))]
 impl<T: Float> Real for T {
     forward! {
         Float::min_value() -> Self;

@@ -56,7 +56,6 @@ pub mod identities;
 pub mod int;
 pub mod ops;
 pub mod pow;
-#[cfg(any(feature = "std", feature = "libm"))]
 pub mod real;
 pub mod sign;
 
