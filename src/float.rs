@@ -10,6 +10,7 @@ use {Num, NumCast, ToPrimitive};
 #[cfg(feature = "libm")]
 use libm::{F32Ext, F64Ext};
 
+
 /// Generic trait for floating point numbers that works with `no_std`.
 ///
 /// This trait implements a subset of the `Float` trait.
@@ -1808,9 +1809,9 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     fn integer_decode(self) -> (u64, i16, i8);
 }
 
-#[cfg(any(feature = "std", feature = "libm"))]
-macro_rules! float_impl {
-    ($T:ident $decode:ident $LibmImpl:ident) => {
+#[cfg(feature = "std")]
+macro_rules! float_impl_std {
+    ($T:ident $decode:ident) => {
         impl Float for $T {
             constant! {
                 nan() -> $T::NAN;
@@ -1823,18 +1824,10 @@ macro_rules! float_impl {
                 max_value() -> $T::MAX;
             }
 
-            #[cfg(feature = "std")]
             #[inline]
             #[allow(deprecated)]
             fn abs_sub(self, other: Self) -> Self {
                 <$T>::abs_sub(self, other)
-            }
-
-            #[cfg(all(not(feature = "std"), feature = "libm"))]
-            #[inline]
-            #[allow(deprecated)]
-            fn abs_sub(self, other: Self) -> Self {
-                <$T as $LibmImpl>::fdim(self, other)
             }
 
             #[inline]
@@ -1842,8 +1835,7 @@ macro_rules! float_impl {
                 $decode(self)
             }
 
-            #[cfg(feature = "std")]
-            forward! {
+            forward!{
                 Self::is_nan(self) -> bool;
                 Self::is_infinite(self) -> bool;
                 Self::is_finite(self) -> bool;
@@ -1892,8 +1884,37 @@ macro_rules! float_impl {
                 Self::acosh(self) -> Self;
                 Self::atanh(self) -> Self;
             }
-            #[cfg(all(not(feature = "std"), feature = "libm"))]
-            forward! {
+        }
+    };
+}
+
+#[cfg(feature = "libm")]
+macro_rules! float_impl_libm {
+    ($T:ident $decode:ident $LibmImpl:ident) => {
+        impl Float for $T {
+            constant! {
+                nan() -> $T::NAN;
+                infinity() -> $T::INFINITY;
+                neg_infinity() -> $T::NEG_INFINITY;
+                neg_zero() -> -0.0;
+                min_value() -> $T::MIN;
+                min_positive_value() -> $T::MIN_POSITIVE;
+                epsilon() -> $T::EPSILON;
+                max_value() -> $T::MAX;
+            }
+
+            #[inline]
+            #[allow(deprecated)]
+            fn abs_sub(self, other: Self) -> Self {
+                <$T as $LibmImpl>::fdim(self, other)
+            }
+
+            #[inline]
+            fn integer_decode(self) -> (u64, i16, i8) {
+                $decode(self)
+            }
+
+            forward!{
                 FloatCore::is_nan(self) -> bool;
                 FloatCore::is_infinite(self) -> bool;
                 FloatCore::is_finite(self) -> bool;
@@ -1978,10 +1999,16 @@ fn integer_decode_f64(f: f64) -> (u64, i16, i8) {
     (mantissa, exponent, sign)
 }
 
-#[cfg(any(feature = "std", feature = "libm"))]
-float_impl!(f32 integer_decode_f32 F32Ext);
-#[cfg(any(feature = "std", feature = "libm"))]
-float_impl!(f64 integer_decode_f64 F64Ext);
+#[cfg(feature = "std")]
+float_impl_std!(f32 integer_decode_f32);
+#[cfg(feature = "std")]
+float_impl_std!(f64 integer_decode_f64);
+
+#[cfg(all(not(feature = "std"), feature = "libm"))]
+float_impl_libm!(f32 integer_decode_f32 F32Ext);
+#[cfg(all(not(feature = "std"), feature = "libm"))]
+float_impl_libm!(f64 integer_decode_f64 F64Ext);
+
 
 macro_rules! float_const_impl {
     ($(#[$doc:meta] $constant:ident,)+) => (
