@@ -54,6 +54,27 @@ impl MulAdd<f64, f64> for f64 {
     }
 }
 
+#[cfg(all(not(feature = "std"), feature = "libm"))]
+impl MulAdd<f32, f32> for f32 {
+    type Output = Self;
+
+    #[inline]
+    fn mul_add(self, a: Self, b: Self) -> Self::Output {
+        <f32 as ::libm::F32Ext>::mul_add(self, a, b)
+    }
+}
+
+#[cfg(all(not(feature = "std"), feature = "libm"))]
+impl MulAdd<f64, f64> for f64 {
+    type Output = Self;
+
+    #[inline]
+    fn mul_add(self, a: Self, b: Self) -> Self::Output {
+        <f64 as ::libm::F64Ext>::mul_add(self, a, b)
+    }
+}
+
+
 macro_rules! mul_add_impl {
     ($trait_name:ident for $($t:ty)*) => {$(
         impl $trait_name for $t {
@@ -86,6 +107,23 @@ impl MulAddAssign<f64, f64> for f64 {
         *self = f64::mul_add(*self, a, b)
     }
 }
+
+#[cfg(all(not(feature = "std"), feature = "libm"))]
+impl MulAddAssign<f32, f32> for f32 {
+    #[inline]
+    fn mul_add_assign(&mut self, a: Self, b: Self) {
+        *self = <f32 as ::libm::F32Ext>::mul_add(*self, a, b)
+    }
+}
+
+#[cfg(all(not(feature = "std"), feature = "libm"))]
+impl MulAddAssign<f64, f64> for f64 {
+    #[inline]
+    fn mul_add_assign(&mut self, a: Self, b: Self) {
+        *self = <f64 as ::libm::F64Ext>::mul_add(*self, a, b)
+    }
+}
+
 
 macro_rules! mul_add_assign_impl {
     ($trait_name:ident for $($t:ty)*) => {$(
