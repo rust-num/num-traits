@@ -19,8 +19,8 @@ use Float;
 pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// Returns the smallest finite value that this type can represent.
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
@@ -32,8 +32,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
 
     /// Returns the smallest positive, normalized value that this type can represent.
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
@@ -45,8 +45,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
 
     /// Returns epsilon, a small positive value.
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
@@ -63,8 +63,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
 
     /// Returns the largest finite value that this type can represent.
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
@@ -75,8 +75,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
 
     /// Returns the largest integer less than or equal to a number.
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     ///
     /// let f = 3.99;
@@ -89,8 +89,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
 
     /// Returns the smallest integer greater than or equal to a number.
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     ///
     /// let f = 3.01;
@@ -104,8 +104,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// Returns the nearest integer to a number. Round half-way cases away from
     /// `0.0`.
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     ///
     /// let f = 3.3;
@@ -118,8 +118,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
 
     /// Return the integer part of a number.
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     ///
     /// let f = 3.3;
@@ -132,8 +132,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
 
     /// Returns the fractional part of a number.
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     ///
     /// let x = 3.5;
@@ -149,8 +149,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// Computes the absolute value of `self`. Returns `Float::nan()` if the
     /// number is `Float::nan()`.
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
@@ -173,8 +173,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// - `-1.0` if the number is negative, `-0.0` or `Float::neg_infinity()`
     /// - `Float::nan()` if the number is `Float::nan()`
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
@@ -190,8 +190,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// Returns `true` if `self` is positive, including `+0.0`,
     /// `Float::infinity()`, and with newer versions of Rust `f64::NAN`.
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
@@ -209,8 +209,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// Returns `true` if `self` is negative, including `-0.0`,
     /// `Float::neg_infinity()`, and with newer versions of Rust `-f64::NAN`.
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
@@ -231,8 +231,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// Using `mul_add` can be more performant than an unfused multiply-add if
     /// the target architecture has a dedicated `fma` CPU instruction.
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     ///
     /// let m = 10.0;
@@ -248,8 +248,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
 
     /// Take the reciprocal (inverse) of a number, `1/x`.
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     ///
     /// let x = 2.0;
@@ -263,8 +263,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     ///
     /// Using this function is generally faster than using `powf`
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     ///
     /// let x = 2.0;
@@ -276,8 +276,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
 
     /// Raise a number to a real number power.
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     ///
     /// let x = 2.0;
@@ -295,8 +295,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     ///
     /// If the implementing type doesn't support NaN, this method should panic if `self < 0`.
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     ///
     /// let positive = 4.0;
@@ -311,8 +311,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
 
     /// Returns `e^(self)`, (the exponential function).
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     ///
     /// let one = 1.0;
@@ -328,8 +328,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
 
     /// Returns `2^(self)`.
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     ///
     /// let f = 2.0;
@@ -347,8 +347,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     ///
     /// If `self <= 0` and this type does not support a NaN representation, this function should panic.
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     ///
     /// let one = 1.0;
@@ -368,8 +368,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     ///
     /// If `self <= 0` and this type does not support a NaN representation, this function should panic.
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     ///
     /// let ten = 10.0;
@@ -392,8 +392,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     ///
     /// If `self <= 0` and this type does not support a NaN representation, this function should panic.
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     ///
     /// let two = 2.0;
@@ -412,8 +412,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// If `self <= 0` and this type does not support a NaN representation, this function should panic.
     ///
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     ///
     /// let ten = 10.0;
@@ -427,8 +427,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
 
     /// Converts radians to degrees.
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use std::f64::consts;
     ///
     /// let angle = consts::PI;
@@ -441,8 +441,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
 
     /// Converts degrees to radians.
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use std::f64::consts;
     ///
     /// let angle = 180.0_f64;
@@ -455,8 +455,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
 
     /// Returns the maximum of the two numbers.
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     ///
     /// let x = 1.0;
@@ -468,8 +468,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
 
     /// Returns the minimum of the two numbers.
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     ///
     /// let x = 1.0;
@@ -484,8 +484,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// * If `self <= other`: `0:0`
     /// * Else: `self - other`
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     ///
     /// let x = 3.0;
@@ -501,8 +501,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
 
     /// Take the cubic root of a number.
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     ///
     /// let x = 8.0;
@@ -517,8 +517,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// Calculate the length of the hypotenuse of a right-angle triangle given
     /// legs of length `x` and `y`.
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     ///
     /// let x = 2.0;
@@ -533,8 +533,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
 
     /// Computes the sine of a number (in radians).
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
@@ -548,8 +548,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
 
     /// Computes the cosine of a number (in radians).
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
@@ -563,8 +563,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
 
     /// Computes the tangent of a number (in radians).
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
@@ -584,8 +584,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// If this type does not support a NaN representation, this function should panic
     /// if the number is outside the range [-1, 1].
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
@@ -607,8 +607,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// If this type does not support a NaN representation, this function should panic
     /// if the number is outside the range [-1, 1].
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
@@ -624,8 +624,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// Computes the arctangent of a number. Return value is in radians in the
     /// range [-pi/2, pi/2];
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     ///
     /// let f = 1.0;
@@ -644,8 +644,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// * `y >= 0`: `arctan(y/x) + pi` -> `(pi/2, pi]`
     /// * `y < 0`: `arctan(y/x) - pi` -> `(-pi, -pi/2)`
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
@@ -670,8 +670,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// Simultaneously computes the sine and cosine of the number, `x`. Returns
     /// `(sin(x), cos(x))`.
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
@@ -689,8 +689,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// Returns `e^(self) - 1` in a way that is accurate even if the
     /// number is close to zero.
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     ///
     /// let x = 7.0;
@@ -710,8 +710,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// If this type does not support a NaN representation, this function should panic
     /// if `self-1 <= 0`.
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
@@ -726,8 +726,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
 
     /// Hyperbolic sine function.
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
@@ -745,8 +745,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
 
     /// Hyperbolic cosine function.
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
@@ -764,8 +764,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
 
     /// Hyperbolic tangent function.
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
@@ -783,8 +783,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
 
     /// Inverse hyperbolic sine function.
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     ///
     /// let x = 1.0;
@@ -798,8 +798,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
 
     /// Inverse hyperbolic cosine function.
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     ///
     /// let x = 1.0;
@@ -813,8 +813,8 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
 
     /// Inverse hyperbolic tangent function.
     ///
-    #[cfg_attr(any(feature = "std", feature = "libm"), doc="```")]
-    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc="```ignore")]
+    #[cfg_attr(any(feature = "std", feature = "libm"), doc=" ```")]
+    #[cfg_attr(not(any(feature = "std", feature = "libm")), doc=" ```ignore")]
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
