@@ -31,10 +31,12 @@ the default `std` feature. Use this in `Cargo.toml`:
 [dependencies.num-traits]
 version = "0.2"
 default-features = false
+# features = ["libm"]    # <--- Uncomment if you wish to use `Float` and `Real`
 ```
 
-The `Float` and `Real` traits are only available when `std` is enabled. The
-`FloatCore` trait is always available.  `MulAdd` and `MulAddAssign` for `f32`
+The `Float` and `Real` traits are only available when either `std` or `libm` is enabled.
+
+The `FloatCore` trait is always available.  `MulAdd` and `MulAddAssign` for `f32`
 and `f64` also require `std`, as do implementations of signed and floating-
 point exponents in `Pow`.
 
