@@ -20,13 +20,16 @@
 #[cfg(feature = "std")]
 extern crate std;
 
+#[cfg(feature = "libm")]
+extern crate libm;
+
 use core::fmt;
 use core::num::Wrapping;
 use core::ops::{Add, Div, Mul, Rem, Sub};
 use core::ops::{AddAssign, DivAssign, MulAssign, RemAssign, SubAssign};
 
 pub use bounds::Bounded;
-#[cfg(feature = "std")]
+#[cfg(any(feature = "std", feature = "libm"))]
 pub use float::Float;
 pub use float::FloatConst;
 // pub use real::{FloatCore, Real}; // NOTE: Don't do this, it breaks `use num_traits::*;`.
@@ -53,7 +56,7 @@ pub mod identities;
 pub mod int;
 pub mod ops;
 pub mod pow;
-#[cfg(feature = "std")]
+#[cfg(any(feature = "std", feature = "libm"))]
 pub mod real;
 pub mod sign;
 

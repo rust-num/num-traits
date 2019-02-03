@@ -7,6 +7,9 @@ use core::f64;
 
 use {Num, NumCast, ToPrimitive};
 
+#[cfg(feature = "libm")]
+use libm::{F32Ext, F64Ext};
+
 /// Generic trait for floating point numbers that works with `no_std`.
 ///
 /// This trait implements a subset of the `Float` trait.
@@ -897,8 +900,8 @@ impl FloatCore for f64 {
 
 /// Generic trait for floating point numbers
 ///
-/// This trait is only available with the `std` feature.
-#[cfg(feature = "std")]
+/// This trait is only available with the `std` feature, or with the `libm` feature otherwise.
+#[cfg(any(feature = "std", feature = "libm"))]
 pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// Returns the `NaN` value.
     ///
@@ -1805,9 +1808,9 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     fn integer_decode(self) -> (u64, i16, i8);
 }
 
-#[cfg(feature = "std")]
+#[cfg(any(feature = "std", feature = "libm"))]
 macro_rules! float_impl {
-    ($T:ident $decode:ident) => {
+    ($T:ident $decode:ident $LibmImpl:ident) => {
         impl Float for $T {
             constant! {
                 nan() -> $T::NAN;
@@ -1820,10 +1823,18 @@ macro_rules! float_impl {
                 max_value() -> $T::MAX;
             }
 
+            #[cfg(feature = "std")]
             #[inline]
             #[allow(deprecated)]
             fn abs_sub(self, other: Self) -> Self {
                 <$T>::abs_sub(self, other)
+            }
+
+            #[cfg(all(not(feature = "std"), feature = "libm"))]
+            #[inline]
+            #[allow(deprecated)]
+            fn abs_sub(self, other: Self) -> Self {
+                <$T as $LibmImpl>::fdim(self, other)
             }
 
             #[inline]
@@ -1831,6 +1842,7 @@ macro_rules! float_impl {
                 $decode(self)
             }
 
+            #[cfg(feature = "std")]
             forward! {
                 Self::is_nan(self) -> bool;
                 Self::is_infinite(self) -> bool;
@@ -1880,6 +1892,56 @@ macro_rules! float_impl {
                 Self::acosh(self) -> Self;
                 Self::atanh(self) -> Self;
             }
+            #[cfg(all(not(feature = "std"), feature = "libm"))]
+            forward! {
+                FloatCore::is_nan(self) -> bool;
+                FloatCore::is_infinite(self) -> bool;
+                FloatCore::is_finite(self) -> bool;
+                FloatCore::is_normal(self) -> bool;
+                FloatCore::classify(self) -> FpCategory;
+                $LibmImpl::floor(self) -> Self;
+                $LibmImpl::ceil(self) -> Self;
+                $LibmImpl::round(self) -> Self;
+                $LibmImpl::trunc(self) -> Self;
+                $LibmImpl::fract(self) -> Self;
+                $LibmImpl::abs(self) -> Self;
+                FloatCore::signum(self) -> Self;
+                FloatCore::is_sign_positive(self) -> bool;
+                FloatCore::is_sign_negative(self) -> bool;
+                $LibmImpl::mul_add(self, a: Self, b: Self) -> Self;
+                FloatCore::recip(self) -> Self;
+                FloatCore::powi(self, n: i32) -> Self;
+                $LibmImpl::powf(self, n: Self) -> Self;
+                $LibmImpl::sqrt(self) -> Self;
+                $LibmImpl::exp(self) -> Self;
+                $LibmImpl::exp2(self) -> Self;
+                $LibmImpl::ln(self) -> Self;
+                $LibmImpl::log(self, base: Self) -> Self;
+                $LibmImpl::log2(self) -> Self;
+                $LibmImpl::log10(self) -> Self;
+                FloatCore::to_degrees(self) -> Self;
+                FloatCore::to_radians(self) -> Self;
+                FloatCore::max(self, other: Self) -> Self;
+                FloatCore::min(self, other: Self) -> Self;
+                $LibmImpl::cbrt(self) -> Self;
+                $LibmImpl::hypot(self, other: Self) -> Self;
+                $LibmImpl::sin(self) -> Self;
+                $LibmImpl::cos(self) -> Self;
+                $LibmImpl::tan(self) -> Self;
+                $LibmImpl::asin(self) -> Self;
+                $LibmImpl::acos(self) -> Self;
+                $LibmImpl::atan(self) -> Self;
+                $LibmImpl::atan2(self, other: Self) -> Self;
+                $LibmImpl::sin_cos(self) -> (Self, Self);
+                $LibmImpl::exp_m1(self) -> Self;
+                $LibmImpl::ln_1p(self) -> Self;
+                $LibmImpl::sinh(self) -> Self;
+                $LibmImpl::cosh(self) -> Self;
+                $LibmImpl::tanh(self) -> Self;
+                $LibmImpl::asinh(self) -> Self;
+                $LibmImpl::acosh(self) -> Self;
+                $LibmImpl::atanh(self) -> Self;
+            }
         }
     };
 }
@@ -1916,10 +1978,10 @@ fn integer_decode_f64(f: f64) -> (u64, i16, i8) {
     (mantissa, exponent, sign)
 }
 
-#[cfg(feature = "std")]
-float_impl!(f32 integer_decode_f32);
-#[cfg(feature = "std")]
-float_impl!(f64 integer_decode_f64);
+#[cfg(any(feature = "std", feature = "libm"))]
+float_impl!(f32 integer_decode_f32 F32Ext);
+#[cfg(any(feature = "std", feature = "libm"))]
+float_impl!(f64 integer_decode_f64 F64Ext);
 
 macro_rules! float_const_impl {
     ($(#[$doc:meta] $constant:ident,)+) => (
@@ -2002,7 +2064,7 @@ mod tests {
         }
     }
 
-    #[cfg(feature = "std")]
+    #[cfg(any(feature = "std", feature = "libm"))]
     #[test]
     fn convert_deg_rad_std() {
         for &(deg, rad) in &DEG_RAD_PAIRS {
