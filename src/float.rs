@@ -1778,6 +1778,32 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// assert!(abs_difference < 1.0e-10);
     /// ```
     fn atanh(self) -> Self;
+    
+    /// Returns the real part of the float.
+    ///
+    /// ```
+    /// use num_traits::Float;
+    ///
+    /// let n = 0.5f64;
+    ///
+    /// assert!(n.real() > 0.4f64);
+    /// ```
+    fn real(self) -> Self {
+        self
+    }
+    
+    /// Returns the imaginary part of the float which equals to zero.
+    ///
+    /// ```
+    /// use num_traits::Float;
+    ///
+    /// let n = 2.7f64;
+    ///
+    /// assert!(n.imag() == 0.0f64);
+    /// ```
+    fn imag(self) -> Self {
+        Self::zero()
+    }
 
     /// Returns the mantissa, base 2 exponent, and sign as integers, respectively.
     /// The original number can be recovered by `sign * mantissa * 2 ^ exponent`.
@@ -1875,6 +1901,8 @@ macro_rules! float_impl {
                 Self::asinh(self) -> Self;
                 Self::acosh(self) -> Self;
                 Self::atanh(self) -> Self;
+                Self::real(self) -> Self;
+                Self::imag(self) -> Self;
             }
         }
     };
