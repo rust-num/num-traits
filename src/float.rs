@@ -1802,7 +1802,7 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// assert!(n.imag() == 0.0f64);
     /// ```
     fn imag(self) -> Self {
-        self * Self::zero()
+        Self::zero()
     }
 
     /// Returns the mantissa, base 2 exponent, and sign as integers, respectively.
@@ -1901,8 +1901,6 @@ macro_rules! float_impl {
                 Self::asinh(self) -> Self;
                 Self::acosh(self) -> Self;
                 Self::atanh(self) -> Self;
-                Self::real(self) -> Self;
-                Self::imag(self) -> Self;
             }
         }
     };
