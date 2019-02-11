@@ -1799,6 +1799,52 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// assert!(abs_difference < 1e-10);
     /// ```
     fn integer_decode(self) -> (u64, i16, i8);
+    
+    /// Returns the real part of the float.
+    ///
+    /// ```
+    /// use num_traits::Float;
+    ///
+    /// let n = 0.5f64;
+    ///
+    /// assert!(n.real() > 0.4f64);
+    /// ```
+    #[inline]
+    fn real(self) -> Self {
+        self
+    }
+    
+    /// Returns the imaginary part of the float which equals to zero.
+    ///
+    /// ```
+    /// use num_traits::Float;
+    ///
+    /// let n = 2.7f64;
+    ///
+    /// assert!(n.imag() == 0.0f64);
+    /// ```
+    #[inline]
+    fn imag(self) -> Self {
+        Self::zero()
+    }
+    
+    /// Computes the argument of the float
+    ///
+    /// ```
+    /// use num_traits::Float;
+    ///
+    /// let r = 0.8f64;
+    ///
+    /// assert_eq!(r.arg(), 0.0f64);
+    /// ```
+    #[inline]
+    fn arg(self) -> Self {
+        if self >= Self::zero() {
+            Self::zero()
+        } else {
+            Self::from(f64::consts::PI)
+        }
+    }
 }
 
 #[cfg(feature = "std")]
