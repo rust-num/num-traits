@@ -1842,7 +1842,7 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
         if self >= Self::zero() {
             Self::zero()
         } else {
-            Self::from(f64::consts::PI)
+            Self::from(f64::consts::PI).unwrap()
         }
     }
 }
