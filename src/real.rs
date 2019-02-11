@@ -775,6 +775,39 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// assert!(abs_difference < 1.0e-10);
     /// ```
     fn atanh(self) -> Self;
+    
+    /// Returns the real part of the float.
+    ///
+    /// ```
+    /// use num_traits::Float;
+    ///
+    /// let n = 0.5f64;
+    ///
+    /// assert!(n.real() > 0.4f64);
+    /// ```
+    fn real(self) -> Self;
+
+    /// Returns the imaginary part of the float which equals to zero.
+    ///
+    /// ```
+    /// use num_traits::Float;
+    ///
+    /// let n = 2.7f64;
+    ///
+    /// assert!(n.imag() == 0.0f64);
+    /// ```
+    fn imag(self) -> Self;
+
+    /// Computes the argument of the float.Float
+    /// 
+    /// ```
+    /// use num_traits::Float;
+    /// 
+    /// let n = 0.8f32;
+    /// 
+    /// assert_eq!(n.arg(), 0.0f32);
+    /// ```
+    fn arg(self) -> Self;
 }
 
 impl<T: Float> Real for T {
@@ -828,5 +861,8 @@ impl<T: Float> Real for T {
         Float::asinh(self) -> Self;
         Float::acosh(self) -> Self;
         Float::atanh(self) -> Self;
+        Float::real(self) -> Self;
+        Float::imag(self) -> Self;
+        Float::arg(self) -> Self;
     }
 }
