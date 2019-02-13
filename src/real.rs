@@ -786,7 +786,11 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     ///
     /// assert!(n.real() > 0.4f64);
     /// ```
+<<<<<<< HEAD
     fn real(self) -> Self::Typo;
+=======
+    fn real(self) -> Self;
+>>>>>>> e2ea775447e536007f4f4cac3d90d02f294d16c0
 
     /// Returns the imaginary part of the float which equals to zero.
     ///
@@ -797,7 +801,11 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     ///
     /// assert!(n.imag() == 0.0f64);
     /// ```
+<<<<<<< HEAD
     fn imag(self) -> Self::Typo;
+=======
+    fn imag(self) -> Self;
+>>>>>>> e2ea775447e536007f4f4cac3d90d02f294d16c0
 
     /// Computes the argument of the float.Float
     /// 
@@ -808,7 +816,11 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// 
     /// assert_eq!(n.arg(), 0.0f32);
     /// ```
+<<<<<<< HEAD
     fn arg(self) -> Self::Typo;
+=======
+    fn arg(self) -> Self;
+>>>>>>> e2ea775447e536007f4f4cac3d90d02f294d16c0
 }
 
 impl<T: Float + PartialOrd> Real for T {
@@ -881,5 +893,8 @@ impl<T: Float + PartialOrd> Real for T {
         Float::asinh(self) -> Self;
         Float::acosh(self) -> Self;
         Float::atanh(self) -> Self;
+        Float::real(self) -> Self;
+        Float::imag(self) -> Self;
+        Float::arg(self) -> Self;
     }
 }
