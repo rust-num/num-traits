@@ -2083,6 +2083,6 @@ mod tests {
     fn realret() {
         use float::Float;
 
-        assert_eq!(Float::imag(0.5f64), 0.0f64);
+        assert_eq!(Float::arg(0.5f64), 0.0f64);
     }
 }
