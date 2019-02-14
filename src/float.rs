@@ -895,8 +895,7 @@ impl FloatCore for f64 {
 ///
 /// This trait is only available with the `std` feature.
 #[cfg(feature = "std")]
-pub trait Float where Self: Num + Copy + NumCast + Neg<Output = Self> {
-    type Typo;
+pub trait Float where Self: Num + Copy + NumCast + Neg<Output = Self> + PartialOrd {
     /// Returns the `NaN` value.
     ///
     /// ```
@@ -1780,42 +1779,6 @@ pub trait Float where Self: Num + Copy + NumCast + Neg<Output = Self> {
     /// ```
     fn atanh(self) -> Self;
 
-    /// Returns the real part of the float.
-    ///
-    /// ```
-    /// use num_traits::Float;
-    ///
-    /// let n = 0.5f64;
-    ///
-    /// assert!(n.real() > 0.4f64);
-    /// ```
-    #[inline]
-    fn real(self) -> Self::Typo;
-    
-    /// Returns the imaginary part of the float which equals to zero.
-    ///
-    /// ```
-    /// use num_traits::Float;
-    ///
-    /// let n = 2.7f64;
-    ///
-    /// assert!(n.imag() == 0.0f64);
-    /// ```
-    #[inline]
-    fn imag(self) -> Self::Typo;
-
-    /// Computes the argument of the float.Float
-    /// 
-    /// ```
-    /// use num_traits::Float;
-    /// 
-    /// let n = 0.8f32;
-    /// 
-    /// assert_eq!(n.arg(), 0.0f32);
-    /// ```
-    #[inline]
-    fn arg(self) -> Self::Typo;
-
     /// Returns the mantissa, base 2 exponent, and sign as integers, respectively.
     /// The original number can be recovered by `sign * mantissa * 2 ^ exponent`.
     ///
@@ -1842,7 +1805,6 @@ pub trait Float where Self: Num + Copy + NumCast + Neg<Output = Self> {
 macro_rules! float_impl {
     ($T:ident $decode:ident) => {
         impl Float for $T {
-            type Typo = $T;
             constant! {
                 nan() -> $T::NAN;
                 infinity() -> $T::INFINITY;
@@ -1863,25 +1825,6 @@ macro_rules! float_impl {
             #[inline]
             fn integer_decode(self) -> (u64, i16, i8) {
                 $decode(self)
-            }
-
-            #[inline]
-            fn real(self) -> Self::Typo {
-                self
-            }
-
-            #[inline]
-            fn imag(self) -> Self::Typo {
-                0.0
-            }
-
-            #[inline]
-            fn arg(self) -> Self::Typo {
-                if self >= 0.0 {
-                    0.0
-                } else {
-                    1.0.asin() * 2.0
-                }
             }
 
             forward! {
@@ -1937,6 +1880,230 @@ macro_rules! float_impl {
     };
 }
 
+#[cfg(feature = "std")]
+pub trait CommonFloat where Self: Num + Copy + NumCast + Neg<Output = Self> {
+    type Typo;
+
+    /// Returns `true` if this value is `NaN` and false otherwise.
+    fn is_nan(self) -> bool;
+
+    /// Returns `true` if this value is positive infinity or negative infinity and
+    /// false otherwise.
+    fn is_infinite(self) -> bool;
+
+    /// Returns `true` if this number is neither infinite nor `NaN`.
+    fn is_finite(self) -> bool;
+    
+    /// Returns `true` if the number is neither zero, infinite,
+    /// [subnormal][subnormal], or `NaN`.
+    /// [subnormal]: http://en.wikipedia.org/wiki/Denormal_number
+    fn is_normal(self) -> bool;
+
+    /// Fused multiply-add. Computes `(self * a) + b` with only one rounding
+    /// error, yielding a more accurate result than an unfused multiply-add.
+    fn mul_add(self, a: Self, b: Self) -> Self;
+    /// Take the reciprocal (inverse) of a number, `1/x`.
+    fn recip(self) -> Self;
+
+    /// Raise a number to a floating point power.
+    fn powf(self, n: Self) -> Self;
+
+    /// Takes self to the power of a.
+    /// 
+    /// Returns NaN if self is negative.
+    /// 
+    /// ```
+    /// use num_traits::CommonFloat;
+    /// 
+    /// let a = 4.0;
+    /// let b = 0.5;
+    /// 
+    /// let difference = self.pown(a) - 2.0;
+    /// 
+    /// assert(difference < 1e-10);
+    /// ```
+    fn pown(self, n: Self) -> Self;
+
+    /// Take the square root of a number.
+    fn sqrt(self) -> Self;
+
+    /// Returns `e^(self)`, (the exponential function).
+    fn exp(self) -> Self;
+
+    /// Returns `2^(self)`.
+    fn exp2(self) -> Self;
+
+    /// Returns the natural logarithm of the number.
+    fn ln(self) -> Self;
+
+    /// Returns the logarithm of the number with respect to an arbitrary base.
+    fn log(self, base: Self) -> Self;
+
+    /// Returns the base 2 logarithm of the number.
+    fn log2(self) -> Self;
+
+    /// Returns the base 10 logarithm of the number.
+    fn log10(self) -> Self;
+
+    /// Take the cubic root of a number.
+    fn cbrt(self) -> Self;
+
+    /// Computes the sine of a number (in radians).
+    fn sin(self) -> Self;
+
+    /// Computes the cosine of a number (in radians).
+    fn cos(self) -> Self;
+
+    /// Computes the tangent of a number (in radians).
+    fn tan(self) -> Self;
+
+    /// Computes the arcsine of a number. Return value is in radians in
+    /// the range [-pi/2, pi/2] or NaN if the number is outside the range
+    /// [-1, 1].
+    fn asin(self) -> Self;
+
+    /// Computes the arccosine of a number. Return value is in radians in
+    /// the range [0, pi] or NaN if the number is outside the range
+    /// [-1, 1].
+    fn acos(self) -> Self;
+
+    /// Computes the arctangent of a number. Return value is in radians in the
+    /// range [-pi/2, pi/2];
+    fn atan(self) -> Self;
+
+    /// Hyperbolic sine function.
+    fn sinh(self) -> Self;
+
+    /// Hyperbolic cosine function.
+    fn cosh(self) -> Self;
+
+    /// Hyperbolic tangent function.
+    fn tanh(self) -> Self;
+
+    /// Inverse hyperbolic sine function.
+    fn asinh(self) -> Self;
+
+    /// Inverse hyperbolic cosine function.
+    fn acosh(self) -> Self;
+
+    /// Inverse hyperbolic tangent function.
+    fn atanh(self) -> Self;
+
+    /// Returns the real part of the float.
+    ///
+    /// ```
+    /// use num_traits::CommonFloat;
+    ///
+    /// let n = 0.5f64;
+    ///
+    /// assert!(n.real() > 0.4f64);
+    /// ```
+    #[inline]
+    fn real(self) -> Self::Typo;
+    
+    /// Returns the imaginary part of the float which equals to zero.
+    ///
+    /// ```
+    /// use num_traits::CommonFloat;
+    ///
+    /// let n = 2.7f64;
+    ///
+    /// assert!(n.imag() == 0.0f64);
+    /// ```
+    #[inline]
+    fn imag(self) -> Self::Typo;
+
+    /// Returns the absolute value of the float.
+    /// 
+    /// ```
+    /// use num_traits::CommonFloat;
+    /// 
+    /// let z = -0.915f32;
+    /// 
+    /// assert!(z.abs() > 0.9f32);
+    /// ```
+    #[inline]
+    fn abs(self) -> Self::Typo;
+
+    /// Computes the argument of the float.
+    /// 
+    /// ```
+    /// use num_traits::CommonFloat;
+    /// 
+    /// let n = 0.8f32;
+    /// 
+    /// assert_eq!(n.arg(), 0.0f32);
+    /// ```
+    #[inline]
+    fn arg(self) -> Self::Typo;
+}
+
+#[cfg(feature = "std")]
+macro_rules! cfloat_impl {
+    ($T:ident) => {
+        impl CommonFloat for $T {
+            type Typo = $T;
+            #[inline]
+            fn real(self) -> Self::Typo {
+                self
+            }
+
+            #[inline]
+            fn imag(self) -> Self::Typo {
+                0.0
+            }
+
+            #[inline]
+            fn abs(self) -> Self::Typo {
+                Float::abs(self)
+            }
+
+            #[inline]
+            fn arg(self) -> Self::Typo {
+                if self >= 0.0 {
+                    0.0
+                } else {
+                    Float::asin(1.0) * 2.0
+                }
+            }
+
+            fn pown(self, other: Self) -> Self {
+                self.powf(other)
+            }
+
+            forward! {
+                Float::is_normal(self) -> bool;
+                Float::is_infinite(self) -> bool;
+                Float::is_finite(self) -> bool;
+                Float::is_nan(self) -> bool;
+                Float::mul_add(self, a: Self, b: Self) -> Self;
+                Float::recip(self) -> Self;
+                Float::powf(self, n: Self) -> Self;
+                Float::sqrt(self) -> Self;
+                Float::exp(self) -> Self;
+                Float::exp2(self) -> Self;
+                Float::ln(self) -> Self;
+                Float::log(self, base: Self) -> Self;
+                Float::log2(self) -> Self;
+                Float::log10(self) -> Self;
+                Float::cbrt(self) -> Self;
+                Float::sin(self) -> Self;
+                Float::cos(self) -> Self;
+                Float::tan(self) -> Self;
+                Float::asin(self) -> Self;
+                Float::acos(self) -> Self;
+                Float::atan(self) -> Self;
+                Float::sinh(self) -> Self;
+                Float::cosh(self) -> Self;
+                Float::tanh(self) -> Self;
+                Float::asinh(self) -> Self;
+                Float::acosh(self) -> Self;
+                Float::atanh(self) -> Self;
+            }
+        }
+    };
+}
+
 fn integer_decode_f32(f: f32) -> (u64, i16, i8) {
     let bits: u32 = unsafe { mem::transmute(f) };
     let sign: i8 = if bits >> 31 == 0 { 1 } else { -1 };
@@ -1969,6 +2136,11 @@ fn integer_decode_f64(f: f64) -> (u64, i16, i8) {
 float_impl!(f32 integer_decode_f32);
 #[cfg(feature = "std")]
 float_impl!(f64 integer_decode_f64);
+
+#[cfg(feature = "std")]
+cfloat_impl!(f32);
+#[cfg(feature = "std")]
+cfloat_impl!(f64);
 
 macro_rules! float_const_impl {
     ($(#[$doc:meta] $constant:ident,)+) => (
@@ -2081,8 +2253,8 @@ mod tests {
 
     #[test]
     fn realret() {
-        use float::Float;
+        use float::CommonFloat;
 
-        assert_eq!(Float::arg(0.5f64), 0.0f64);
+        assert_eq!(CommonFloat::arg(0.5f64), 0.0f64);
     }
 }
