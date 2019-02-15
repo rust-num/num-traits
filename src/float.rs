@@ -1905,9 +1905,6 @@ pub trait CommonFloat where Self: Num + Copy + NumCast + Neg<Output = Self> {
     /// Take the reciprocal (inverse) of a number, `1/x`.
     fn recip(self) -> Self;
 
-    /// Raise a number to a floating point power.
-    fn powf(self, n: Self) -> Self;
-
     /// Takes self to the power of a.
     /// 
     /// Returns NaN if self is negative.
@@ -2078,7 +2075,6 @@ macro_rules! cfloat_impl {
                 Float::is_nan(self) -> bool;
                 Float::mul_add(self, a: Self, b: Self) -> Self;
                 Float::recip(self) -> Self;
-                Float::powf(self, n: Self) -> Self;
                 Float::sqrt(self) -> Self;
                 Float::exp(self) -> Self;
                 Float::exp2(self) -> Self;
