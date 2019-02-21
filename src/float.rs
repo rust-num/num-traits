@@ -2203,11 +2203,4 @@ mod tests {
             57.2957795130823208767981548141051703
         );
     }
-
-    #[test]
-    fn realret() {
-        use float::CommonFloat;
-
-        assert_eq!(CommonFloat::arg(0.5f64), 0.0f64);
-    }
 }
