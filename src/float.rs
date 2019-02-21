@@ -1912,12 +1912,12 @@ pub trait CommonFloat where Self: Num + Copy + NumCast + Neg<Output = Self> {
     /// ```
     /// use num_traits::CommonFloat;
     /// 
-    /// let a = 4.0;
-    /// let b = 0.5;
+    /// let a = 2.0f64;
+    /// let b = 2.0f64;
     /// 
-    /// let difference = a.pown(b) - 2.0;
+    /// let difference = a.pown(b);
     /// 
-    /// assert(difference < 1e-10);
+    /// assert(difference > 3.9f64);
     /// ```
     fn pown(self, n: Self) -> Self;
 
