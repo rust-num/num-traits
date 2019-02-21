@@ -29,7 +29,6 @@ pub use bounds::Bounded;
 #[cfg(feature = "std")]
 pub use float::Float;
 pub use float::FloatConst;
-pub use float::CommonFloat;
 // pub use real::{FloatCore, Real}; // NOTE: Don't do this, it breaks `use num_traits::*;`.
 pub use cast::{cast, AsPrimitive, FromPrimitive, NumCast, ToPrimitive};
 pub use identities::{one, zero, One, Zero};
