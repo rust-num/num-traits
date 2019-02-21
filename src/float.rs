@@ -1908,17 +1908,6 @@ pub trait CommonFloat where Self: Num + Copy + NumCast + Neg<Output = Self> {
     /// Takes self to the power of a.
     /// 
     /// Returns NaN if self is negative.
-    /// 
-    /// ```
-    /// use num_traits::CommonFloat;
-    /// 
-    /// let a = 2.0f64;
-    /// let b = 2.0f64;
-    /// 
-    /// let difference = a.pown(b);
-    /// 
-    /// assert!(difference > 3.9f64);
-    /// ```
     fn pown(self, n: Self) -> Self;
 
     /// Take the square root of a number.
@@ -1987,50 +1976,18 @@ pub trait CommonFloat where Self: Num + Copy + NumCast + Neg<Output = Self> {
     fn atanh(self) -> Self;
 
     /// Returns the real part of the float.
-    ///
-    /// ```
-    /// use num_traits::CommonFloat;
-    ///
-    /// let n = 0.5f64;
-    ///
-    /// assert!(n.real() > 0.4f64);
-    /// ```
     #[inline]
     fn real(self) -> Self::Typo;
     
     /// Returns the imaginary part of the float which equals to zero.
-    ///
-    /// ```
-    /// use num_traits::CommonFloat;
-    ///
-    /// let n = 2.7f64;
-    ///
-    /// assert!(n.imag() == 0.0f64);
-    /// ```
     #[inline]
     fn imag(self) -> Self::Typo;
 
     /// Returns the absolute value of the float.
-    /// 
-    /// ```
-    /// use num_traits::CommonFloat;
-    /// 
-    /// let z = -0.915f32;
-    /// 
-    /// assert!(z.abs() > 0.9f32);
-    /// ```
     #[inline]
     fn abs(self) -> Self::Typo;
 
     /// Computes the argument of the float.
-    /// 
-    /// ```
-    /// use num_traits::CommonFloat;
-    /// 
-    /// let n = 0.8f32;
-    /// 
-    /// assert_eq!(n.arg(), 0.0f32);
-    /// ```
     #[inline]
     fn arg(self) -> Self::Typo;
 }
