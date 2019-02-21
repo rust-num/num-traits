@@ -1915,7 +1915,7 @@ pub trait CommonFloat where Self: Num + Copy + NumCast + Neg<Output = Self> {
     /// let a = 4.0;
     /// let b = 0.5;
     /// 
-    /// let difference = self.pown(a) - 2.0;
+    /// let difference = a.pown(b) - 2.0;
     /// 
     /// assert(difference < 1e-10);
     /// ```
