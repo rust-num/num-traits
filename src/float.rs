@@ -895,7 +895,7 @@ impl FloatCore for f64 {
 ///
 /// This trait is only available with the `std` feature.
 #[cfg(feature = "std")]
-pub trait Float where Self: Num + Copy + NumCast + Neg<Output = Self> + PartialOrd {
+pub trait Float: Num + Copy + NumCast + Neg<Output = Self> + PartialOrd {
     /// Returns the `NaN` value.
     ///
     /// ```
@@ -1881,7 +1881,7 @@ macro_rules! float_impl {
 }
 
 #[cfg(feature = "std")]
-pub trait CommonFloat where Self: Num + Copy + NumCast + Neg<Output = Self> {
+pub trait CommonFloat: Num + Copy + NumCast + Neg<Output = Self> {
     type Typo;
 
     /// Returns `true` if this value is `NaN` and false otherwise.
