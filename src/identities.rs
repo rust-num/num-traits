@@ -1,5 +1,6 @@
 use core::num::Wrapping;
 use core::ops::{Add, Mul};
+use core::mem;
 
 /// Defines an additive identity element for `Self`.
 pub trait Zero: Sized + Add<Self, Output = Self> {
@@ -19,6 +20,24 @@ pub trait Zero: Sized + Add<Self, Output = Self> {
     /// `static mut`s.
     // This cannot be an associated constant, because of bignums.
     fn zero() -> Self;
+
+    /// Sets `self` to the additive identity element of `Self`, `0`.
+    /// This function may be faster than replacing self with `Zero::zero()`.
+    ///
+    /// # Laws
+    ///
+    /// ```{.text}
+    /// a + 0 = a       ∀ a ∈ Self
+    /// 0 + a = a       ∀ a ∈ Self
+    /// ```
+    ///
+    /// # Purity
+    ///
+    /// This function may return different results depending on the previous state of `self`.
+    fn to_zero(&mut self) -> &mut Self {
+        mem::replace(self, Zero::zero());
+        self
+    }
 
     /// Returns `true` if `self` is equal to the additive identity.
     #[inline]
@@ -89,6 +108,23 @@ pub trait One: Sized + Mul<Self, Output = Self> {
     /// `static mut`s.
     // This cannot be an associated constant, because of bignums.
     fn one() -> Self;
+
+    /// Sets `self` to the multiplicative identity element of `Self`, `1`.
+    ///
+    /// # Laws
+    ///
+    /// ```{.text}
+    /// a * 1 = a       ∀ a ∈ Self
+    /// 1 * a = a       ∀ a ∈ Self
+    /// ```
+    ///
+    /// # Purity
+    ///
+    /// This function may return different results depending on the previous state of `self`.
+    fn to_zero(&mut self) -> &mut Self {
+        mem::replace(self, One::one());
+        self
+    }
 
     /// Returns `true` if `self` is equal to the multiplicative identity.
     ///
