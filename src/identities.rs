@@ -22,7 +22,7 @@ pub trait Zero: Sized + Add<Self, Output = Self> {
     fn zero() -> Self;
 
     /// Sets `self` to the additive identity element of `Self`, `0`.
-    /// This function may be faster than replacing self with `Zero::zero()`.
+    /// Returns `&mut self` to enable method chaining.
     ///
     /// # Laws
     ///
@@ -30,10 +30,6 @@ pub trait Zero: Sized + Add<Self, Output = Self> {
     /// a + 0 = a       ∀ a ∈ Self
     /// 0 + a = a       ∀ a ∈ Self
     /// ```
-    ///
-    /// # Purity
-    ///
-    /// This function may return different results depending on the previous state of `self`.
     fn to_zero(&mut self) -> &mut Self {
         mem::replace(self, Zero::zero());
         self
@@ -110,6 +106,7 @@ pub trait One: Sized + Mul<Self, Output = Self> {
     fn one() -> Self;
 
     /// Sets `self` to the multiplicative identity element of `Self`, `1`.
+    /// Returns `&mut self` to enable method chaining.
     ///
     /// # Laws
     ///
@@ -117,11 +114,7 @@ pub trait One: Sized + Mul<Self, Output = Self> {
     /// a * 1 = a       ∀ a ∈ Self
     /// 1 * a = a       ∀ a ∈ Self
     /// ```
-    ///
-    /// # Purity
-    ///
-    /// This function may return different results depending on the previous state of `self`.
-    fn to_zero(&mut self) -> &mut Self {
+    fn to_one(&mut self) -> &mut Self {
         mem::replace(self, One::one());
         self
     }
