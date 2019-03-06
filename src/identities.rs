@@ -1,6 +1,5 @@
 use core::num::Wrapping;
 use core::ops::{Add, Mul};
-use core::mem;
 
 /// Defines an additive identity element for `Self`.
 pub trait Zero: Sized + Add<Self, Output = Self> {
@@ -31,7 +30,7 @@ pub trait Zero: Sized + Add<Self, Output = Self> {
     /// 0 + a = a       ∀ a ∈ Self
     /// ```
     fn to_zero(&mut self) -> &mut Self {
-        mem::replace(self, Zero::zero());
+        *self = Zero::zero();
         self
     }
 
@@ -115,7 +114,7 @@ pub trait One: Sized + Mul<Self, Output = Self> {
     /// 1 * a = a       ∀ a ∈ Self
     /// ```
     fn to_one(&mut self) -> &mut Self {
-        mem::replace(self, One::one());
+        *self = One::one();
         self
     }
 
