@@ -171,8 +171,8 @@ pub trait PrimInt:
     /// ```
     /// use num_traits::PrimInt;
     ///
-    /// let n = 0xFEDCBA9876543210i64;
-    /// let m = 0x000FEDCBA9876543i64;
+    /// let n = 0x0123456789ABCDEFi64;
+    /// let m = 0x0000123456789ABCi64;
     ///
     /// assert_eq!(n.unsigned_shr(12), m);
     /// ```
