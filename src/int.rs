@@ -171,10 +171,10 @@ pub trait PrimInt:
     /// ```
     /// use num_traits::PrimInt;
     ///
-    /// let n = 0x0123456789ABCDEFi64;
-    /// let m = 0x0000123456789ABCi64;
+    /// let n = -8i8; // 0b11111000
+    /// let m = 62i8; // 0b00111110
     ///
-    /// assert_eq!(n.unsigned_shr(12), m);
+    /// assert_eq!(n.unsigned_shr(2), m);
     /// ```
     fn unsigned_shr(self, n: u32) -> Self;
 
