@@ -2,16 +2,15 @@ use core::num::Wrapping;
 use core::ops::{Add, Mul};
 
 /// Defines an additive identity element for `Self`.
+///
+/// # Laws
+///
+/// ```{.text}
+/// a + 0 = a       ∀ a ∈ Self
+/// 0 + a = a       ∀ a ∈ Self
+/// ```
 pub trait Zero: Sized + Add<Self, Output = Self> {
     /// Returns the additive identity element of `Self`, `0`.
-    ///
-    /// # Laws
-    ///
-    /// ```{.text}
-    /// a + 0 = a       ∀ a ∈ Self
-    /// 0 + a = a       ∀ a ∈ Self
-    /// ```
-    ///
     /// # Purity
     ///
     /// This function should return the same result at all times regardless of
@@ -22,14 +21,7 @@ pub trait Zero: Sized + Add<Self, Output = Self> {
 
     /// Sets `self` to the additive identity element of `Self`, `0`.
     /// Returns `&mut self` to enable method chaining.
-    ///
-    /// # Laws
-    ///
-    /// ```{.text}
-    /// a + 0 = a       ∀ a ∈ Self
-    /// 0 + a = a       ∀ a ∈ Self
-    /// ```
-    fn to_zero(&mut self) -> &mut Self {
+    fn set_zero(&mut self) -> &mut Self {
         *self = Zero::zero();
         self
     }
@@ -80,21 +72,27 @@ where
     fn is_zero(&self) -> bool {
         self.0.is_zero()
     }
+
+    fn set_zero(&mut self) -> &mut Self {
+        self.0.set_zero();
+        self
+    }
+
     fn zero() -> Self {
         Wrapping(T::zero())
     }
 }
 
 /// Defines a multiplicative identity element for `Self`.
+///
+/// # Laws
+///
+/// ```{.text}
+/// a * 1 = a       ∀ a ∈ Self
+/// 1 * a = a       ∀ a ∈ Self
+/// ```
 pub trait One: Sized + Mul<Self, Output = Self> {
     /// Returns the multiplicative identity element of `Self`, `1`.
-    ///
-    /// # Laws
-    ///
-    /// ```{.text}
-    /// a * 1 = a       ∀ a ∈ Self
-    /// 1 * a = a       ∀ a ∈ Self
-    /// ```
     ///
     /// # Purity
     ///
@@ -106,14 +104,7 @@ pub trait One: Sized + Mul<Self, Output = Self> {
 
     /// Sets `self` to the multiplicative identity element of `Self`, `1`.
     /// Returns `&mut self` to enable method chaining.
-    ///
-    /// # Laws
-    ///
-    /// ```{.text}
-    /// a * 1 = a       ∀ a ∈ Self
-    /// 1 * a = a       ∀ a ∈ Self
-    /// ```
-    fn to_one(&mut self) -> &mut Self {
+    fn set_one(&mut self) -> &mut Self {
         *self = One::one();
         self
     }
@@ -138,6 +129,10 @@ macro_rules! one_impl {
             #[inline]
             fn one() -> $t {
                 $v
+            }
+            #[inline]
+            fn is_one(&self) -> bool {
+                *self == $v
             }
         }
     };
@@ -166,6 +161,11 @@ impl<T: One> One for Wrapping<T>
 where
     Wrapping<T>: Mul<Output = Wrapping<T>>,
 {
+    fn set_one(&mut self) -> &mut Self {
+        self.0.set_one();
+        self
+    }
+
     fn one() -> Self {
         Wrapping(T::one())
     }
