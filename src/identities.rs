@@ -21,9 +21,8 @@ pub trait Zero: Sized + Add<Self, Output = Self> {
 
     /// Sets `self` to the additive identity element of `Self`, `0`.
     /// Returns `&mut self` to enable method chaining.
-    fn set_zero(&mut self) -> &mut Self {
+    fn set_zero(&mut self) {
         *self = Zero::zero();
-        self
     }
 
     /// Returns `true` if `self` is equal to the additive identity.
@@ -73,9 +72,8 @@ where
         self.0.is_zero()
     }
 
-    fn set_zero(&mut self) -> &mut Self {
+    fn set_zero(&mut self) {
         self.0.set_zero();
-        self
     }
 
     fn zero() -> Self {
@@ -103,10 +101,8 @@ pub trait One: Sized + Mul<Self, Output = Self> {
     fn one() -> Self;
 
     /// Sets `self` to the multiplicative identity element of `Self`, `1`.
-    /// Returns `&mut self` to enable method chaining.
-    fn set_one(&mut self) -> &mut Self {
+    fn set_one(&mut self) {
         *self = One::one();
-        self
     }
 
     /// Returns `true` if `self` is equal to the multiplicative identity.
@@ -161,9 +157,8 @@ impl<T: One> One for Wrapping<T>
 where
     Wrapping<T>: Mul<Output = Wrapping<T>>,
 {
-    fn set_one(&mut self) -> &mut Self {
+    fn set_one(&mut self) {
         self.0.set_one();
-        self
     }
 
     fn one() -> Self {
