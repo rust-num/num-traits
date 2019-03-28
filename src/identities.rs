@@ -20,7 +20,6 @@ pub trait Zero: Sized + Add<Self, Output = Self> {
     fn zero() -> Self;
 
     /// Sets `self` to the additive identity element of `Self`, `0`.
-    /// Returns `&mut self` to enable method chaining.
     fn set_zero(&mut self) {
         *self = Zero::zero();
     }
