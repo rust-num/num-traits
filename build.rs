@@ -9,14 +9,16 @@ fn main() {
         panic!("i128 support was not detected!");
     }
 
+    // Verbose probe to ensure we can blanket impl associated const traits.
+    // Early versions of associated consts prohibited this due to a restriction
+    // of const expressions to non-Drop types.
     if probe("fn main() {
-        struct TestDrop(); impl Drop for TestDrop { fn drop(&mut self) {} }
-        trait TestConst { const TEST: Self; }
-        impl TestConst for TestDrop { const TEST: TestDrop = TestDrop(); }
+        trait Const { const CONST: Self; }
+        impl<T: Const> Const for Option<T> {
+            const CONST: Option<T> = Some(T::CONST);
+        }
     }") {
         println!("cargo:rustc-cfg=has_associated_consts");
-    } else if env::var_os("CARGO_FEATURE_ASSOCIATED_CONSTS").is_some() {
-        panic!("associated constant support was not detected!");
     }
 }
 
