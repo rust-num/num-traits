@@ -33,10 +33,10 @@ pub trait Zero: Sized + Add<Self, Output = Self> {
 /// expressed as compile-time constants.
 ///
 /// This is implemented for all primitive types, and should be implemented
-/// wherever possible. Implementors must ensure that `ZeroConst::ZERO` is
+/// wherever possible. Implementors must ensure that `ConstZero::ZERO` is
 /// the same value produced by [`Zero::zero()`](trait.Zero.html#tymethod.zero).
 #[cfg(has_associated_consts)]
-pub trait ZeroConst: Zero {
+pub trait ConstZero: Zero {
     /// Additive identity: see [`Zero::zero()`](trait.Zero.html#tymethod.zero).
     const ZERO: Self;
 }
@@ -60,7 +60,7 @@ macro_rules! zero_impl {
 macro_rules! zero_const_impl {
     ($t:ty, $v:expr) => {
         zero_impl!($t, $v);
-        impl ZeroConst for $t {
+        impl ConstZero for $t {
             const ZERO: $t = $v;
         }
     };
@@ -107,7 +107,7 @@ where
 }
 
 #[cfg(has_associated_consts)]
-impl<T: ZeroConst> ZeroConst for Wrapping<T>
+impl<T: ConstZero> ConstZero for Wrapping<T>
 where
     Wrapping<T>: Zero,
 {
@@ -156,10 +156,10 @@ pub trait One: Sized + Mul<Self, Output = Self> {
 /// expressed as compile-time constants.
 ///
 /// This is implemented for all primitive types, and should be implemented
-/// wherever possible. Implementors must ensure that `OneConst::ONE` is
+/// wherever possible. Implementors must ensure that `ConstOne::ONE` is
 /// the same value produced by [`One::one()`](trait.One.html#tymethod.one).
 #[cfg(has_associated_consts)]
-pub trait OneConst: One {
+pub trait ConstOne: One {
     /// Multiplicative identity: see [`One::one`](trait.One.html#tymethod.one).
     const ONE: Self;
 }
@@ -183,7 +183,7 @@ macro_rules! one_impl {
 macro_rules! one_const_impl {
     ($t:ty, $v:expr) => {
         one_impl!($t, $v);
-        impl OneConst for $t {
+        impl ConstOne for $t {
             const ONE: $t = $v;
         }
     };
@@ -227,7 +227,7 @@ where
 }
 
 #[cfg(has_associated_consts)]
-impl<T: OneConst> OneConst for Wrapping<T>
+impl<T: ConstOne> ConstOne for Wrapping<T>
 where
     Wrapping<T>: One,
 {
@@ -254,10 +254,10 @@ fn const_identies() {
     macro_rules! test_zero_one {
         ($zero:expr, $one:expr; $($t:ty),+) => {
             $(
-                assert_eq!(<$t as ZeroConst>::ZERO, $zero);
-                assert_eq!(<$t as ZeroConst>::ZERO, <$t as Zero>::zero());
-                assert_eq!(<$t as OneConst>::ONE, $one);
-                assert_eq!(<$t as OneConst>::ONE, <$t as One>::one());
+                assert_eq!(<$t as ConstZero>::ZERO, $zero);
+                assert_eq!(<$t as ConstZero>::ZERO, <$t as Zero>::zero());
+                assert_eq!(<$t as ConstOne>::ONE, $one);
+                assert_eq!(<$t as ConstOne>::ONE, <$t as One>::one());
             )+
         }
     }
