@@ -26,6 +26,8 @@ use core::ops::{Add, Div, Mul, Rem, Sub};
 use core::ops::{AddAssign, DivAssign, MulAssign, RemAssign, SubAssign};
 
 pub use bounds::Bounded;
+#[cfg(has_associated_consts)]
+pub use bounds::ConstBounded;
 #[cfg(feature = "std")]
 pub use float::Float;
 pub use float::FloatConst;
