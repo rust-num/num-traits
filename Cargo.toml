@@ -22,3 +22,6 @@ features = ["std"]
 default = ["std"]
 std = []
 i128 = []
+
+[build-dependencies]
+autocfg = "0.1.2"
