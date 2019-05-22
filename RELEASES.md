@@ -1,3 +1,11 @@
+# Release 0.2.8 (2019-05-21)
+
+- [Fixed feature detection on `no_std` targets][116].
+
+**Contributors**: @cuviper
+
+[116]: https://github.com/rust-num/num-traits/pull/116
+
 # Release 0.2.7 (2019-05-20)
 
 - [Documented when `CheckedShl` and `CheckedShr` return `None`][90].
