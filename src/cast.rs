@@ -6,7 +6,7 @@ use core::{i128, u128};
 use core::{i16, i32, i64, i8, isize};
 use core::{u16, u32, u64, u8, usize};
 
-use float::FloatCore;
+use crate::float::FloatCore;
 
 /// A generic trait for converting a value to a number.
 pub trait ToPrimitive {

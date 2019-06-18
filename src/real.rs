@@ -1,6 +1,6 @@
 use std::ops::Neg;
 
-use {Float, Num, NumCast};
+use crate::{Float, Num, NumCast};
 
 // NOTE: These doctests have the same issue as those in src/float.rs.
 // They're testing the inherent methods directly, and not those of `Real`.

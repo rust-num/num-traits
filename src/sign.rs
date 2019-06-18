@@ -1,8 +1,8 @@
 use core::num::Wrapping;
 use core::ops::Neg;
 
-use float::FloatCore;
-use Num;
+use crate::float::FloatCore;
+use crate::Num;
 
 /// Useful functions for signed numbers (i.e. numbers that can be negative).
 pub trait Signed: Sized + Num + Neg<Output = Self> {

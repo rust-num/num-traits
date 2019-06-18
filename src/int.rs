@@ -1,9 +1,9 @@
 use core::ops::{BitAnd, BitOr, BitXor, Not, Shl, Shr};
 
-use bounds::Bounded;
-use ops::checked::*;
-use ops::saturating::Saturating;
-use {Num, NumCast};
+use crate::bounds::Bounded;
+use crate::ops::checked::*;
+use crate::ops::saturating::Saturating;
+use crate::{Num, NumCast};
 
 /// Generic trait for primitive integers.
 ///

@@ -1,6 +1,6 @@
 use core::num::Wrapping;
 use core::ops::Mul;
-use {CheckedMul, One};
+use crate::{CheckedMul, One};
 
 /// Binary operator for raising a value to a power.
 pub trait Pow<RHS> {

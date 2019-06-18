@@ -5,7 +5,7 @@ use core::ops::Neg;
 use core::f32;
 use core::f64;
 
-use {Num, NumCast, ToPrimitive};
+use crate::{Num, NumCast, ToPrimitive};
 
 /// Generic trait for floating point numbers that works with `no_std`.
 ///
@@ -1982,7 +1982,7 @@ mod tests {
 
     #[test]
     fn convert_deg_rad() {
-        use float::FloatCore;
+        use crate::float::FloatCore;
 
         for &(deg, rad) in &DEG_RAD_PAIRS {
             assert!((FloatCore::to_degrees(rad) - deg).abs() < 1e-6);
@@ -1998,7 +1998,7 @@ mod tests {
     #[test]
     fn convert_deg_rad_std() {
         for &(deg, rad) in &DEG_RAD_PAIRS {
-            use Float;
+            use crate::Float;
 
             assert!((Float::to_degrees(rad) - deg).abs() < 1e-6);
             assert!((Float::to_radians(deg) - rad).abs() < 1e-6);
