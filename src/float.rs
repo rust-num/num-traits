@@ -2014,7 +2014,7 @@ mod tests {
     // To avoid the failure, the test is limited to `no_std` builds.
     #[cfg(not(feature = "std"))]
     fn to_degrees_rounding() {
-        use float::FloatCore;
+        use crate::float::FloatCore;
 
         assert_eq!(
             FloatCore::to_degrees(1_f32),
