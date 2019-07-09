@@ -173,7 +173,7 @@ mod float_impls {
 
 /// Raises a value to the power of exp, using exponentiation by squaring.
 ///
-/// Note that `0⁰` (`pow(0, 0)`) returnes `1`. Mathematically this is undefined.
+/// Note that `0⁰` (`pow(0, 0)`) returns `1`. Mathematically this is undefined.
 ///
 /// # Example
 ///
@@ -211,7 +211,7 @@ pub fn pow<T: Clone + One + Mul<T, Output = T>>(mut base: T, mut exp: usize) -> 
 
 /// Raises a value to the power of exp, returning `None` if an overflow occurred.
 ///
-/// Note that `0⁰` (`checked_pow(0, 0)`) returnes `Some(1)`. Mathematically this is undefined.
+/// Note that `0⁰` (`checked_pow(0, 0)`) returns `Some(1)`. Mathematically this is undefined.
 ///
 /// Otherwise same as the `pow` function.
 ///
