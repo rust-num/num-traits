@@ -682,7 +682,7 @@ impl<T: NumCast> NumCast for Wrapping<T> {
 
 /// A generic interface for casting between machine scalars with the
 /// `as` operator, which admits narrowing and precision loss.
-/// Implementers of this trait AsPrimitive should behave like a primitive
+/// Implementers of this trait `AsPrimitive` should behave like a primitive
 /// numeric type (e.g. a newtype around another primitive), and the
 /// intended conversion must never fail.
 ///
