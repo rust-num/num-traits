@@ -42,6 +42,7 @@ pub use ops::saturating::Saturating;
 pub use ops::wrapping::{WrappingAdd, WrappingMul, WrappingShl, WrappingShr, WrappingSub};
 pub use pow::{checked_pow, pow, Pow};
 pub use sign::{abs, abs_sub, signum, Signed, Unsigned};
+pub use dist::{Norm, Distance};
 
 #[macro_use]
 mod macros;
