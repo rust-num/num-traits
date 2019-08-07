@@ -1,21 +1,75 @@
+//! Traits for generically calculating distances between values.
+//!
+//! This is often necessary in generic numeric algorithms to determine if
+//! the demanded precision is reached.
+
 use std::ops::{Sub, Div, DivAssign};
 
 use {Num};
 
+/// The abstract notion of the distance between two values.
+///
+/// This can be used to calculate the distance between two arbitrary
+/// values even if there is no sensible definition of a norm of these.
 pub trait Distance {
+    /// The resulting type of the distance function.
+    ///
+    /// Mathematically, a norm is a mapping from 2-tuples of vectors of a vector space _V_
+    /// into the non-negative real numbers, so `Output` will usually be a floating point type
+    /// or in some cases an unsigned integer type.
     type Output: Num;
+
+    /// Calculates the distance between `self` and `other`.
     fn distance(&self, other: &Self) -> Self::Output;
 }
 
+/// The abstract notion of the norm of a vector.
+///
+/// If `Self` is `Copy` and implements `Sub`, then `Distance` will
+/// be generically implemented for it. The `distance` function
+/// of this generic implementation will calculate the norm of the difference
+/// of the two arguments.
 pub trait Norm: Sized  {
+    /// The resulting type of the norm function.
+    ///
+    /// Mathematically, a norm is a mapping from a vector space _V_ into the non-negative
+    /// real numbers, so `Output` will usually be a floating point type
+    /// or in some cases an unsigned integer type.
     type Output: Num;
+
+    /// Calculates the norm of `self`.
+    ///
+    /// On signed integer and floating point values, it calls the `abs` function.
+    ///
+    /// On unsigned integer values, it simply returns the original value.
     fn norm(&self) -> <Self as Norm>::Output;
 }
 
+/// Normalizes the vector `v`, i.e. divides it by its norm.
+///
+/// As long as the implementations of `Div` and `DivAssign` on `T` match,
+/// `v` will be equal to `normalized(v)` after calling this function.
+///
+/// ## Attention
+///
+/// Due to numerical errors, `v` is *not* guaranteed to have exactly norm `1`
+/// after calling this function.
+///
+/// On integer types this function will do complete nonsense since
+/// `DivAssign` is implemented as an integer division for integers.
 pub fn normalize<T: Norm<Output=R> + DivAssign<R>, R: Num>(v: &mut T) {
     *v /= v.norm();
 }
 
+/// Normalizes the normalized vector of `v`, i.e. `v` divided by its norm.
+///
+/// ## Attention
+///
+/// Due to numerical errors, the result is *not* guaranteed to have exactly norm `1`
+/// after calling this function.
+///
+/// On integer types this function will do complete nonsense since
+/// `Div` is implemented as an integer division for integers.
 pub fn normalized<T: Norm<Output=R> + Div<R, Output=T>, R: Num>(v: T) -> T {
     let norm = v.norm();
     v / norm
@@ -29,6 +83,8 @@ impl<T: Copy + Norm + Sub<Self, Output=Self>> Distance for T{
 }
 
 
+/// Generically implements `Norm` for the unsigned integer types
+/// by simply returning the original value.
 macro_rules! norm_impl_self {
     ($($t:ty)*) => ($(
         impl Norm for $t {
@@ -40,6 +96,8 @@ macro_rules! norm_impl_self {
     )*)
 }
 
+/// Generically implements `Norm` for types with an `abs` function
+/// by returning the result of this function.
 macro_rules! norm_impl_abs {
     ($($t:ty)*) => ($(
         impl Norm for $t {
@@ -51,6 +109,9 @@ macro_rules! norm_impl_abs {
     )*)
 }
 
+/// Generically implements `Norm` for the signed integer types
+/// by calling their `abs` function and casting to the corresponding unsinged
+/// integer type.
 macro_rules! norm_impl_unsigned_output {
     ($($t:ty, $out:ty);*) => ($(
         impl Norm for $t {
