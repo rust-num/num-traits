@@ -132,3 +132,35 @@ norm_impl_unsigned_output!(i128, u128);
 
 #[cfg(has_u128)]
 norm_impl_self!(u128);
+
+
+#[test]
+fn norm_floating_point() {
+    assert_eq!((-2.0f32).norm(), 2.0);
+    assert_eq!((-3.0f64).norm(), 3.0);
+}
+
+#[test]
+fn distance_floating_point() {
+    assert_eq!((5.0f32).distance(&3.0), 2.0);
+    assert_eq!((2.0f32).distance(&-3.0), 5.0);
+    assert_eq!((1.0f64).distance(&4.0), 3.0);
+}
+
+#[test]
+fn norm_unsigned_integer() {
+    assert_eq!(2u8.norm(), 2);
+    assert_eq!(3u16.norm(), 3);
+    assert_eq!(4u32.norm(), 4);
+    assert_eq!(5u64.norm(), 5);
+    assert_eq!(6usize.norm(), 6);
+}
+
+#[test]
+fn norm_signed_integer() {
+    assert_eq!((-2i8).norm(), 2);
+    assert_eq!((-3i16).norm(), 3);
+    assert_eq!((-4i32).norm(), 4);
+    assert_eq!((-5i64).norm(), 5);
+    assert_eq!((-6isize).norm(), 6);
+}
