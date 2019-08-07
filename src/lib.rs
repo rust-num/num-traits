@@ -48,6 +48,7 @@ mod macros;
 
 pub mod bounds;
 pub mod cast;
+pub mod dist;
 pub mod float;
 pub mod identities;
 pub mod int;
