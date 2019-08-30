@@ -216,7 +216,12 @@ macro_rules! float_trait_impl {
                 }
 
                 fn slice_shift_char(src: &str) -> Option<(char, &str)> {
-                    src.chars().nth(0).map(|ch| (ch, &src[1..]))
+                    let mut chars = src.chars();
+                    if let Some(ch) = chars.next() {
+                        Some((ch, chars.as_str()))
+                    } else {
+                        None
+                    }
                 }
 
                 let (is_positive, src) =  match slice_shift_char(src) {
@@ -393,6 +398,15 @@ fn from_str_radix_unwrap() {
 
     let f: f32 = Num::from_str_radix("0.0", 10).unwrap();
     assert_eq!(f, 0.0);
+}
+
+#[test]
+fn from_str_radix_multi_byte_fail() {
+    // Ensure parsing doesn't panic, even on invalid sign characters
+    assert!(f32::from_str_radix("™0.2", 10).is_err());
+
+    // Even when parsing the exponent sign
+    assert!(f32::from_str_radix("0.2E™1", 10).is_err());
 }
 
 #[test]
