@@ -375,7 +375,7 @@ pub fn clamp<T: PartialOrd>(input: T, min: T, max: T) -> T {
 ///
 ///  If input is less than min then this returns min.
 ///  Otherwise this returns input.
-///  Preserves `NaN` different from `min`.
+///  `clamp_min(std::f32::NAN, 1.0)` preserves `NAN` different from `f32::min(std::f32::NAN, 1.0)`.
 #[inline]
 pub fn clamp_min<T: PartialOrd>(input: T, min: T) -> T {
     if input < min {
@@ -389,7 +389,7 @@ pub fn clamp_min<T: PartialOrd>(input: T, min: T) -> T {
 ///
 ///  If input is less than min then this returns min.
 ///  Otherwise this returns input.
-///  Preserves `NaN` different from `max`.
+///  `clamp_max(std::f32::NAN, 1.0)` preserves `NAN` different from `f32::max(std::f32::NAN, 1.0)`.
 #[inline]
 pub fn clamp_max<T: PartialOrd>(input: T, max: T) -> T {
     if input > max {
