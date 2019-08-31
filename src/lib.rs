@@ -377,7 +377,7 @@ pub fn clamp<T: PartialOrd>(input: T, min: T, max: T) -> T {
 ///  Otherwise this returns input.
 ///  Preserves `NaN` different from `min`.
 #[inline]
-pub fn clamp_lower<T: PartialOrd>(input: T, min: T) -> T {
+pub fn clamp_min<T: PartialOrd>(input: T, min: T) -> T {
     if input < min {
         min
     } else {
@@ -391,7 +391,7 @@ pub fn clamp_lower<T: PartialOrd>(input: T, min: T) -> T {
 ///  Otherwise this returns input.
 ///  Preserves `NaN` different from `max`.
 #[inline]
-pub fn clamp_upper<T: PartialOrd>(input: T, max: T) -> T {
+pub fn clamp_max<T: PartialOrd>(input: T, max: T) -> T {
     if input > max {
         max
     } else {
@@ -405,22 +405,22 @@ fn clamp_test() {
     assert_eq!(1, clamp(1, -1, 2));
     assert_eq!(-1, clamp(-2, -1, 2));
     assert_eq!(2, clamp(3, -1, 2));
-    assert_eq!(1, clamp_lower(1, -1));
-    assert_eq!(-1, clamp_lower(-2, -1));
-    assert_eq!(-1, clamp_upper(1, -1));
-    assert_eq!(-2, clamp_upper(-2, -1));
+    assert_eq!(1, clamp_min(1, -1));
+    assert_eq!(-1, clamp_min(-2, -1));
+    assert_eq!(-1, clamp_max(1, -1));
+    assert_eq!(-2, clamp_max(-2, -1));
 
     // Float test
     assert_eq!(1.0, clamp(1.0, -1.0, 2.0));
     assert_eq!(-1.0, clamp(-2.0, -1.0, 2.0));
     assert_eq!(2.0, clamp(3.0, -1.0, 2.0));
-    assert_eq!(1.0, clamp_lower(1.0, -1.0));
-    assert_eq!(-1.0, clamp_lower(-2.0, -1.0));
-    assert_eq!(-1.0, clamp_upper(1.0, -1.0));
-    assert_eq!(-2.0, clamp_upper(-2.0, -1.0));
+    assert_eq!(1.0, clamp_min(1.0, -1.0));
+    assert_eq!(-1.0, clamp_min(-2.0, -1.0));
+    assert_eq!(-1.0, clamp_max(1.0, -1.0));
+    assert_eq!(-2.0, clamp_max(-2.0, -1.0));
     assert!(clamp(::core::f32::NAN, -1.0, 1.0).is_nan());
-    assert!(clamp_lower(::core::f32::NAN, 1.0).is_nan());
-    assert!(clamp_upper(::core::f32::NAN, 1.0).is_nan());
+    assert!(clamp_min(::core::f32::NAN, 1.0).is_nan());
+    assert!(clamp_max(::core::f32::NAN, 1.0).is_nan());
 }
 
 #[test]
