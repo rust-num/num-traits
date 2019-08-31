@@ -418,6 +418,7 @@ fn clamp_test() {
     assert_eq!(-1.0, clamp_lower(-2.0, -1.0));
     assert_eq!(-1.0, clamp_upper(1.0, -1.0));
     assert_eq!(-2.0, clamp_upper(-2.0, -1.0));
+    assert!(clamp(::core::f32::NAN, -1.0, 1.0).is_nan());
     assert!(clamp_lower(::core::f32::NAN, 1.0).is_nan());
     assert!(clamp_upper(::core::f32::NAN, 1.0).is_nan());
 }
