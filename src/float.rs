@@ -10,7 +10,6 @@ use {Num, NumCast, ToPrimitive};
 #[cfg(feature = "libm")]
 use libm::{F32Ext, F64Ext};
 
-
 /// Generic trait for floating point numbers that works with `no_std`.
 ///
 /// This trait implements a subset of the `Float` trait.
@@ -1835,7 +1834,7 @@ macro_rules! float_impl_std {
                 $decode(self)
             }
 
-            forward!{
+            forward! {
                 Self::is_nan(self) -> bool;
                 Self::is_infinite(self) -> bool;
                 Self::is_finite(self) -> bool;
@@ -1914,7 +1913,7 @@ macro_rules! float_impl_libm {
                 $decode(self)
             }
 
-            forward!{
+            forward! {
                 FloatCore::is_nan(self) -> bool;
                 FloatCore::is_infinite(self) -> bool;
                 FloatCore::is_finite(self) -> bool;
@@ -2008,7 +2007,6 @@ float_impl_std!(f64 integer_decode_f64);
 float_impl_libm!(f32 integer_decode_f32 F32Ext);
 #[cfg(all(not(feature = "std"), feature = "libm"))]
 float_impl_libm!(f64 integer_decode_f64 F64Ext);
-
 
 macro_rules! float_const_impl {
     ($(#[$doc:meta] $constant:ident,)+) => (

@@ -155,15 +155,15 @@ pow_impl!(Wrapping<isize>);
 #[cfg(any(feature = "std", feature = "libm"))]
 mod float_impls {
     use super::Pow;
-    use ::Float;
+    use Float;
 
-    pow_impl!(f32, i8, i32,  <f32 as Float>::powi);
-    pow_impl!(f32, u8, i32,  <f32 as Float>::powi);
+    pow_impl!(f32, i8, i32, <f32 as Float>::powi);
+    pow_impl!(f32, u8, i32, <f32 as Float>::powi);
     pow_impl!(f32, i16, i32, <f32 as Float>::powi);
     pow_impl!(f32, u16, i32, <f32 as Float>::powi);
     pow_impl!(f32, i32, i32, <f32 as Float>::powi);
-    pow_impl!(f64, i8, i32,  <f64 as Float>::powi);
-    pow_impl!(f64, u8, i32,  <f64 as Float>::powi);
+    pow_impl!(f64, i8, i32, <f64 as Float>::powi);
+    pow_impl!(f64, u8, i32, <f64 as Float>::powi);
     pow_impl!(f64, i16, i32, <f64 as Float>::powi);
     pow_impl!(f64, u16, i32, <f64 as Float>::powi);
     pow_impl!(f64, i32, i32, <f64 as Float>::powi);
