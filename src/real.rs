@@ -16,6 +16,7 @@ use Float;
 ///
 /// This trait is always available, however it requires either `std` or `libm`
 /// in order for `f32` and `f64` to implement it.
+#[cfg(any(feature = "std", feature = "libm"))]
 pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// Returns the smallest finite value that this type can represent.
     ///
