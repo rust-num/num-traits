@@ -766,6 +766,8 @@ impl FloatCore for f32 {
         const EXP_MASK: u32 = 0x7f800000;
         const MAN_MASK: u32 = 0x007fffff;
 
+        // Safety: this identical to the implementation of f32::to_bits(),
+        // which is only available starting at Rust 1.20
         let bits: u32 = unsafe { mem::transmute(self) };
         match (bits & MAN_MASK, bits & EXP_MASK) {
             (0, 0) => FpCategory::Zero,
@@ -838,6 +840,8 @@ impl FloatCore for f64 {
         const EXP_MASK: u64 = 0x7ff0000000000000;
         const MAN_MASK: u64 = 0x000fffffffffffff;
 
+        // Safety: this identical to the implementation of f64::to_bits(),
+        // which is only available starting at Rust 1.20
         let bits: u64 = unsafe { mem::transmute(self) };
         match (bits & MAN_MASK, bits & EXP_MASK) {
             (0, 0) => FpCategory::Zero,
@@ -1881,6 +1885,8 @@ macro_rules! float_impl {
 }
 
 fn integer_decode_f32(f: f32) -> (u64, i16, i8) {
+    // Safety: this identical to the implementation of f32::to_bits(),
+    // which is only available starting at Rust 1.20
     let bits: u32 = unsafe { mem::transmute(f) };
     let sign: i8 = if bits >> 31 == 0 { 1 } else { -1 };
     let mut exponent: i16 = ((bits >> 23) & 0xff) as i16;
@@ -1895,6 +1901,8 @@ fn integer_decode_f32(f: f32) -> (u64, i16, i8) {
 }
 
 fn integer_decode_f64(f: f64) -> (u64, i16, i8) {
+    // Safety: this identical to the implementation of f64::to_bits(),
+    // which is only available starting at Rust 1.20
     let bits: u64 = unsafe { mem::transmute(f) };
     let sign: i8 = if bits >> 63 == 0 { 1 } else { -1 };
     let mut exponent: i16 = ((bits >> 52) & 0x7ff) as i16;
