@@ -35,7 +35,7 @@ default-features = false
 ```
 
 The `Float` and `Real` traits are only available when either `std` or `libm` is enabled.  
-The `libm` feature is only available with Rust 1.31 and later.
+The `libm` feature is only available with Rust 1.31 and later ([see PR #99](https://github.com/rust-num/num-traits/pull/99)).
 
 The `FloatCore` trait is always available.  `MulAdd` and `MulAddAssign` for `f32`
 and `f64` also require `std` or `libm`, as do implementations of signed and floating-
