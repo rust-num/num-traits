@@ -387,7 +387,7 @@ pub fn clamp_min<T: PartialOrd>(input: T, min: T) -> T {
 
 /// A value bounded by a maximum value
 ///
-///  If input is less than min then this returns min.
+///  If input is greater than max then this returns max.
 ///  Otherwise this returns input.
 ///  `clamp_max(std::f32::NAN, 1.0)` preserves `NAN` different from `f32::max(std::f32::NAN, 1.0)`.
 #[inline]
