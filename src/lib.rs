@@ -437,27 +437,38 @@ fn clamp_test() {
 }
 
 #[test]
-fn clamp_nan_bound() {
-    /// When debug assertions and the `std` feature are enabled, checks that
-    /// the expression panics.
-    macro_rules! assert_debug_panics {
-        ($body:expr) => {
-            #[cfg(all(debug_assertions, feature = "std"))]
-            {
-                if let Ok(v) = ::std::panic::catch_unwind(|| $body) {
-                    panic!(
-                        "assertion failed: should_panic; non-panicking result: {:?}",
-                        v
-                    );
-                }
-            }
-        };
-    }
-    assert_debug_panics!(clamp(0., ::core::f32::NAN, 1.));
-    assert_debug_panics!(clamp(0., -1., ::core::f32::NAN));
-    assert_debug_panics!(clamp(0., ::core::f32::NAN, ::core::f32::NAN));
-    assert_debug_panics!(clamp_min(0., ::core::f32::NAN));
-    assert_debug_panics!(clamp_max(0., ::core::f32::NAN));
+#[should_panic]
+#[cfg(debug_assertions)]
+fn clamp_nan_min() {
+    clamp(0., ::core::f32::NAN, 1.);
+}
+
+#[test]
+#[should_panic]
+#[cfg(debug_assertions)]
+fn clamp_nan_max() {
+    clamp(0., -1., ::core::f32::NAN);
+}
+
+#[test]
+#[should_panic]
+#[cfg(debug_assertions)]
+fn clamp_nan_min_max() {
+    clamp(0., ::core::f32::NAN, ::core::f32::NAN);
+}
+
+#[test]
+#[should_panic]
+#[cfg(debug_assertions)]
+fn clamp_min_nan_min() {
+    clamp_min(0., ::core::f32::NAN);
+}
+
+#[test]
+#[should_panic]
+#[cfg(debug_assertions)]
+fn clamp_max_nan_max() {
+    clamp_max(0., ::core::f32::NAN);
 }
 
 #[test]
