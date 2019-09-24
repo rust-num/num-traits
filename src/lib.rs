@@ -438,10 +438,12 @@ fn clamp_test() {
 
 #[test]
 fn clamp_nan_bound() {
-    /// When debug assertions are enabled, checks that the expression panics.
+    /// When debug assertions and the `std` feature are enabled, checks that
+    /// the expression panics.
     macro_rules! assert_debug_panics {
         ($body:expr) => {
-            if cfg!(debug_assertions) {
+            #[cfg(all(debug_assertions, feature = "std"))]
+            {
                 if let Ok(v) = ::std::panic::catch_unwind(|| $body) {
                     panic!(
                         "assertion failed: should_panic; non-panicking result: {:?}",
