@@ -14,6 +14,18 @@ script:
   - ./ci/test_full.sh
 matrix:
   include:
+    # i586 presents floating point challenges for lack of SSE/SSE2
+    - name: "i586"
+      rust: stable
+      env: TARGET=i586-unknown-linux-gnu
+      addons:
+        apt:
+          packages:
+            - gcc-multilib
+      before_script:
+        - rustup target add $TARGET
+      script:
+        - cargo test --verbose --target $TARGET --all-features
     # try a target that doesn't have std at all
     - name: "no_std"
       rust: stable

@@ -18,7 +18,7 @@
 /// // 100.0
 /// let abs_difference = (m.mul_add(x, b) - (m*x + b)).abs();
 ///
-/// assert!(abs_difference <= f32::EPSILON);
+/// assert!(abs_difference <= 100.0 * f32::EPSILON);
 /// ```
 pub trait MulAdd<A = Self, B = Self> {
     /// The resulting type after applying the fused multiply-add.
@@ -140,7 +140,7 @@ mod tests {
 
                         let abs_difference = (MulAdd::mul_add(m, x, b) - (m*x + b)).abs();
 
-                        assert!(abs_difference <= $t::EPSILON);
+                        assert!(abs_difference <= 46.4 * $t::EPSILON);
                     }
                 )+
             };
