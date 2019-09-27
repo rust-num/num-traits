@@ -20,7 +20,8 @@
 #[cfg(feature = "std")]
 extern crate std;
 
-#[cfg(feature = "libm")]
+// Only `no_std` builds actually use `libm`.
+#[cfg(all(not(feature = "std"), feature = "libm"))]
 extern crate libm;
 
 use core::fmt;

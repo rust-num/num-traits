@@ -7,7 +7,7 @@ use core::f64;
 
 use {Num, NumCast, ToPrimitive};
 
-#[cfg(feature = "libm")]
+#[cfg(all(not(feature = "std"), feature = "libm"))]
 use libm::{F32Ext, F64Ext};
 
 /// Generic trait for floating point numbers that works with `no_std`.
@@ -1887,7 +1887,7 @@ macro_rules! float_impl_std {
     };
 }
 
-#[cfg(feature = "libm")]
+#[cfg(all(not(feature = "std"), feature = "libm"))]
 macro_rules! float_impl_libm {
     ($T:ident $decode:ident $LibmImpl:ident) => {
         impl Float for $T {
