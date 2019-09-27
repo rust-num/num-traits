@@ -17,7 +17,7 @@ exclude = ["/ci/*", "/.travis.yml", "/bors.toml"]
 features = ["std"]
 
 [dependencies]
-libm = { version = "0.1", optional = true }
+libm = { version = "0.1.4", optional = true }
 
 [features]
 default = ["std"]
