@@ -12,8 +12,16 @@ cargo test --verbose
 cargo build --verbose --no-default-features
 cargo test --verbose --no-default-features
 
-# test `i128`
 if [[ "$TRAVIS_RUST_VERSION" =~ ^(nightly|beta|stable)$ ]]; then
+    # test `i128`
     cargo build --verbose --features=i128
     cargo test --verbose --features=i128
+
+    # test with std and libm (libm build fails on Rust 1.26 and earlier)
+    cargo build --verbose --features "libm"
+    cargo test --verbose --features "libm"
+
+    # test `no_std` with libm (libm build fails on Rust 1.26 and earlier)
+    cargo build --verbose --no-default-features --features "libm"
+    cargo test --verbose --no-default-features --features "libm"
 fi
