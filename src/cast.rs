@@ -639,7 +639,8 @@ pub fn cast<T: NumCast, U: NumCast>(n: T) -> Option<U> {
 /// An interface for casting between machine scalars.
 pub trait NumCast: Sized + ToPrimitive {
     /// Creates a number from another value that can be converted into
-    /// a primitive via the `ToPrimitive` trait.
+    /// a primitive via the `ToPrimitive` trait. If the source value cannot be
+    /// represented by the target type, then `None` is returned.
     fn from<T: ToPrimitive>(n: T) -> Option<Self>;
 }
 
