@@ -10,38 +10,45 @@ use float::FloatCore;
 
 /// A generic trait for converting a value to a number.
 pub trait ToPrimitive {
-    /// Converts the value of `self` to an `isize`.
+    /// Converts the value of `self` to an `isize`. If the value cannot be
+    /// represented by an `isize`, then `None` is returned.
     #[inline]
     fn to_isize(&self) -> Option<isize> {
         self.to_i64().as_ref().and_then(ToPrimitive::to_isize)
     }
 
-    /// Converts the value of `self` to an `i8`.
+    /// Converts the value of `self` to an `i8`. If the value cannot be
+    /// represented by an `i8`, then `None` is returned.
     #[inline]
     fn to_i8(&self) -> Option<i8> {
         self.to_i64().as_ref().and_then(ToPrimitive::to_i8)
     }
 
-    /// Converts the value of `self` to an `i16`.
+    /// Converts the value of `self` to an `i16`. If the value cannot be
+    /// represented by an `i16`, then `None` is returned.
     #[inline]
     fn to_i16(&self) -> Option<i16> {
         self.to_i64().as_ref().and_then(ToPrimitive::to_i16)
     }
 
-    /// Converts the value of `self` to an `i32`.
+    /// Converts the value of `self` to an `i32`. If the value cannot be
+    /// represented by an `i32`, then `None` is returned.
     #[inline]
     fn to_i32(&self) -> Option<i32> {
         self.to_i64().as_ref().and_then(ToPrimitive::to_i32)
     }
 
-    /// Converts the value of `self` to an `i64`.
+    /// Converts the value of `self` to an `i64`. If the value cannot be
+    /// represented by an `i64`, then `None` is returned.
     fn to_i64(&self) -> Option<i64>;
 
-    /// Converts the value of `self` to an `i128`.
+    /// Converts the value of `self` to an `i128`. If the value cannot be
+    /// represented by an `i128` (`i64` under the default implementation), then
+    /// `None` is returned.
     ///
     /// This method is only available with feature `i128` enabled on Rust >= 1.26.
     ///
-    /// The default implementation converts through `to_i64()`.  Types implementing
+    /// The default implementation converts through `to_i64()`. Types implementing
     /// this trait should override this method if they can represent a greater range.
     #[inline]
     #[cfg(has_i128)]
@@ -49,35 +56,42 @@ pub trait ToPrimitive {
         self.to_i64().map(From::from)
     }
 
-    /// Converts the value of `self` to a `usize`.
+    /// Converts the value of `self` to a `usize`. If the value cannot be
+    /// represented by a `usize`, then `None` is returned.
     #[inline]
     fn to_usize(&self) -> Option<usize> {
         self.to_u64().as_ref().and_then(ToPrimitive::to_usize)
     }
 
-    /// Converts the value of `self` to an `u8`.
+    /// Converts the value of `self` to a `u8`. If the value cannot be
+    /// represented by a `u8`, then `None` is returned.
     #[inline]
     fn to_u8(&self) -> Option<u8> {
         self.to_u64().as_ref().and_then(ToPrimitive::to_u8)
     }
 
-    /// Converts the value of `self` to an `u16`.
+    /// Converts the value of `self` to a `u16`. If the value cannot be
+    /// represented by a `u16`, then `None` is returned.
     #[inline]
     fn to_u16(&self) -> Option<u16> {
         self.to_u64().as_ref().and_then(ToPrimitive::to_u16)
     }
 
-    /// Converts the value of `self` to an `u32`.
+    /// Converts the value of `self` to a `u32`. If the value cannot be
+    /// represented by a `u32`, then `None` is returned.
     #[inline]
     fn to_u32(&self) -> Option<u32> {
         self.to_u64().as_ref().and_then(ToPrimitive::to_u32)
     }
 
-    /// Converts the value of `self` to an `u64`.
+    /// Converts the value of `self` to a `u64`. If the value cannot be
+    /// represented by a `u64`, then `None` is returned.
     #[inline]
     fn to_u64(&self) -> Option<u64>;
 
-    /// Converts the value of `self` to an `u128`.
+    /// Converts the value of `self` to a `u128`. If the value cannot be
+    /// represented by a `u128` (`u64` under the default implementation), then
+    /// `None` is returned.
     ///
     /// This method is only available with feature `i128` enabled on Rust >= 1.26.
     ///
@@ -89,13 +103,15 @@ pub trait ToPrimitive {
         self.to_u64().map(From::from)
     }
 
-    /// Converts the value of `self` to an `f32`.
+    /// Converts the value of `self` to an `f32`. If the value cannot be
+    /// represented by an `f32`, then `None` is returned.
     #[inline]
     fn to_f32(&self) -> Option<f32> {
         self.to_f64().as_ref().and_then(ToPrimitive::to_f32)
     }
 
-    /// Converts the value of `self` to an `f64`.
+    /// Converts the value of `self` to an `f64`. If the value cannot be
+    /// represented by an `f64`, then `None` is returned.
     #[inline]
     fn to_f64(&self) -> Option<f64> {
         match self.to_i64() {
