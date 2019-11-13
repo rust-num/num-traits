@@ -1,3 +1,19 @@
+# Release 0.2.9 (2019-11-12)
+
+- [A new optional `libm` dependency][99] enables the `Float` and `Real` traits
+  in `no_std` builds.
+- [The new `clamp_min` and `clamp_max`][122] limit minimum and maximum values
+  while preserving input `NAN`s.
+- [Fixed a panic in floating point `from_str_radix` on invalid signs][126].
+- Miscellaneous documentation updates.
+
+**Contributors**: @cuviper, @dingelish, @HeroicKatora, @jturner314, @ocstl,
+@Shnatsel, @termoshtt, @waywardmonkeys, @yoanlcq
+
+[99]: https://github.com/rust-num/num-traits/pull/99
+[122]: https://github.com/rust-num/num-traits/pull/122
+[126]: https://github.com/rust-num/num-traits/pull/126
+
 # Release 0.2.8 (2019-05-21)
 
 - [Fixed feature detection on `no_std` targets][116].

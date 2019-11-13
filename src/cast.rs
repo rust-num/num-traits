@@ -86,7 +86,6 @@ pub trait ToPrimitive {
 
     /// Converts the value of `self` to a `u64`. If the value cannot be
     /// represented by a `u64`, then `None` is returned.
-    #[inline]
     fn to_u64(&self) -> Option<u64>;
 
     /// Converts the value of `self` to a `u128`. If the value cannot be
