@@ -25,7 +25,6 @@ pub trait Zero: Sized + Add<Self, Output = Self> {
     }
 
     /// Returns `true` if `self` is equal to the additive identity.
-    #[inline]
     fn is_zero(&self) -> bool;
 }
 
