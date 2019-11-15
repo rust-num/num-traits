@@ -86,14 +86,11 @@ where
 impl<'a> Zero for Cow<'a, str> {
 
     fn is_zero(&self) -> bool {
-        match self {
-            Self::Borrowed(str) => str.len() == 0,
-            Self::Owned(string) => string.len() == 0
-        }
+        self.len() == 0
     }
 
     fn zero() -> Self {
-        Self::Borrowed("")
+        Default::default()
     }
 }
 
