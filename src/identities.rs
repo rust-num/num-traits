@@ -1,6 +1,8 @@
 use core::num::Wrapping;
 use core::ops::{Add, Mul};
 
+#[cfg(feature = "std")] use std::borrow::Cow;
+
 /// Defines an additive identity element for `Self`.
 ///
 /// # Laws
@@ -76,6 +78,22 @@ where
 
     fn zero() -> Self {
         Wrapping(T::zero())
+    }
+}
+
+///Implements Zero as the empty string
+#[cfg(feature = "std")]
+impl<'a> Zero for Cow<'a, str> {
+
+    fn is_zero(&self) -> bool {
+        match self {
+            Self::Borrowed(str) => str.len() == 0,
+            Self::Owned(string) => string.len() == 0
+        }
+    }
+
+    fn zero() -> Self {
+        Self::Borrowed("")
     }
 }
 
@@ -203,4 +221,28 @@ fn wrapping_is_zero() {
 fn wrapping_is_one() {
     fn require_one<T: One>(_: &T) {}
     require_one(&Wrapping(42));
+}
+
+#[test]
+#[cfg(feature = "std")]
+fn cow_is_zero() {
+    fn require_zero<T: Zero>(_: &T) {}
+    require_zero(&Cow::Borrowed("42"));
+}
+
+#[test]
+#[cfg(feature = "std")]
+fn cow_zero() {
+    use std::borrow::ToOwned;
+
+    let s = Cow::Borrowed("num_traits");
+    assert_eq!(s.clone()+Cow::zero(), s);
+    assert_eq!(Cow::zero()+s.clone(), s);
+
+    let s = Cow::<'static,str>::Owned("num_traits".to_owned());
+    assert_eq!(s.clone()+Cow::zero(), s);
+    assert_eq!(Cow::zero()+s.clone(), s);
+
+    assert!(Cow::Borrowed("").is_zero());
+    assert!(Cow::<'static,str>::Owned("".to_owned()).is_zero());
 }
