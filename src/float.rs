@@ -8,7 +8,7 @@ use core::f64;
 use {Num, NumCast, ToPrimitive};
 
 #[cfg(all(not(feature = "std"), feature = "libm"))]
-use libm::{F32Ext, F64Ext};
+use libm;
 
 /// Generic trait for floating point numbers that works with `no_std`.
 ///
@@ -1889,7 +1889,7 @@ macro_rules! float_impl_std {
 
 #[cfg(all(not(feature = "std"), feature = "libm"))]
 macro_rules! float_impl_libm {
-    ($T:ident $decode:ident $LibmImpl:ident) => {
+    ($T:ident $decode:ident { $($LibmImpl:tt)* }) => {
         impl Float for $T {
             constant! {
                 nan() -> $T::NAN;
@@ -1903,15 +1903,21 @@ macro_rules! float_impl_libm {
             }
 
             #[inline]
-            #[allow(deprecated)]
-            fn abs_sub(self, other: Self) -> Self {
-                <$T as $LibmImpl>::fdim(self, other)
-            }
-
-            #[inline]
             fn integer_decode(self) -> (u64, i16, i8) {
                 $decode(self)
             }
+
+            #[inline]
+            fn fract(self) -> Self {
+                self - FloatCore::trunc(self)
+            }
+
+            #[inline]
+            fn log(self, base: Self) -> Self {
+                self.ln() / base.ln()
+            }
+
+            $($LibmImpl)*
 
             forward! {
                 FloatCore::is_nan(self) -> bool;
@@ -1919,48 +1925,15 @@ macro_rules! float_impl_libm {
                 FloatCore::is_finite(self) -> bool;
                 FloatCore::is_normal(self) -> bool;
                 FloatCore::classify(self) -> FpCategory;
-                $LibmImpl::floor(self) -> Self;
-                $LibmImpl::ceil(self) -> Self;
-                $LibmImpl::round(self) -> Self;
-                $LibmImpl::trunc(self) -> Self;
-                $LibmImpl::fract(self) -> Self;
-                $LibmImpl::abs(self) -> Self;
                 FloatCore::signum(self) -> Self;
                 FloatCore::is_sign_positive(self) -> bool;
                 FloatCore::is_sign_negative(self) -> bool;
-                $LibmImpl::mul_add(self, a: Self, b: Self) -> Self;
                 FloatCore::recip(self) -> Self;
                 FloatCore::powi(self, n: i32) -> Self;
-                $LibmImpl::powf(self, n: Self) -> Self;
-                $LibmImpl::sqrt(self) -> Self;
-                $LibmImpl::exp(self) -> Self;
-                $LibmImpl::exp2(self) -> Self;
-                $LibmImpl::ln(self) -> Self;
-                $LibmImpl::log(self, base: Self) -> Self;
-                $LibmImpl::log2(self) -> Self;
-                $LibmImpl::log10(self) -> Self;
                 FloatCore::to_degrees(self) -> Self;
                 FloatCore::to_radians(self) -> Self;
                 FloatCore::max(self, other: Self) -> Self;
                 FloatCore::min(self, other: Self) -> Self;
-                $LibmImpl::cbrt(self) -> Self;
-                $LibmImpl::hypot(self, other: Self) -> Self;
-                $LibmImpl::sin(self) -> Self;
-                $LibmImpl::cos(self) -> Self;
-                $LibmImpl::tan(self) -> Self;
-                $LibmImpl::asin(self) -> Self;
-                $LibmImpl::acos(self) -> Self;
-                $LibmImpl::atan(self) -> Self;
-                $LibmImpl::atan2(self, other: Self) -> Self;
-                $LibmImpl::sin_cos(self) -> (Self, Self);
-                $LibmImpl::exp_m1(self) -> Self;
-                $LibmImpl::ln_1p(self) -> Self;
-                $LibmImpl::sinh(self) -> Self;
-                $LibmImpl::cosh(self) -> Self;
-                $LibmImpl::tanh(self) -> Self;
-                $LibmImpl::asinh(self) -> Self;
-                $LibmImpl::acosh(self) -> Self;
-                $LibmImpl::atanh(self) -> Self;
             }
         }
     };
@@ -2004,9 +1977,269 @@ float_impl_std!(f32 integer_decode_f32);
 float_impl_std!(f64 integer_decode_f64);
 
 #[cfg(all(not(feature = "std"), feature = "libm"))]
-float_impl_libm!(f32 integer_decode_f32 F32Ext);
+float_impl_libm!(f32 integer_decode_f32 {
+    #[inline]
+    #[allow(deprecated)]
+    fn abs_sub(self, other: Self) -> Self {
+        libm::fdimf(self, other)
+    }
+    #[inline]
+    fn floor(self) -> Self {
+        libm::floorf(self)
+    }
+    #[inline]
+    fn ceil(self) -> Self {
+        libm::ceilf(self)
+    }
+    #[inline]
+    fn round(self) -> Self {
+        libm::roundf(self)
+    }
+    #[inline]
+    fn trunc(self) -> Self {
+        libm::truncf(self)
+    }
+    #[inline]
+    fn abs(self) -> Self {
+        libm::fabsf(self)
+    }
+    #[inline]
+    fn mul_add(self, a: Self, b: Self) -> Self {
+        libm::fmaf(self, a, b)
+    }
+    #[inline]
+    fn powf(self, n: Self) -> Self {
+        libm::powf(self, n)
+    }
+    #[inline]
+    fn sqrt(self) -> Self {
+        libm::sqrtf(self)
+    }
+    #[inline]
+    fn exp(self) -> Self {
+        libm::expf(self)
+    }
+    #[inline]
+    fn exp2(self) -> Self {
+        libm::exp2f(self)
+    }
+    #[inline]
+    fn ln(self) -> Self {
+        libm::logf(self)
+    }
+    #[inline]
+    fn log2(self) -> Self {
+        libm::log2f(self)
+    }
+    #[inline]
+    fn log10(self) -> Self {
+        libm::log10f(self)
+    }
+    #[inline]
+    fn cbrt(self) -> Self {
+        libm::cbrtf(self)
+    }
+    #[inline]
+    fn hypot(self, other: Self) -> Self {
+        libm::hypotf(self, other)
+    }
+    #[inline]
+    fn sin(self) -> Self {
+        libm::sinf(self)
+    }
+    #[inline]
+    fn cos(self) -> Self {
+        libm::cosf(self)
+    }
+    #[inline]
+    fn tan(self) -> Self {
+        libm::tanf(self)
+    }
+    #[inline]
+    fn asin(self) -> Self {
+        libm::asinf(self)
+    }
+    #[inline]
+    fn acos(self) -> Self {
+        libm::acosf(self)
+    }
+    #[inline]
+    fn atan(self) -> Self {
+        libm::atanf(self)
+    }
+    #[inline]
+    fn atan2(self, other: Self) -> Self {
+        libm::atan2f(self, other)
+    }
+    #[inline]
+    fn sin_cos(self) -> (Self, Self) {
+        libm::sincosf(self)
+    }
+    #[inline]
+    fn exp_m1(self) -> Self {
+        libm::expm1f(self)
+    }
+    #[inline]
+    fn ln_1p(self) -> Self {
+        libm::log1pf(self)
+    }
+    #[inline]
+    fn sinh(self) -> Self {
+        libm::sinhf(self)
+    }
+    #[inline]
+    fn cosh(self) -> Self {
+        libm::coshf(self)
+    }
+    #[inline]
+    fn tanh(self) -> Self {
+        libm::tanhf(self)
+    }
+    #[inline]
+    fn asinh(self) -> Self {
+        libm::asinhf(self)
+    }
+    #[inline]
+    fn acosh(self) -> Self {
+        libm::acoshf(self)
+    }
+    #[inline]
+    fn atanh(self) -> Self {
+        libm::atanhf(self)
+    }
+});
 #[cfg(all(not(feature = "std"), feature = "libm"))]
-float_impl_libm!(f64 integer_decode_f64 F64Ext);
+float_impl_libm!(f64 integer_decode_f64 {
+    #[inline]
+    #[allow(deprecated)]
+    fn abs_sub(self, other: Self) -> Self {
+        libm::fdim(self, other)
+    }
+    #[inline]
+    fn floor(self) -> Self {
+        libm::floor(self)
+    }
+    #[inline]
+    fn ceil(self) -> Self {
+        libm::ceil(self)
+    }
+    #[inline]
+    fn round(self) -> Self {
+        libm::round(self)
+    }
+    #[inline]
+    fn trunc(self) -> Self {
+        libm::trunc(self)
+    }
+    #[inline]
+    fn abs(self) -> Self {
+        libm::fabs(self)
+    }
+    #[inline]
+    fn mul_add(self, a: Self, b: Self) -> Self {
+        libm::fma(self, a, b)
+    }
+    #[inline]
+    fn powf(self, n: Self) -> Self {
+        libm::pow(self, n)
+    }
+    #[inline]
+    fn sqrt(self) -> Self {
+        libm::sqrt(self)
+    }
+    #[inline]
+    fn exp(self) -> Self {
+        libm::exp(self)
+    }
+    #[inline]
+    fn exp2(self) -> Self {
+        libm::exp2(self)
+    }
+    #[inline]
+    fn ln(self) -> Self {
+        libm::log(self)
+    }
+    #[inline]
+    fn log2(self) -> Self {
+        libm::log2(self)
+    }
+    #[inline]
+    fn log10(self) -> Self {
+        libm::log10(self)
+    }
+    #[inline]
+    fn cbrt(self) -> Self {
+        libm::cbrt(self)
+    }
+    #[inline]
+    fn hypot(self, other: Self) -> Self {
+        libm::hypot(self, other)
+    }
+    #[inline]
+    fn sin(self) -> Self {
+        libm::sin(self)
+    }
+    #[inline]
+    fn cos(self) -> Self {
+        libm::cos(self)
+    }
+    #[inline]
+    fn tan(self) -> Self {
+        libm::tan(self)
+    }
+    #[inline]
+    fn asin(self) -> Self {
+        libm::asin(self)
+    }
+    #[inline]
+    fn acos(self) -> Self {
+        libm::acos(self)
+    }
+    #[inline]
+    fn atan(self) -> Self {
+        libm::atan(self)
+    }
+    #[inline]
+    fn atan2(self, other: Self) -> Self {
+        libm::atan2(self, other)
+    }
+    #[inline]
+    fn sin_cos(self) -> (Self, Self) {
+        libm::sincos(self)
+    }
+    #[inline]
+    fn exp_m1(self) -> Self {
+        libm::expm1(self)
+    }
+    #[inline]
+    fn ln_1p(self) -> Self {
+        libm::log1p(self)
+    }
+    #[inline]
+    fn sinh(self) -> Self {
+        libm::sinh(self)
+    }
+    #[inline]
+    fn cosh(self) -> Self {
+        libm::cosh(self)
+    }
+    #[inline]
+    fn tanh(self) -> Self {
+        libm::tanh(self)
+    }
+    #[inline]
+    fn asinh(self) -> Self {
+        libm::asinh(self)
+    }
+    #[inline]
+    fn acosh(self) -> Self {
+        libm::acosh(self)
+    }
+    #[inline]
+    fn atanh(self) -> Self {
+        libm::atanh(self)
+    }
+});
 
 macro_rules! float_const_impl {
     ($(#[$doc:meta] $constant:ident,)+) => (
