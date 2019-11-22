@@ -1889,52 +1889,48 @@ macro_rules! float_impl_std {
 
 #[cfg(all(not(feature = "std"), feature = "libm"))]
 macro_rules! float_impl_libm {
-    ($T:ident $decode:ident { $($LibmImpl:tt)* }) => {
-        impl Float for $T {
-            constant! {
-                nan() -> $T::NAN;
-                infinity() -> $T::INFINITY;
-                neg_infinity() -> $T::NEG_INFINITY;
-                neg_zero() -> -0.0;
-                min_value() -> $T::MIN;
-                min_positive_value() -> $T::MIN_POSITIVE;
-                epsilon() -> $T::EPSILON;
-                max_value() -> $T::MAX;
-            }
+    ($T:ident $decode:ident) => {
+        constant! {
+            nan() -> $T::NAN;
+            infinity() -> $T::INFINITY;
+            neg_infinity() -> $T::NEG_INFINITY;
+            neg_zero() -> -0.0;
+            min_value() -> $T::MIN;
+            min_positive_value() -> $T::MIN_POSITIVE;
+            epsilon() -> $T::EPSILON;
+            max_value() -> $T::MAX;
+        }
 
-            #[inline]
-            fn integer_decode(self) -> (u64, i16, i8) {
-                $decode(self)
-            }
+        #[inline]
+        fn integer_decode(self) -> (u64, i16, i8) {
+            $decode(self)
+        }
 
-            #[inline]
-            fn fract(self) -> Self {
-                self - FloatCore::trunc(self)
-            }
+        #[inline]
+        fn fract(self) -> Self {
+            self - FloatCore::trunc(self)
+        }
 
-            #[inline]
-            fn log(self, base: Self) -> Self {
-                self.ln() / base.ln()
-            }
+        #[inline]
+        fn log(self, base: Self) -> Self {
+            self.ln() / base.ln()
+        }
 
-            $($LibmImpl)*
-
-            forward! {
-                FloatCore::is_nan(self) -> bool;
-                FloatCore::is_infinite(self) -> bool;
-                FloatCore::is_finite(self) -> bool;
-                FloatCore::is_normal(self) -> bool;
-                FloatCore::classify(self) -> FpCategory;
-                FloatCore::signum(self) -> Self;
-                FloatCore::is_sign_positive(self) -> bool;
-                FloatCore::is_sign_negative(self) -> bool;
-                FloatCore::recip(self) -> Self;
-                FloatCore::powi(self, n: i32) -> Self;
-                FloatCore::to_degrees(self) -> Self;
-                FloatCore::to_radians(self) -> Self;
-                FloatCore::max(self, other: Self) -> Self;
-                FloatCore::min(self, other: Self) -> Self;
-            }
+        forward! {
+            FloatCore::is_nan(self) -> bool;
+            FloatCore::is_infinite(self) -> bool;
+            FloatCore::is_finite(self) -> bool;
+            FloatCore::is_normal(self) -> bool;
+            FloatCore::classify(self) -> FpCategory;
+            FloatCore::signum(self) -> Self;
+            FloatCore::is_sign_positive(self) -> bool;
+            FloatCore::is_sign_negative(self) -> bool;
+            FloatCore::recip(self) -> Self;
+            FloatCore::powi(self, n: i32) -> Self;
+            FloatCore::to_degrees(self) -> Self;
+            FloatCore::to_radians(self) -> Self;
+            FloatCore::max(self, other: Self) -> Self;
+            FloatCore::min(self, other: Self) -> Self;
         }
     };
 }
@@ -1977,7 +1973,9 @@ float_impl_std!(f32 integer_decode_f32);
 float_impl_std!(f64 integer_decode_f64);
 
 #[cfg(all(not(feature = "std"), feature = "libm"))]
-float_impl_libm!(f32 integer_decode_f32 {
+impl Float for f32 {
+    float_impl_libm!(f32 integer_decode_f32);
+
     #[inline]
     #[allow(deprecated)]
     fn abs_sub(self, other: Self) -> Self {
@@ -2107,9 +2105,12 @@ float_impl_libm!(f32 integer_decode_f32 {
     fn atanh(self) -> Self {
         libm::atanhf(self)
     }
-});
+}
+
 #[cfg(all(not(feature = "std"), feature = "libm"))]
-float_impl_libm!(f64 integer_decode_f64 {
+impl Float for f64 {
+    float_impl_libm!(f64 integer_decode_f64);
+
     #[inline]
     #[allow(deprecated)]
     fn abs_sub(self, other: Self) -> Self {
@@ -2239,7 +2240,7 @@ float_impl_libm!(f64 integer_decode_f64 {
     fn atanh(self) -> Self {
         libm::atanh(self)
     }
-});
+}
 
 macro_rules! float_const_impl {
     ($(#[$doc:meta] $constant:ident,)+) => (
