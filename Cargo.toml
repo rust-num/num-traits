@@ -8,7 +8,7 @@ categories = ["algorithms", "science", "no-std"]
 license = "MIT/Apache-2.0"
 repository = "https://github.com/rust-num/num-traits"
 name = "num-traits"
-version = "0.2.9"
+version = "0.2.10"
 readme = "README.md"
 build = "build.rs"
 exclude = ["/ci/*", "/.travis.yml", "/bors.toml"]
@@ -17,7 +17,7 @@ exclude = ["/ci/*", "/.travis.yml", "/bors.toml"]
 features = ["std"]
 
 [dependencies]
-libm = { version = "0.1.4", optional = true }
+libm = { version = "0.2.0", optional = true }
 
 [features]
 default = ["std"]

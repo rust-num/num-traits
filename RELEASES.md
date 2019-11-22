@@ -1,3 +1,11 @@
+# Release 0.2.10 (2019-11-22)
+
+- [Updated the `libm` dependency to 0.2][144].
+
+**Contributors**: @CryZe
+
+[144]: https://github.com/rust-num/num-traits/pull/144
+
 # Release 0.2.9 (2019-11-12)
 
 - [A new optional `libm` dependency][99] enables the `Float` and `Real` traits
