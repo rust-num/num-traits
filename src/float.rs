@@ -2247,6 +2247,7 @@ macro_rules! float_const_impl {
         #[allow(non_snake_case)]
         pub trait FloatConst {
             $(#[$doc] fn $constant() -> Self;)+
+            #[doc = "Return the full circle constant `τ`."] fn TAU() -> Self;
         }
         float_const_impl! { @float f32, $($constant,)+ }
         float_const_impl! { @float f64, $($constant,)+ }
@@ -2255,6 +2256,7 @@ macro_rules! float_const_impl {
         impl FloatConst for $T {
             constant! {
                 $( $constant() -> $T::consts::$constant; )+
+                TAU() -> 6.28318530717958647692528676655900577;
             }
         }
     );
