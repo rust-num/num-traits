@@ -2291,7 +2291,7 @@ float_const_impl! {
     LOG10_E,
     #[doc = "Return `log2(e)`."]
     LOG2_E,
-    #[doc = "Return Archimedes’ constant."]
+    #[doc = "Return Archimedes’ constant `π`."]
     PI,
     #[doc = "Return `sqrt(2.0)`."]
     SQRT_2,
