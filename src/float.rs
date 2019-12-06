@@ -1,6 +1,6 @@
 use core::mem;
 use core::num::FpCategory;
-use core::ops::Neg;
+use core::ops::{Add, Neg};
 
 use core::f32;
 use core::f64;
@@ -2247,7 +2247,11 @@ macro_rules! float_const_impl {
         #[allow(non_snake_case)]
         pub trait FloatConst {
             $(#[$doc] fn $constant() -> Self;)+
-            #[doc = "Return the full circle constant `τ`."] fn TAU() -> Self;
+            #[doc = "Return the full circle constant `τ`."]
+            #[inline]
+            fn TAU() -> Self where Self: Sized + Add<Self, Output = Self> {
+                Self::PI() + Self::PI()
+            }
         }
         float_const_impl! { @float f32, $($constant,)+ }
         float_const_impl! { @float f64, $($constant,)+ }
