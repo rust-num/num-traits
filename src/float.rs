@@ -1,6 +1,6 @@
 use core::mem;
 use core::num::FpCategory;
-use core::ops::Neg;
+use core::ops::{Add, Neg};
 
 use core::f32;
 use core::f64;
@@ -2247,6 +2247,11 @@ macro_rules! float_const_impl {
         #[allow(non_snake_case)]
         pub trait FloatConst {
             $(#[$doc] fn $constant() -> Self;)+
+            #[doc = "Return the full circle constant `τ`."]
+            #[inline]
+            fn TAU() -> Self where Self: Sized + Add<Self, Output = Self> {
+                Self::PI() + Self::PI()
+            }
         }
         float_const_impl! { @float f32, $($constant,)+ }
         float_const_impl! { @float f64, $($constant,)+ }
@@ -2255,6 +2260,7 @@ macro_rules! float_const_impl {
         impl FloatConst for $T {
             constant! {
                 $( $constant() -> $T::consts::$constant; )+
+                TAU() -> 6.28318530717958647692528676655900577;
             }
         }
     );
@@ -2289,7 +2295,7 @@ float_const_impl! {
     LOG10_E,
     #[doc = "Return `log2(e)`."]
     LOG2_E,
-    #[doc = "Return Archimedes’ constant."]
+    #[doc = "Return Archimedes’ constant `π`."]
     PI,
     #[doc = "Return `sqrt(2.0)`."]
     SQRT_2,
