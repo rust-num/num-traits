@@ -22,7 +22,7 @@ use {Num, NumCast};
 ///
 /// All `PrimInt` types are expected to be fixed-width binary integers. The width can be queried
 /// via `T::zero().count_zeros()`. The trait currently lacks a way to query the width at
-/// compile-time.
+/// compile-time, but `core::mem::size_of::<T>()` can be used in the meantime.
 ///
 /// While a default implementation for all builtin primitive integers is provided, the trait is in
 /// no way restricted to these. Other integer types that fulfil the requirements are free to
