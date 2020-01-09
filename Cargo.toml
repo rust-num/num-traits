@@ -25,4 +25,4 @@ std = []
 i128 = []
 
 [build-dependencies]
-autocfg = "0.1.3"
+autocfg = "1"
