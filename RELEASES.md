@@ -1,3 +1,13 @@
+# Release 0.2.11 (2020-01-09)
+
+- [Added the full circle constant τ as `FloatConst::TAU`][145].
+- [Updated the `autocfg` build dependency to 1.0][148].
+
+**Contributors**: @cuviper, @m-ou-se
+
+[145]: https://github.com/rust-num/num-traits/pull/145
+[148]: https://github.com/rust-num/num-traits/pull/148
+
 # Release 0.2.10 (2019-11-22)
 
 - [Updated the `libm` dependency to 0.2][144].
