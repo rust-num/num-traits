@@ -1806,6 +1806,37 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// assert!(abs_difference < 1e-10);
     /// ```
     fn integer_decode(self) -> (u64, i16, i8);
+
+    /// Returns a number composed of the magnitude of `self` and the sign of
+    /// `sign`.
+    ///
+    /// Equal to `self` if the sign of `self` and `sign` are the same, otherwise
+    /// equal to `-self`. If `self` is a `NAN`, then a `NAN` with the sign of
+    /// `sign` is returned.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use num_traits::Float;
+    ///
+    /// let f = 3.5_f32;
+    ///
+    /// assert_eq!(f.copysign(0.42), 3.5_f32);
+    /// assert_eq!(f.copysign(-0.42), -3.5_f32);
+    /// assert_eq!((-f).copysign(0.42), 3.5_f32);
+    /// assert_eq!((-f).copysign(-0.42), -3.5_f32);
+    ///
+    /// assert!(f32::nan().copysign(1.0).is_nan());
+    /// ```
+    fn copysign(self, sign:Self) -> Self {
+        if self.is_nan() {
+            sign / Self::zero()
+        } else if self.signum() == sign.signum() {
+            self
+        } else {
+            self.neg()
+        }
+    }
 }
 
 #[cfg(feature = "std")]
@@ -1882,6 +1913,7 @@ macro_rules! float_impl_std {
                 Self::asinh(self) -> Self;
                 Self::acosh(self) -> Self;
                 Self::atanh(self) -> Self;
+                Self::copysign(self, sign: Self) -> Self;
             }
         }
     };
@@ -2105,6 +2137,10 @@ impl Float for f32 {
     fn atanh(self) -> Self {
         libm::atanhf(self)
     }
+    #[inline]
+    fn copysign(self, sign: Self) -> Self {
+        libm::copysignf(self, sign)
+    }
 }
 
 #[cfg(all(not(feature = "std"), feature = "libm"))]
@@ -2240,6 +2276,10 @@ impl Float for f64 {
     fn atanh(self) -> Self {
         libm::atanh(self)
     }
+    #[inline]
+    fn copysign(self, sign: Self) -> Self {
+        libm::copysign(self, sign)
+    }
 }
 
 macro_rules! float_const_impl {
@@ -2355,5 +2395,28 @@ mod tests {
             FloatCore::to_degrees(1_f32),
             57.2957795130823208767981548141051703
         );
+    }
+
+    #[cfg(any(feature = "std", feature = "libm"))]
+    #[test]
+    fn copysign() {
+        use float::Float;
+        test_copysign_generic(2.0_f32, -2.0_f32, f32::nan());
+        test_copysign_generic(2.0_f64, -2.0_f64, f64::nan());
+    }
+
+    fn test_copysign_generic<F: crate::float::Float + core::fmt::Debug>(p: F, n: F, nan: F) {
+        assert!(p.is_sign_positive());
+        assert!(n.is_sign_negative());
+        assert!(nan.is_nan());
+
+        assert_eq!(p, p.copysign(p));
+        assert_eq!(p.neg(), p.copysign(n));
+
+        assert_eq!(n, n.copysign(n));
+        assert_eq!(n.neg(), n.copysign(p));
+
+        assert!(nan.copysign(p).is_sign_positive());
+        assert!(nan.copysign(n).is_sign_negative());
     }
 }
