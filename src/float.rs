@@ -606,8 +606,8 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     /// use num_traits::float::FloatCore;
     /// use std::{f32, f64};
     ///
-    /// fn check<T: FloatCore>(x: T, y: T, min: T) {
-    ///     assert!(x.max(y) == min);
+    /// fn check<T: FloatCore>(x: T, y: T, max: T) {
+    ///     assert!(x.max(y) == max);
     /// }
     ///
     /// check(1.0f32, 2.0, 2.0);
