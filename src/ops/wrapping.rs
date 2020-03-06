@@ -116,7 +116,8 @@ pub trait WrappingNeg: Sized {
     /// use num_traits::WrappingNeg;
     ///
     /// assert_eq!(100i8.wrapping_neg(), -100);
-    /// assert_eq!((-128i8).wrapping_neg(), -128);
+    /// assert_eq!((-100i8).wrapping_neg(), 100);
+    /// assert_eq!((-128i8).wrapping_neg(), -128); // wrapped!
     /// ```
     fn wrapping_neg(&self) -> Self;
 }
