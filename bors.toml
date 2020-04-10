@@ -1,3 +1,13 @@
 status = [
-  "continuous-integration/travis-ci/push",
+  "Test (1.8.0)",
+  "Test (1.15.0)",
+  "Test (1.20.0)",
+  "Test (1.26.0)",
+  "Test (1.31.0)",
+  "Test (stable)",
+  "Test (beta)",
+  "Test (nightly)",
+  "Test (i586)",
+  "No Std",
+  "Format",
 ]
