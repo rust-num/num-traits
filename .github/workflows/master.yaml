@@ -15,12 +15,17 @@ jobs:
       matrix:
         rust: [1.8.0, stable]
     steps:
-      - name: Rust install
+      - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
           toolchain: ${{ matrix.rust }}
           profile: minimal
           override: true
+      - name: Cache cargo registry
+        uses: actions/cache@v1
+        with:
+          path: ~/.cargo/registry
+          key: cargo-registry
       - name: Checkout
         uses: actions/checkout@v2
       - name: Build
