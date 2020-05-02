@@ -1,5 +1,37 @@
 use core::ops::{Add, Mul, Sub};
 
+/// Saturating math operations. Deprecated, use `SaturatingAdd`, `SaturatingSub` and
+/// `SaturatingMul` instead.
+pub trait Saturating {
+    /// Saturating addition operator.
+    /// Returns a+b, saturating at the numeric bounds instead of overflowing.
+    fn saturating_add(self, v: Self) -> Self;
+
+    /// Saturating subtraction operator.
+    /// Returns a-b, saturating at the numeric bounds instead of overflowing.
+    fn saturating_sub(self, v: Self) -> Self;
+}
+
+macro_rules! deprecated_saturating_impl {
+    ($trait_name:ident for $($t:ty)*) => {$(
+        impl $trait_name for $t {
+            #[inline]
+            fn saturating_add(self, v: Self) -> Self {
+                Self::saturating_add(self, v)
+            }
+
+            #[inline]
+            fn saturating_sub(self, v: Self) -> Self {
+                Self::saturating_sub(self, v)
+            }
+        }
+    )*}
+}
+
+deprecated_saturating_impl!(Saturating for isize usize i8 u8 i16 u16 i32 u32 i64 u64);
+#[cfg(has_i128)]
+deprecated_saturating_impl!(Saturating for i128 u128);
+
 macro_rules! saturating_impl {
     ($trait_name:ident, $method:ident, $t:ty) => {
         impl $trait_name for $t {
@@ -19,7 +51,7 @@ macro_rules! saturating_impl {
     };
 }
 
-/// Performs addition that saturates high on overflow and low on underflow.
+/// Performs addition that saturates at the numeric bounds instead of overflowing.
 pub trait SaturatingAdd: Sized + Add<Self, Output = Self> {
     /// Saturating addition. Computes `self + other`, saturating at the relevant high or low boundary of
     /// the type.
@@ -42,7 +74,7 @@ saturating_impl!(SaturatingAdd, saturating_add, isize);
 #[cfg(has_i128)]
 saturating_impl!(SaturatingAdd, saturating_add, i128);
 
-/// Performs subtraction that saturates high on overflow and low on underflow.
+/// Performs subtraction that saturates at the numeric bounds instead of overflowing.
 pub trait SaturatingSub: Sized + Sub<Self, Output = Self> {
     /// Saturating subtraction. Computes `self - other`, saturating at the relevant high or low boundary of
     /// the type.
@@ -65,7 +97,7 @@ saturating_impl!(SaturatingSub, saturating_sub, isize);
 #[cfg(has_i128)]
 saturating_impl!(SaturatingSub, saturating_sub, i128);
 
-/// Performs subtraction that saturates high on overflow and low on underflow.
+/// Performs multiplication that saturates at the numeric bounds instead of overflowing.
 pub trait SaturatingMul: Sized + Mul<Self, Output = Self> {
     /// Saturating multiplication. Computes `self * other`, saturating at the relevant high or low boundary of
     /// the type.

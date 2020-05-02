@@ -2,7 +2,7 @@ use core::ops::{BitAnd, BitOr, BitXor, Not, Shl, Shr};
 
 use bounds::Bounded;
 use ops::checked::*;
-use ops::saturating::*;
+use ops::saturating::Saturating;
 use {Num, NumCast};
 
 /// Generic trait for primitive integers.
@@ -50,9 +50,7 @@ pub trait PrimInt:
     + CheckedSub<Output = Self>
     + CheckedMul<Output = Self>
     + CheckedDiv<Output = Self>
-    + SaturatingAdd
-    + SaturatingSub
-    + SaturatingMul
+    + Saturating
 {
     /// Returns the number of ones in the binary representation of `self`.
     ///
