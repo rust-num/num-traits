@@ -1,6 +1,6 @@
 use core::mem;
 use core::num::FpCategory;
-use core::ops::{Add, Neg};
+use core::ops::{Add, Div, Neg};
 
 use core::f32;
 use core::f64;
@@ -2252,6 +2252,16 @@ macro_rules! float_const_impl {
             fn TAU() -> Self where Self: Sized + Add<Self, Output = Self> {
                 Self::PI() + Self::PI()
             }
+            #[doc = "Return `log10(2.0)`."]
+            #[inline]
+            fn LOG10_2() -> Self where Self: Sized + Div<Self, Output = Self> {
+                Self::LN_2() / Self::LN_10()
+            }
+            #[doc = "Return `log2(10.0)`."]
+            #[inline]
+            fn LOG2_10() -> Self where Self: Sized + Div<Self, Output = Self> {
+                Self::LN_10() / Self::LN_2()
+            }
         }
         float_const_impl! { @float f32, $($constant,)+ }
         float_const_impl! { @float f64, $($constant,)+ }
@@ -2261,6 +2271,8 @@ macro_rules! float_const_impl {
             constant! {
                 $( $constant() -> $T::consts::$constant; )+
                 TAU() -> 6.28318530717958647692528676655900577;
+                LOG10_2() -> 0.301029995663981195213738894724493027;
+                LOG2_10() -> 3.32192809488736234787031942948939018;
             }
         }
     );
@@ -2355,5 +2367,24 @@ mod tests {
             FloatCore::to_degrees(1_f32),
             57.2957795130823208767981548141051703
         );
+    }
+
+    #[test]
+    #[cfg(any(feature = "std", feature = "libm"))]
+    fn extra_logs() {
+        use float::{Float, FloatConst};
+
+        fn check<F: Float + FloatConst>(diff: F) {
+            let _2 = F::from(2.0).unwrap();
+            assert!((F::LOG10_2() - F::log10(_2)).abs() < diff);
+            assert!((F::LOG10_2() - F::LN_2() / F::LN_10()).abs() < diff);
+
+            let _10 = F::from(10.0).unwrap();
+            assert!((F::LOG2_10() - F::log2(_10)).abs() < diff);
+            assert!((F::LOG2_10() - F::LN_10() / F::LN_2()).abs() < diff);
+        }
+
+        check::<f32>(1e-6);
+        check::<f64>(1e-12);
     }
 }

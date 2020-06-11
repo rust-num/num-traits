@@ -42,7 +42,7 @@ pub use ops::checked::{
 };
 pub use ops::inv::Inv;
 pub use ops::mul_add::{MulAdd, MulAddAssign};
-pub use ops::saturating::Saturating;
+pub use ops::saturating::{Saturating, SaturatingAdd, SaturatingMul, SaturatingSub};
 pub use ops::wrapping::{
     WrappingAdd, WrappingMul, WrappingNeg, WrappingShl, WrappingShr, WrappingSub,
 };
