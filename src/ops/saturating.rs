@@ -41,14 +41,6 @@ macro_rules! saturating_impl {
             }
         }
     };
-    ($trait_name:ident, $method:ident, $t:ty, $rhs:ty) => {
-        impl $trait_name<$rhs> for $t {
-            #[inline]
-            fn $method(&self, v: &$rhs) -> Self {
-                <$t>::$method(*self, *v)
-            }
-        }
-    };
 }
 
 /// Performs addition that saturates at the numeric bounds instead of overflowing.
