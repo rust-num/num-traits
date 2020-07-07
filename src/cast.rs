@@ -9,6 +9,14 @@ use core::{u16, u32, u64, u8, usize};
 use float::FloatCore;
 
 /// A generic trait for converting a value to a number.
+///
+/// A value can be represented by the target type when it lies within
+/// the range of scalars supported by the target type.
+/// For example, a negative integer cannot be represented by an unsigned
+/// integer type, and an `f64` with a very high magnitude might not be
+/// convertible to an `f32`.
+/// On the other hand, conversions with possible precision loss or truncation
+/// (e.g. an `f32` with a decimal part to an integer type) are admitted.
 pub trait ToPrimitive {
     /// Converts the value of `self` to an `isize`. If the value cannot be
     /// represented by an `isize`, then `None` is returned.
@@ -392,6 +400,14 @@ impl_to_primitive_float!(f32);
 impl_to_primitive_float!(f64);
 
 /// A generic trait for converting a number to a value.
+///
+/// A value can be represented by the target type when it lies within
+/// the range of scalars supported by the target type.
+/// For example, a negative integer cannot be represented by an unsigned
+/// integer type, and an `f64` with a very high magnitude might not be
+/// convertible to an `f32`.
+/// On the other hand, conversions with possible precision loss or truncation
+/// (e.g. an `f32` with a decimal part to an integer type) are admitted.
 pub trait FromPrimitive: Sized {
     /// Converts an `isize` to return an optional value of this type. If the
     /// value cannot be represented by this type, then `None` is returned.
@@ -672,6 +688,14 @@ pub trait NumCast: Sized + ToPrimitive {
     /// Creates a number from another value that can be converted into
     /// a primitive via the `ToPrimitive` trait. If the source value cannot be
     /// represented by the target type, then `None` is returned.
+    ///
+    /// A value can be represented by the target type when it lies within
+    /// the range of scalars supported by the target type.
+    /// For example, a negative integer cannot be represented by an unsigned
+    /// integer type, and an `f64` with a very high magnitude might not be
+    /// convertible to an `f32`.
+    /// On the other hand, conversions with possible precision loss or truncation
+    /// (e.g. an `f32` with a decimal part to an integer type) are admitted.
     fn from<T: ToPrimitive>(n: T) -> Option<Self>;
 }
 
