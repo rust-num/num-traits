@@ -1,4 +1,8 @@
 use core::ops::{Add, Mul, Sub};
+#[cfg(has_i128)]
+use core::{i128, u128};
+use core::{i16, i32, i64, i8, isize};
+use core::{u16, u32, u64, u8, usize};
 
 macro_rules! overflowing_impl {
     ($trait_name:ident, $method:ident, $t:ty) => {
@@ -89,9 +93,9 @@ fn test_overflowing_traits() {
         a.overflowing_mul(&b)
     }
     assert_eq!(overflowing_add(5i16, 2), (7, false));
-    assert_eq!(overflowing_add(std::i16::MAX, 1), (std::i16::MIN, true));
+    assert_eq!(overflowing_add(i16::MAX, 1), (i16::MIN, true));
     assert_eq!(overflowing_sub(5i16, 2), (3, false));
-    assert_eq!(overflowing_sub(std::i16::MIN, 1), (std::i16::MAX, true));
+    assert_eq!(overflowing_sub(i16::MIN, 1), (i16::MAX, true));
     assert_eq!(overflowing_mul(5i16, 2), (10, false));
     assert_eq!(overflowing_mul(1_000_000_000i32, 10), (1410065408, true));
 }
