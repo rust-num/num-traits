@@ -753,22 +753,13 @@ impl<T: NumCast> NumCast for Wrapping<T> {
 /// # Safety
 ///
 /// **In Rust versions before 1.45.0**, some uses of the `as` operator were not entirely safe.
-/// In particular, it was undefined behavior if:
-///
-/// - A truncated floating point value cannot fit in the target integer
-///   type ([#10184](https://github.com/rust-lang/rust/issues/10184));
+/// In particular, it was undefined behavior if
+/// a truncated floating point value could not fit in the target integer
+/// type ([#10184](https://github.com/rust-lang/rust/issues/10184)).
 ///
 /// ```ignore
 /// # use num_traits::AsPrimitive;
 /// let x: u8 = (1.04E+17).as_(); // UB
-/// ```
-///
-/// - Or a floating point value does not fit in another floating
-///   point type ([#15536](https://github.com/rust-lang/rust/issues/15536)).
-///
-/// ```ignore
-/// # use num_traits::AsPrimitive;
-/// let x: f32 = (1e300f64).as_(); // UB
 /// ```
 ///
 pub trait AsPrimitive<T>: 'static + Copy
