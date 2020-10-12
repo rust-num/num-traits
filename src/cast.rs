@@ -635,6 +635,39 @@ impl<T: ToPrimitive> ToPrimitive for Wrapping<T> {
     }
 }
 
+macro_rules! impl_to_primitive_ref {
+    ($( $(#[$cfg:meta])* fn $method:ident -> $i:ident ; )*) => {$(
+        #[inline]
+        $(#[$cfg])*
+        fn $method(&self) -> Option<$i> {
+            (*self).$method()
+        }
+    )*}
+}
+
+impl<T: ToPrimitive> ToPrimitive for &T {
+    impl_to_primitive_ref! {
+        fn to_isize -> isize;
+        fn to_i8 -> i8;
+        fn to_i16 -> i16;
+        fn to_i32 -> i32;
+        fn to_i64 -> i64;
+        #[cfg(has_i128)]
+        fn to_i128 -> i128;
+
+        fn to_usize -> usize;
+        fn to_u8 -> u8;
+        fn to_u16 -> u16;
+        fn to_u32 -> u32;
+        fn to_u64 -> u64;
+        #[cfg(has_i128)]
+        fn to_u128 -> u128;
+
+        fn to_f32 -> f32;
+        fn to_f64 -> f64;
+    }
+}
+
 macro_rules! impl_from_primitive_wrapping {
     ($( $(#[$cfg:meta])* fn $method:ident ( $i:ident ); )*) => {$(
         #[inline]
