@@ -1,3 +1,20 @@
+# Release 0.2.13 (2020-10-29)
+
+- [The new `OverflowingAdd`, `OverflowingSub`, and `OverflowingMul` traits][180]
+  return a tuple with the operation result and a `bool` indicating overflow.
+- [The "i128" feature now overrides compiler probes for that support][185].
+  This may fix scenarios where `autocfg` probing doesn't work properly.
+- [Casts from large `f64` values to `f32` now saturate to infinity][186]. They
+  previously returned `None` because that was once thought to be undefined
+  behavior, but [rust#15536] resolved that such casts are fine.
+
+**Contributors**: @cuviper, @Enet4, @KaczuH, @martin-t, @newpavlov
+
+[180]: https://github.com/rust-num/num-traits/pull/180
+[185]: https://github.com/rust-num/num-traits/pull/185
+[186]: https://github.com/rust-num/num-traits/pull/186
+[rust#15536]: https://github.com/rust-lang/rust/issues/15536
+
 # Release 0.2.12 (2020-06-11)
 
 - [The new `WrappingNeg` trait][153] will wrap the result if it exceeds the
