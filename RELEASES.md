@@ -1,3 +1,9 @@
+# Release 0.2.14 (2020-10-29)
+
+- Clarify the license specification as "MIT OR Apache-2.0".
+
+**Contributors**: @cuviper
+
 # Release 0.2.13 (2020-10-29)
 
 - [The new `OverflowingAdd`, `OverflowingSub`, and `OverflowingMul` traits][180]
