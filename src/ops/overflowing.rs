@@ -17,7 +17,7 @@ macro_rules! overflowing_impl {
 
 /// Performs addition with a flag for overflow.
 pub trait OverflowingAdd: Sized + Add<Self, Output = Self> {
-    /// Returns a tuple of the addition along with a boolean indicating whether an arithmetic overflow would occur.
+    /// Returns a tuple of the sum along with a boolean indicating whether an arithmetic overflow would occur.
     /// If an overflow would have occurred then the wrapped value is returned.
     fn overflowing_add(&self, v: &Self) -> (Self, bool);
 }
@@ -40,7 +40,7 @@ overflowing_impl!(OverflowingAdd, overflowing_add, i128);
 
 /// Performs substraction with a flag for overflow.
 pub trait OverflowingSub: Sized + Sub<Self, Output = Self> {
-    /// Returns a tuple of the subtraction along with a boolean indicating whether an arithmetic overflow would occur.
+    /// Returns a tuple of the difference along with a boolean indicating whether an arithmetic overflow would occur.
     /// If an overflow would have occurred then the wrapped value is returned.
     fn overflowing_sub(&self, v: &Self) -> (Self, bool);
 }
@@ -63,7 +63,7 @@ overflowing_impl!(OverflowingSub, overflowing_sub, i128);
 
 /// Performs multiplication with a flag for overflow.
 pub trait OverflowingMul: Sized + Mul<Self, Output = Self> {
-    /// Returns a tuple of the subtraction along with a boolean indicating whether an arithmetic overflow would occur.
+    /// Returns a tuple of the product along with a boolean indicating whether an arithmetic overflow would occur.
     /// If an overflow would have occurred then the wrapped value is returned.
     fn overflowing_mul(&self, v: &Self) -> (Self, bool);
 }
