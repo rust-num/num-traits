@@ -7,12 +7,16 @@
 - [Casts from large `f64` values to `f32` now saturate to infinity][186]. They
   previously returned `None` because that was once thought to be undefined
   behavior, but [rust#15536] resolved that such casts are fine.
+- [`Num::from_str_radix` documents requirements for radix support][192], which
+  are now more relaxed than previously implied. It is suggested to accept at
+  least `2..=36` without panicking, but `Err` may be returned otherwise.
 
 **Contributors**: @cuviper, @Enet4, @KaczuH, @martin-t, @newpavlov
 
 [180]: https://github.com/rust-num/num-traits/pull/180
 [185]: https://github.com/rust-num/num-traits/pull/185
 [186]: https://github.com/rust-num/num-traits/pull/186
+[192]: https://github.com/rust-num/num-traits/issues/192
 [rust#15536]: https://github.com/rust-lang/rust/issues/15536
 
 # Release 0.2.12 (2020-06-11)
