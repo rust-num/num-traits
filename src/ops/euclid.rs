@@ -1,6 +1,5 @@
 use core::ops::{Div, Rem};
-use Float;
-
+use float::Float;
 pub trait DivRemEuclid: Sized + Div<Self, Output = Self> + Rem<Self, Output = Self> {
     /// Calculates Euclidean division, the matching method for `rem_euclid`.
     ///
