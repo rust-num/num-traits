@@ -187,8 +187,6 @@ mod tests {
             ($($t:ident)+) => {
                 $(
                     {
-                        use core::$t;
-
                         let x: $t = 12.1;
                         let y: $t = 3.2;
                         assert!(DivRemEuclid::div_euclid(&x,&y)*y+DivRemEuclid::rem_euclid(&x,&y)-x
