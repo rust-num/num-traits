@@ -106,8 +106,11 @@ rem_euclid_int_impl!(RemEuclid for i8 i16 i32 i64);
 rem_euclid_uint_impl!(RemEuclid for isize usize u8 u16 u32 u64);
 #[cfg(has_i128)]
 div_euclid_int_impl!(DivEuclid for i128);
+#[cfg(has_i128)]
 div_euclid_uint_impl!(DivEuclid for u128);
+#[cfg(has_i128)]
 rem_euclid_int_impl!(RemEuclid for i128);
+#[cfg(has_i128)]
 rem_euclid_uint_impl!(RemEuclid for u128);
 
 #[cfg(any(feature = "std", feature = "libm"))]
@@ -170,7 +173,7 @@ macro_rules! checked_div_euclid_int_impl {
         impl $trait_name for $t {
             #[inline]
             fn checked_div_euclid(self, v: $t) -> Option<$t> {
-                if v == 0 || (self == Self::MIN && v == -1) {
+                if v == 0 || (self == Self::min_value() && v == -1) {
                     None
                 } else {
                     Some(DivEuclid::div_euclid(self,v))
@@ -198,7 +201,7 @@ macro_rules! checked_rem_euclid_int_impl {
         impl $trait_name for $t {
             #[inline]
             fn checked_rem_euclid(self, v: $t) -> Option<$t> {
-                if v == 0 || (self == Self::MIN && v == -1) {
+                if v == 0 || (self == Self::min_value() && v == -1) {
                     None
                 } else {
                     Some(RemEuclid::rem_euclid(self,v))
@@ -227,8 +230,11 @@ checked_rem_euclid_int_impl!(CheckedRemEuclid for i8 i16 i32 i64);
 checked_rem_euclid_uint_impl!(CheckedRemEuclid for isize usize u8 u16 u32 u64);
 #[cfg(has_i128)]
 checked_div_euclid_int_impl!(CheckedDivEuclid for i128);
+#[cfg(has_i128)]
 checked_div_euclid_uint_impl!(CheckedDivEuclid for u128);
+#[cfg(has_i128)]
 checked_rem_euclid_int_impl!(CheckedRemEuclid for i128);
+#[cfg(has_i128)]
 checked_rem_euclid_uint_impl!(CheckedRemEuclid for u128);
 
 #[cfg(test)]
@@ -265,7 +271,7 @@ mod tests {
                         assert_eq!(DivEuclid::div_euclid(-x,y),4);
                         assert_eq!(RemEuclid::rem_euclid(x,y),1);
                         assert_eq!(RemEuclid::rem_euclid(-x,y),2);
-                        let x: $t = $t::MIN+1;
+                        let x: $t = $t::min_value()+1;
                         let y: $t = -1;
                         assert_eq!(DivEuclid::div_euclid(x,y),$t::MAX);
                     }
@@ -307,8 +313,8 @@ mod tests {
             ($($t:ident)+) => {
                 $(
                     {
-                        assert_eq!(CheckedDivEuclid::checked_div_euclid($t::MIN,-1),None);
-                        assert_eq!(CheckedRemEuclid::checked_rem_euclid($t::MIN,-1),None);
+                        assert_eq!(CheckedDivEuclid::checked_div_euclid($t::min_value(),-1),None);
+                        assert_eq!(CheckedRemEuclid::checked_rem_euclid($t::min_value(),-1),None);
                         assert_eq!(CheckedDivEuclid::checked_div_euclid(1,0),None);
                         assert_eq!(CheckedRemEuclid::checked_rem_euclid(1,0),None);
                     }
