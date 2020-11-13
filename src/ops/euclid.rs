@@ -47,24 +47,24 @@ pub trait DivRemEuclid: Sized + Div<Self, Output = Self> + Rem<Self, Output = Se
     fn rem_euclid(&self, v: &Self) -> Self;
 }
 macro_rules! div_rem_euclid_impl {
-    ($trait_name:ident for $($t:ty)*) => {$(
+    ($trait_name:ident,$method:ident,$method_2:ident for $($t:ty)*) => {$(
         impl $trait_name for $t {
             #[inline]
-            fn div_euclid(&self, v: &$t) -> Self {
-                <$t>::div_euclid(*self, *v)
+            fn $method(&self, v: &$t) -> Self {
+                <$t>::$method(*self, *v)
             }
 
             #[inline]
-            fn rem_euclid(&self, v: &$t) -> Self {
-                <$t>::rem_euclid(*self, *v)
+            fn $method_2(&self, v: &$t) -> Self {
+                <$t>::$method_2(*self, *v)
             }
 
         }
     )*}
 }
-div_rem_euclid_impl!(DivRemEuclid for isize usize i8 u8 i16 u16 i32 u32 i64 u64);
+div_rem_euclid_impl!(DivRemEuclid,div_euclid,rem_euclid for isize usize i8 u8 i16 u16 i32 u32 i64 u64);
 #[cfg(has_i128)]
-div_rem_euclid_impl!(DivRemEuclid for i128 u128);
+div_rem_euclid_impl!(DivRemEuclid,div_euclid,rem_euclid for i128 u128);
 
 #[cfg(any(feature = "std", feature = "libm"))]
 impl DivRemEuclid for f32 {
@@ -117,23 +117,23 @@ pub trait CheckedDivRemEuclid: Sized + Div<Self, Output = Self> + Rem<Self, Outp
 }
 
 macro_rules! checked_div_rem_euclid_impl {
-    ($trait_name:ident for $($t:ty)*) => {$(
+    ($trait_name:ident,$method:ident,$method_2:ident for $($t:ty)*) => {$(
         impl $trait_name for $t {
             #[inline]
-            fn checked_div_euclid(&self, v: &$t) -> Option<$t> {
-                <$t>::checked_div_euclid(*self, *v)
+            fn $method(&self, v: &$t) -> Option<$t> {
+                <$t>::$method(*self, *v)
             }
 
             #[inline]
-            fn checked_rem_euclid(&self, v: &$t) -> Option<$t> {
-                <$t>::checked_rem_euclid(*self, *v)
+            fn $method_2(&self, v: &$t) -> Option<$t> {
+                <$t>::$method_2(*self, *v)
             }
         }
     )*}
 }
-checked_div_rem_euclid_impl!(CheckedDivRemEuclid for isize usize i8 u8 i16 u16 i32 u32 i64 u64);
+checked_div_rem_euclid_impl!(CheckedDivRemEuclid,checked_div_euclid,checked_rem_euclid for isize usize i8 u8 i16 u16 i32 u32 i64 u64);
 #[cfg(has_i128)]
-checked_div_rem_euclid_impl!(CheckedDivRemEuclid for i128 u128);
+checked_div_rem_euclid_impl!(CheckedDivRemEuclid,checked_div_euclid,checked_rem_euclid for i128 u128);
 
 #[cfg(test)]
 mod tests {
