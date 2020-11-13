@@ -1,5 +1,4 @@
 use core::ops::{Div, Rem};
-use float::Float;
 pub trait DivRemEuclid: Sized + Div<Self, Output = Self> + Rem<Self, Output = Self> {
     /// Calculates Euclidean division, the matching method for `rem_euclid`.
     ///
@@ -70,7 +69,7 @@ div_rem_euclid_impl!(DivRemEuclid for i128 u128);
 #[cfg(any(feature = "std", feature = "libm"))]
 impl DivRemEuclid for f32 {
     fn div_euclid(&self, rhs: &f32) -> f32 {
-        let q = <f32 as Float>::trunc(self / rhs);
+        let q = <f32 as ::Float>::trunc(self / rhs);
         if self % rhs < 0.0 {
             return if *rhs > 0.0 { q - 1.0 } else { q + 1.0 };
         }
@@ -80,7 +79,7 @@ impl DivRemEuclid for f32 {
     fn rem_euclid(&self, rhs: &f32) -> f32 {
         let r = self % rhs;
         if r < 0.0 {
-            r + <f32 as Float>::abs(*rhs)
+            r + <f32 as ::Float>::abs(*rhs)
         } else {
             r
         }
@@ -90,7 +89,7 @@ impl DivRemEuclid for f32 {
 #[cfg(any(feature = "std", feature = "libm"))]
 impl DivRemEuclid for f64 {
     fn div_euclid(&self, rhs: &f64) -> f64 {
-        let q = <f64 as Float>::trunc(self / rhs);
+        let q = <f64 as ::Float>::trunc(self / rhs);
         if self % rhs < 0.0 {
             return if *rhs > 0.0 { q - 1.0 } else { q + 1.0 };
         }
@@ -100,7 +99,7 @@ impl DivRemEuclid for f64 {
     fn rem_euclid(&self, rhs: &f64) -> f64 {
         let r = self % rhs;
         if r < 0.0 {
-            r + <f64 as Float>::abs(*rhs)
+            r + <f64 as ::Float>::abs(*rhs)
         } else {
             r
         }
