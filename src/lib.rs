@@ -48,7 +48,7 @@ pub use ops::wrapping::{
 };
 pub use pow::{checked_pow, pow, Pow};
 pub use sign::{abs, abs_sub, signum, Signed, Unsigned};
-
+pub use ops::euclid::{DivRemEuclid,CheckedDivRemEuclid};
 #[macro_use]
 mod macros;
 
