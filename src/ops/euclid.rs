@@ -273,7 +273,7 @@ mod tests {
                         assert_eq!(RemEuclid::rem_euclid(-x,y),2);
                         let x: $t = $t::min_value()+1;
                         let y: $t = -1;
-                        assert_eq!(DivEuclid::div_euclid(x,y),$t::MAX);
+                        assert_eq!(DivEuclid::div_euclid(x,y),$t::max_value());
                     }
                 )+
             };
@@ -292,13 +292,13 @@ mod tests {
                         let x: $t = 12.1;
                         let y: $t = 3.2;
                         assert!(DivEuclid::div_euclid(x,y)*y+RemEuclid::rem_euclid(x,y)-x
-                        <=46.4 * $t::EPSILON);
+                        <=46.4 * <$t as ::Float>::epsilon());
                         assert!(DivEuclid::div_euclid(x,-y)*-y+RemEuclid::rem_euclid(x,-y)-x
-                        <= 46.4 * $t::EPSILON);
+                        <= 46.4 * <$t as ::Float>::epsilon());
                         assert!(DivEuclid::div_euclid(-x,y)*y+RemEuclid::rem_euclid(-x,y)-(-x)
-                        <= 46.4 * $t::EPSILON);
+                        <= 46.4 * <$t as ::Float>::epsilon());
                         assert!(DivEuclid::div_euclid(-x,-y)*-y+RemEuclid::rem_euclid(-x,-y)-(-x)
-                        <= 46.4 * $t::EPSILON);
+                        <= 46.4 * <$t as ::Float>::epsilon());
                     }
                 )+
             };
