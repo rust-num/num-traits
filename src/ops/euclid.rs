@@ -37,12 +37,12 @@ pub trait DivRemEuclid: Sized + Div<Self, Output = Self> + Rem<Self, Output = Se
     /// ```
     /// use num_traits::DivRemEuclid;
     ///
-    /// let a: f32 = 7.0;
-    /// let b: f32 = 4.0;
-    /// assert_eq!(DivRemEuclid::rem_euclid(&a,&b), 3.0);
-    /// assert_eq!(DivRemEuclid::rem_euclid(&-a,&b), 1.0);
-    /// assert_eq!(DivRemEuclid::rem_euclid(&a,&-b), 3.0);
-    /// assert_eq!(DivRemEuclid::rem_euclid(&-a,&-b), 1.0);
+    /// let a: i32 = 7;
+    /// let b: i32 = 4;
+    /// assert_eq!(DivRemEuclid::rem_euclid(&a,&b), 3);
+    /// assert_eq!(DivRemEuclid::rem_euclid(&-a,&b), 1);
+    /// assert_eq!(DivRemEuclid::rem_euclid(&a,&-b), 3);
+    /// assert_eq!(DivRemEuclid::rem_euclid(&-a,&-b), 1);
     /// ```
     fn rem_euclid(&self, v: &Self) -> Self;
 }
@@ -187,6 +187,8 @@ mod tests {
             ($($t:ident)+) => {
                 $(
                     {
+                        use core::$t;
+
                         let x: $t = 12.1;
                         let y: $t = 3.2;
                         assert!(DivRemEuclid::div_euclid(&x,&y)*y+DivRemEuclid::rem_euclid(&x,&y)-x
