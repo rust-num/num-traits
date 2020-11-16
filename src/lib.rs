@@ -33,6 +33,7 @@ pub use bounds::Bounded;
 #[cfg(any(feature = "std", feature = "libm"))]
 pub use float::Float;
 pub use float::FloatConst;
+pub use float::FloatCore;
 // pub use real::{FloatCore, Real}; // NOTE: Don't do this, it breaks `use num_traits::*;`.
 pub use cast::{cast, AsPrimitive, FromPrimitive, NumCast, ToPrimitive};
 pub use identities::{one, zero, One, Zero};
@@ -40,7 +41,7 @@ pub use int::PrimInt;
 pub use ops::checked::{
     CheckedAdd, CheckedDiv, CheckedMul, CheckedNeg, CheckedRem, CheckedShl, CheckedShr, CheckedSub,
 };
-pub use ops::euclid::{CheckedDivEuclid, CheckedRemEuclid, DivEuclid, RemEuclid};
+pub use ops::euclid::{CheckedEuclid, Euclid};
 pub use ops::inv::Inv;
 pub use ops::mul_add::{MulAdd, MulAddAssign};
 pub use ops::saturating::{Saturating, SaturatingAdd, SaturatingMul, SaturatingSub};
@@ -49,6 +50,7 @@ pub use ops::wrapping::{
 };
 pub use pow::{checked_pow, pow, Pow};
 pub use sign::{abs, abs_sub, signum, Signed, Unsigned};
+
 #[macro_use]
 mod macros;
 
