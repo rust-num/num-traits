@@ -1,6 +1,7 @@
 use core::num::Wrapping;
 use core::ops::{Add, Mul, Neg, Shl, Shr, Sub};
 
+#[macro_export]
 macro_rules! wrapping_impl {
     ($trait_name:ident, $method:ident, $t:ty) => {
         impl $trait_name for $t {
@@ -89,6 +90,7 @@ wrapping_impl!(WrappingMul, wrapping_mul, isize);
 #[cfg(has_i128)]
 wrapping_impl!(WrappingMul, wrapping_mul, i128);
 
+#[macro_export]
 macro_rules! wrapping_unary_impl {
     ($trait_name:ident, $method:ident, $t:ty) => {
         impl $trait_name for $t {
@@ -137,6 +139,7 @@ wrapping_unary_impl!(WrappingNeg, wrapping_neg, isize);
 #[cfg(has_i128)]
 wrapping_unary_impl!(WrappingNeg, wrapping_neg, i128);
 
+#[macro_export]
 macro_rules! wrapping_shift_impl {
     ($trait_name:ident, $method:ident, $t:ty) => {
         impl $trait_name for $t {

@@ -14,6 +14,7 @@ pub trait Bounded {
     fn max_value() -> Self;
 }
 
+#[macro_export]
 macro_rules! bounded_impl {
     ($t:ty, $min:expr, $max:expr) => {
         impl Bounded for $t {

@@ -156,6 +156,7 @@ impl<T> NumAssign for T where T: Num + NumAssignOps {}
 pub trait NumAssignRef: NumAssign + for<'r> NumAssignOps<&'r Self> {}
 impl<T> NumAssignRef for T where T: NumAssign + for<'r> NumAssignOps<&'r T> {}
 
+#[macro_export]
 macro_rules! int_trait_impl {
     ($name:ident for $($t:ty)*) => ($(
         impl $name for $t {
@@ -213,6 +214,7 @@ impl fmt::Display for ParseFloatError {
 // FIXME: The standard library from_str_radix on floats was deprecated, so we're stuck
 // with this implementation ourselves until we want to make a breaking change.
 // (would have to drop it from `Num` though)
+#[macro_export]
 macro_rules! float_trait_impl {
     ($name:ident for $($t:ident)*) => ($(
         impl $name for $t {

@@ -18,6 +18,7 @@ pub trait Pow<RHS> {
     fn pow(self, rhs: RHS) -> Self::Output;
 }
 
+#[macro_export]
 macro_rules! pow_impl {
     ($t:ty) => {
         pow_impl!($t, u8);

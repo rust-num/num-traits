@@ -306,6 +306,7 @@ pub trait PrimInt:
     fn pow(self, exp: u32) -> Self;
 }
 
+#[macro_export]
 macro_rules! prim_int_impl {
     ($T:ty, $S:ty, $U:ty) => {
         impl PrimInt for $T {

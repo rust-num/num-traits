@@ -1809,6 +1809,7 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
 }
 
 #[cfg(feature = "std")]
+#[macro_export]
 macro_rules! float_impl_std {
     ($T:ident $decode:ident) => {
         impl Float for $T {
@@ -1888,6 +1889,7 @@ macro_rules! float_impl_std {
 }
 
 #[cfg(all(not(feature = "std"), feature = "libm"))]
+#[macro_export]
 macro_rules! float_impl_libm {
     ($T:ident $decode:ident) => {
         constant! {
@@ -2242,6 +2244,7 @@ impl Float for f64 {
     }
 }
 
+#[macro_export]
 macro_rules! float_const_impl {
     ($(#[$doc:meta] $constant:ident,)+) => (
         #[allow(non_snake_case)]

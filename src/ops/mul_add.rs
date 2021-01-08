@@ -54,6 +54,7 @@ impl MulAdd<f64, f64> for f64 {
     }
 }
 
+#[macro_export]
 macro_rules! mul_add_impl {
     ($trait_name:ident for $($t:ty)*) => {$(
         impl $trait_name for $t {
@@ -87,6 +88,7 @@ impl MulAddAssign<f64, f64> for f64 {
     }
 }
 
+#[macro_export]
 macro_rules! mul_add_assign_impl {
     ($trait_name:ident for $($t:ty)*) => {$(
         impl $trait_name for $t {

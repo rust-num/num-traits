@@ -28,6 +28,7 @@ pub trait Zero: Sized + Add<Self, Output = Self> {
     fn is_zero(&self) -> bool;
 }
 
+#[macro_export]
 macro_rules! zero_impl {
     ($t:ty, $v:expr) => {
         impl Zero for $t {
@@ -117,6 +118,7 @@ pub trait One: Sized + Mul<Self, Output = Self> {
     }
 }
 
+#[macro_export]
 macro_rules! one_impl {
     ($t:ty, $v:expr) => {
         impl One for $t {

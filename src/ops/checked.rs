@@ -8,6 +8,7 @@ pub trait CheckedAdd: Sized + Add<Self, Output = Self> {
     fn checked_add(&self, v: &Self) -> Option<Self>;
 }
 
+#[macro_export]
 macro_rules! checked_impl {
     ($trait_name:ident, $method:ident, $t:ty) => {
         impl $trait_name for $t {
@@ -147,6 +148,7 @@ checked_impl!(CheckedRem, checked_rem, isize);
 #[cfg(has_i128)]
 checked_impl!(CheckedRem, checked_rem, i128);
 
+#[macro_export]
 macro_rules! checked_impl_unary {
     ($trait_name:ident, $method:ident, $t:ty) => {
         impl $trait_name for $t {
@@ -214,6 +216,7 @@ pub trait CheckedShl: Sized + Shl<u32, Output = Self> {
     fn checked_shl(&self, rhs: u32) -> Option<Self>;
 }
 
+#[macro_export]
 macro_rules! checked_shift_impl {
     ($trait_name:ident, $method:ident, $t:ty) => {
         impl $trait_name for $t {

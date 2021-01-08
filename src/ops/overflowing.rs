@@ -4,6 +4,7 @@ use core::{i128, u128};
 use core::{i16, i32, i64, i8, isize};
 use core::{u16, u32, u64, u8, usize};
 
+#[macro_export]
 macro_rules! overflowing_impl {
     ($trait_name:ident, $method:ident, $t:ty) => {
         impl $trait_name for $t {

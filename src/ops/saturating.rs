@@ -12,6 +12,7 @@ pub trait Saturating {
     fn saturating_sub(self, v: Self) -> Self;
 }
 
+#[macro_export]
 macro_rules! deprecated_saturating_impl {
     ($trait_name:ident for $($t:ty)*) => {$(
         impl $trait_name for $t {
@@ -32,6 +33,7 @@ deprecated_saturating_impl!(Saturating for isize usize i8 u8 i16 u16 i32 u32 i64
 #[cfg(has_i128)]
 deprecated_saturating_impl!(Saturating for i128 u128);
 
+#[macro_export]
 macro_rules! saturating_impl {
     ($trait_name:ident, $method:ident, $t:ty) => {
         impl $trait_name for $t {

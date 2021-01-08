@@ -41,6 +41,7 @@ pub trait Signed: Sized + Num + Neg<Output = Self> {
     fn is_negative(&self) -> bool;
 }
 
+#[macro_export]
 macro_rules! signed_impl {
     ($($t:ty)*) => ($(
         impl Signed for $t {
@@ -107,6 +108,7 @@ where
     }
 }
 
+#[macro_export]
 macro_rules! signed_float_impl {
     ($t:ty) => {
         impl Signed for $t {
@@ -196,6 +198,7 @@ pub fn signum<T: Signed>(value: T) -> T {
 /// A trait for values which cannot be negative
 pub trait Unsigned: Num {}
 
+#[macro_export]
 macro_rules! empty_trait_impl {
     ($name:ident for $($t:ty)*) => ($(
         impl $name for $t {}
