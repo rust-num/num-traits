@@ -236,6 +236,7 @@ macro_rules! float_trait_impl {
                     "inf"   => return Ok(core::$t::INFINITY),
                     "-inf"  => return Ok(core::$t::NEG_INFINITY),
                     "NaN"   => return Ok(core::$t::NAN),
+                    "-NaN"  => return Ok(-core::$t::NAN),
                     _       => {},
                 }
 
