@@ -624,6 +624,7 @@ fn check_numassign_ops() {
     assert_eq!(compute(1, 2), 1)
 }
 
+#[cfg(has_int_assignop_ref)]
 #[test]
 fn check_numassignref_ops() {
     fn compute<T: NumAssignRef + Copy>(mut x: T, y: &T) -> T {
