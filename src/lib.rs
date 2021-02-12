@@ -175,11 +175,7 @@ int_trait_impl!(Num for u128 i128);
 
 impl<T: Num> Num for Wrapping<T>
 where
-    Wrapping<T>: Add<Output = Wrapping<T>>
-        + Sub<Output = Wrapping<T>>
-        + Mul<Output = Wrapping<T>>
-        + Div<Output = Wrapping<T>>
-        + Rem<Output = Wrapping<T>>,
+    Wrapping<T>: NumOps,
 {
     type FromStrRadixErr = T::FromStrRadixErr;
     fn from_str_radix(str: &str, radix: u32) -> Result<Self, Self::FromStrRadixErr> {
