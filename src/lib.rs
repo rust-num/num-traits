@@ -622,5 +622,15 @@ fn check_numassign_ops() {
     assert_eq!(compute(1, 2), 1)
 }
 
-// TODO test `NumAssignRef`, but even the standard numeric types don't
-// implement this yet. (see rust pr41336)
+#[test]
+fn check_numassignref_ops() {
+    fn compute<T: NumAssignRef + Copy>(mut x: T, y: &T) -> T {
+        x *= y;
+        x /= y;
+        x %= y;
+        x += y;
+        x -= y;
+        x
+    }
+    assert_eq!(compute(1, &2), 1)
+}
