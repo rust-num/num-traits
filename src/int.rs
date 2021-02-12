@@ -218,6 +218,24 @@ pub trait PrimInt:
     /// ```
     fn swap_bytes(self) -> Self;
 
+    /// Reverses the order of bits in the integer.
+    ///
+    /// The least significant bit becomes the most significant bit, second least-significant bit
+    /// becomes second most-significant bit, etc.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use num_traits::PrimInt;
+    ///
+    /// let n = 0x12345678u32;
+    /// let m = 0x1e6a2c48u32;
+    ///
+    /// assert_eq!(n.reverse_bits(), m);
+    /// assert_eq!(0u32.reverse_bits(), 0);
+    /// ```
+    fn reverse_bits(self) -> Self;
+
     /// Convert an integer from big endian to the target's endianness.
     ///
     /// On big endian this is a no-op. On little endian the bytes are swapped.
@@ -362,6 +380,11 @@ macro_rules! prim_int_impl {
             #[inline]
             fn swap_bytes(self) -> Self {
                 <$T>::swap_bytes(self)
+            }
+
+            #[inline]
+            fn reverse_bits(self) -> Self {
+                <$T>::reverse_bits(self)
             }
 
             #[inline]
