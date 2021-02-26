@@ -234,7 +234,9 @@ pub trait PrimInt:
     /// assert_eq!(n.reverse_bits(), m);
     /// assert_eq!(0u32.reverse_bits(), 0);
     /// ```
-    fn reverse_bits(self) -> Self;
+    fn reverse_bits(self) -> Self {
+        reverse_bits_fallback(self)
+    }
 
     /// Convert an integer from big endian to the target's endianness.
     ///
@@ -324,6 +326,39 @@ pub trait PrimInt:
     fn pow(self, exp: u32) -> Self;
 }
 
+fn one_per_byte<P: PrimInt>() -> P {
+    // i8, u8: return 0x01
+    // i16, u16: return 0x0101 = (0x01 << 8) | 0x01
+    // i32, u32: return 0x01010101 = (0x0101 << 16) | 0x0101
+    // ...
+    let mut ret = P::one();
+    let mut shift = 8;
+    let mut b = ret.count_zeros() >> 3;
+    while b != 0 {
+        ret = (ret << shift) | ret;
+        shift <<= 1;
+        b >>= 1;
+    }
+    ret
+}
+
+fn reverse_bits_fallback<P: PrimInt>(i: P) -> P {
+    let rep_01: P = one_per_byte();
+    let rep_03 = (rep_01 << 1) | rep_01;
+    let rep_05 = (rep_01 << 2) | rep_01;
+    let rep_0f = (rep_03 << 2) | rep_03;
+    let rep_33 = (rep_03 << 4) | rep_03;
+    let rep_55 = (rep_05 << 4) | rep_05;
+
+    // code above only used to determine rep_0f, rep_33, rep_55;
+    // optimizer should be able to do it in compile time
+    let mut ret = i.swap_bytes();
+    ret = ((ret & rep_0f) << 4) | ((ret >> 4) & rep_0f);
+    ret = ((ret & rep_33) << 2) | ((ret >> 2) & rep_33);
+    ret = ((ret & rep_55) << 1) | ((ret >> 1) & rep_55);
+    ret
+}
+
 macro_rules! prim_int_impl {
     ($T:ty, $S:ty, $U:ty) => {
         impl PrimInt for $T {
@@ -382,6 +417,7 @@ macro_rules! prim_int_impl {
                 <$T>::swap_bytes(self)
             }
 
+            #[cfg(has_reverse_bits)]
             #[inline]
             fn reverse_bits(self) -> Self {
                 <$T>::reverse_bits(self)

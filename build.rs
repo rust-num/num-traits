@@ -16,5 +16,7 @@ fn main() {
         "has_to_int_unchecked",
     );
 
+    ac.emit_expression_cfg("1u32.reverse_bits()", "has_reverse_bits");
+
     autocfg::rerun_path("build.rs");
 }
