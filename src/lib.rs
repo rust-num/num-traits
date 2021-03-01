@@ -224,11 +224,19 @@ macro_rules! float_trait_impl {
                 use self::FloatErrorKind::*;
                 use self::ParseFloatError as PFE;
 
+                // Special case radix 10 to use more accurate standard library implementation
+                if radix == 10 {
+                    return src.parse().map_err(|_| PFE {
+                        kind: if src.is_empty() { Empty } else { Invalid },
+                    });
+                }
+
                 // Special values
                 match src {
                     "inf"   => return Ok(core::$t::INFINITY),
                     "-inf"  => return Ok(core::$t::NEG_INFINITY),
                     "NaN"   => return Ok(core::$t::NAN),
+                    "-NaN"  => return Ok(-core::$t::NAN),
                     _       => {},
                 }
 
