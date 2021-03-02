@@ -33,7 +33,6 @@ pub use bounds::Bounded;
 #[cfg(any(feature = "std", feature = "libm"))]
 pub use float::Float;
 pub use float::FloatConst;
-pub use float::FloatCore;
 // pub use real::{FloatCore, Real}; // NOTE: Don't do this, it breaks `use num_traits::*;`.
 pub use cast::{cast, AsPrimitive, FromPrimitive, NumCast, ToPrimitive};
 pub use identities::{one, zero, One, Zero};
