@@ -78,6 +78,22 @@ pub trait PrimInt:
     /// ```
     fn count_zeros(self) -> u32;
 
+    /// Returns the number of leading ones in the binary representation
+    /// of `self`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use num_traits::PrimInt;
+    ///
+    /// let n = 0xF00Du16;
+    ///
+    /// assert_eq!(n.leading_ones(), 4);
+    /// ```
+    fn leading_ones(self) -> u32 {
+        (!self).leading_zeros()
+    }
+
     /// Returns the number of leading zeros in the binary representation
     /// of `self`.
     ///
@@ -91,6 +107,22 @@ pub trait PrimInt:
     /// assert_eq!(n.leading_zeros(), 10);
     /// ```
     fn leading_zeros(self) -> u32;
+
+    /// Returns the number of trailing ones in the binary representation
+    /// of `self`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use num_traits::PrimInt;
+    ///
+    /// let n = 0xBEEFu16;
+    ///
+    /// assert_eq!(n.trailing_ones(), 4);
+    /// ```
+    fn trailing_ones(self) -> u32 {
+        (!self).trailing_zeros()
+    }
 
     /// Returns the number of trailing zeros in the binary representation
     /// of `self`.
@@ -319,9 +351,21 @@ macro_rules! prim_int_impl {
                 <$T>::count_zeros(self)
             }
 
+            #[cfg(has_leading_leading_ones)]
+            #[inline]
+            fn leading_ones(self) -> u32 {
+                <$T>::leading_ones(self)
+            }
+
             #[inline]
             fn leading_zeros(self) -> u32 {
                 <$T>::leading_zeros(self)
+            }
+
+            #[cfg(has_leading_trailing_ones)]
+            #[inline]
+            fn trailing_ones(self) -> u32 {
+                <$T>::trailing_ones(self)
             }
 
             #[inline]
