@@ -11,6 +11,10 @@ fn main() {
         autocfg::emit("has_i128");
     }
 
+    if env::var_os("CARGO_FEATURE_COPYSIGN").is_some() || ac.probe_expression("f32::copysign") {
+        autocfg::emit("has_copysign");
+    }
+
     ac.emit_expression_cfg(
         "unsafe { 1f64.to_int_unchecked::<i32>() }",
         "has_to_int_unchecked",
