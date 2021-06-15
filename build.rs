@@ -16,5 +16,7 @@ fn main() {
         "has_to_int_unchecked",
     );
 
+    ac.emit_expression_cfg("1u32.trailing_ones()", "has_leading_trailing_ones");
+
     autocfg::rerun_path("build.rs");
 }
