@@ -835,6 +835,22 @@ impl FloatCore for f32 {
     fn fract(self) -> Self {
         self - libm::truncf(self)
     }
+
+    #[cfg(all(not(feature = "std"), feature = "libm"))]
+    #[inline]
+    fn is_sign_negative(self) -> bool {
+        libm::copysignf(1.0f32, self) == -1.0f32
+    }
+
+    #[cfg(all(not(feature = "std"), feature = "libm"))]
+    #[inline]
+    fn signum(self) -> Self {
+        if self.is_nan() {
+            FloatCore::nan()
+        } else {
+            libm::copysignf(1.0f32, self)
+        }
+    }
 }
 
 impl FloatCore for f64 {
@@ -926,6 +942,22 @@ impl FloatCore for f64 {
     #[inline]
     fn fract(self) -> Self {
         self - libm::trunc(self)
+    }
+
+    #[cfg(all(not(feature = "std"), feature = "libm"))]
+    #[inline]
+    fn is_sign_negative(self) -> bool {
+        libm::copysign(1.0f64, self) == -1.0f64
+    }
+
+    #[cfg(all(not(feature = "std"), feature = "libm"))]
+    #[inline]
+    fn signum(self) -> Self {
+        if self.is_nan() {
+            FloatCore::nan()
+        } else {
+            libm::copysign(1.0f64, self)
+        }
     }
 }
 
