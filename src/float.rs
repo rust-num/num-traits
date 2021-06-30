@@ -783,6 +783,17 @@ impl FloatCore for f32 {
 
     #[inline]
     #[cfg(not(feature = "std"))]
+    fn is_sign_negative(self) -> bool {
+        const SIGN_MASK: u32 = 0x80000000;
+
+        // Safety: this identical to the implementation of f32::to_bits(),
+        // which is only available starting at Rust 1.20
+        let bits: u32 = unsafe { mem::transmute(self) };
+        bits & SIGN_MASK != 0
+    }
+
+    #[inline]
+    #[cfg(not(feature = "std"))]
     fn to_degrees(self) -> Self {
         // Use a constant for better precision.
         const PIS_IN_180: f32 = 57.2957795130823208767981548141051703_f32;
@@ -835,22 +846,6 @@ impl FloatCore for f32 {
     fn fract(self) -> Self {
         self - libm::truncf(self)
     }
-
-    #[cfg(all(not(feature = "std"), feature = "libm"))]
-    #[inline]
-    fn is_sign_negative(self) -> bool {
-        libm::copysignf(1.0f32, self) == -1.0f32
-    }
-
-    #[cfg(all(not(feature = "std"), feature = "libm"))]
-    #[inline]
-    fn signum(self) -> Self {
-        if self.is_nan() {
-            FloatCore::nan()
-        } else {
-            libm::copysignf(1.0f32, self)
-        }
-    }
 }
 
 impl FloatCore for f64 {
@@ -886,6 +881,17 @@ impl FloatCore for f64 {
             (_, EXP_MASK) => FpCategory::Nan,
             _ => FpCategory::Normal,
         }
+    }
+
+    #[inline]
+    #[cfg(not(feature = "std"))]
+    fn is_sign_negative(self) -> bool {
+        const SIGN_MASK: u64 = 0x8000000000000000;
+
+        // Safety: this identical to the implementation of f64::to_bits(),
+        // which is only available starting at Rust 1.20
+        let bits: u64 = unsafe { mem::transmute(self) };
+        bits & SIGN_MASK != 0
     }
 
     #[inline]
@@ -942,22 +948,6 @@ impl FloatCore for f64 {
     #[inline]
     fn fract(self) -> Self {
         self - libm::trunc(self)
-    }
-
-    #[cfg(all(not(feature = "std"), feature = "libm"))]
-    #[inline]
-    fn is_sign_negative(self) -> bool {
-        libm::copysign(1.0f64, self) == -1.0f64
-    }
-
-    #[cfg(all(not(feature = "std"), feature = "libm"))]
-    #[inline]
-    fn signum(self) -> Self {
-        if self.is_nan() {
-            FloatCore::nan()
-        } else {
-            libm::copysign(1.0f64, self)
-        }
     }
 }
 
