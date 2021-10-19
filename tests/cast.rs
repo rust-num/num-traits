@@ -78,6 +78,7 @@ fn wrapping_is_numcast() {
 }
 
 #[test]
+#[allow(clippy::approx_constant)]
 fn as_primitive() {
     let x: f32 = (1.625f64).as_();
     assert_eq!(x, 1.625f32);

@@ -169,6 +169,7 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     /// check(f64::NAN, true);
     /// check(0.0f64, false);
     /// ```
+    #[allow(clippy::eq_op)]
     #[inline]
     fn is_nan(self) -> bool {
         self != self

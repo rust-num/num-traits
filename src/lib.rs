@@ -424,6 +424,7 @@ pub fn clamp<T: PartialOrd>(input: T, min: T, max: T) -> T {
 ///  `clamp_min(std::f32::NAN, 1.0)` preserves `NAN` different from `f32::min(std::f32::NAN, 1.0)`.
 ///
 /// **Panics** in debug mode if `!(min == min)`. (This occurs if `min` is `NAN`.)
+#[allow(clippy::eq_op)]
 #[inline]
 pub fn clamp_min<T: PartialOrd>(input: T, min: T) -> T {
     debug_assert!(min == min, "min must not be NAN");
@@ -441,6 +442,7 @@ pub fn clamp_min<T: PartialOrd>(input: T, min: T) -> T {
 ///  `clamp_max(std::f32::NAN, 1.0)` preserves `NAN` different from `f32::max(std::f32::NAN, 1.0)`.
 ///
 /// **Panics** in debug mode if `!(max == max)`. (This occurs if `max` is `NAN`.)
+#[allow(clippy::eq_op)]
 #[inline]
 pub fn clamp_max<T: PartialOrd>(input: T, max: T) -> T {
     debug_assert!(max == max, "max must not be NAN");
