@@ -17,6 +17,7 @@
 #![doc(html_root_url = "https://docs.rs/num-traits/0.2")]
 #![deny(unconditional_recursion)]
 #![no_std]
+#![cfg_attr(feature = "const_conversion", feature(const_trait_impl))]
 #[cfg(feature = "std")]
 extern crate std;
 

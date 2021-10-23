@@ -1,6 +1,7 @@
 //! Tests of `num_traits::cast`.
 
 #![no_std]
+#![cfg_attr(feature = "const_conversion", feature(const_trait_impl))]
 
 #[cfg(feature = "std")]
 #[macro_use]
@@ -366,6 +367,10 @@ fn newtype_to_primitive() {
 
     // minimal impl
     impl<T: ToPrimitive> ToPrimitive for New<T> {
+        fn to_i8(&self) -> Option<i8> {
+            self.0.to_i8()
+        }
+
         fn to_i64(&self) -> Option<i64> {
             self.0.to_i64()
         }
@@ -395,4 +400,132 @@ fn newtype_to_primitive() {
     }
     check!(i8 i16 i32 i64 isize);
     check!(u8 u16 u32 u64 usize);
+}
+
+#[cfg(any(has_const_trait_impl, feature = "const_conversion"))]
+#[test]
+fn valid_int_to_int_const_cast_succeeds() {
+    use crate::ToPrimitive;
+
+    // Given
+    const VALUE: i64 = -42;
+    const EXPECTED: Option<i8> = Some(-42);
+
+    // When
+    const RESULT: Option<i8> = VALUE.to_i8();
+
+    // Then
+    assert!(RESULT == EXPECTED);
+}
+
+#[cfg(any(has_const_trait_impl, feature = "const_conversion"))]
+#[test]
+fn valid_int_to_uint_const_cast_succeeds() {
+    use crate::ToPrimitive;
+
+    // Given
+    const VALUE: i64 = 42;
+    const EXPECTED: Option<u8> = Some(42);
+
+    // When
+    const RESULT: Option<u8> = VALUE.to_u8();
+
+    // Then
+    assert!(RESULT == EXPECTED);
+}
+
+#[cfg(any(has_const_trait_impl, feature = "const_conversion"))]
+#[test]
+fn valid_unt_to_uint_const_cast_succeeds() {
+    use crate::ToPrimitive;
+
+    // Given
+    const VALUE: u64 = 42;
+    const EXPECTED: Option<u8> = Some(42);
+
+    // When
+    const RESULT: Option<u8> = VALUE.to_u8();
+
+    // Then
+    assert!(RESULT == EXPECTED);
+}
+
+#[cfg(any(has_const_trait_impl, feature = "const_conversion"))]
+#[test]
+fn valid_unt_to_int_const_cast_succeeds() {
+    use crate::ToPrimitive;
+
+    // Given
+    const VALUE: u64 = 42;
+    const EXPECTED: Option<i8> = Some(42);
+
+    // When
+    const RESULT: Option<i8> = VALUE.to_i8();
+
+    // Then
+    assert!(RESULT == EXPECTED);
+}
+
+#[cfg(any(has_const_trait_impl, feature = "const_conversion"))]
+#[test]
+fn invalid_int_to_int_const_cast_succeeds() {
+    use crate::ToPrimitive;
+
+    // Given
+    const VALUE: i64 = -129;
+    const EXPECTED: Option<i8> = None;
+
+    // When
+    const RESULT: Option<i8> = VALUE.to_i8();
+
+    // Then
+    assert!(RESULT == EXPECTED);
+}
+
+#[cfg(any(has_const_trait_impl, feature = "const_conversion"))]
+#[test]
+fn invalid_int_to_uint_const_cast_succeeds() {
+    use crate::ToPrimitive;
+
+    // Given
+    const VALUE: i64 = -1;
+    const EXPECTED: Option<u8> = None;
+
+    // When
+    const RESULT: Option<u8> = VALUE.to_u8();
+
+    // Then
+    assert!(RESULT == EXPECTED);
+}
+
+#[cfg(any(has_const_trait_impl, feature = "const_conversion"))]
+#[test]
+fn invalid_unt_to_uint_const_cast_succeeds() {
+    use crate::ToPrimitive;
+
+    // Given
+    const VALUE: u64 = 256;
+    const EXPECTED: Option<u8> = None;
+
+    // When
+    const RESULT: Option<u8> = VALUE.to_u8();
+
+    // Then
+    assert!(RESULT == EXPECTED);
+}
+
+#[cfg(any(has_const_trait_impl, feature = "const_conversion"))]
+#[test]
+fn invalid_unt_to_int_const_cast_succeeds() {
+    use crate::ToPrimitive;
+
+    // Given
+    const VALUE: u64 = 128;
+    const EXPECTED: Option<i8> = None;
+
+    // When
+    const RESULT: Option<i8> = VALUE.to_i8();
+
+    // Then
+    assert!(RESULT == EXPECTED);
 }

@@ -18,6 +18,14 @@ fn main() {
 
     ac.emit_expression_cfg("1u32.reverse_bits()", "has_reverse_bits");
     ac.emit_expression_cfg("1u32.trailing_ones()", "has_leading_trailing_ones");
+    ac.emit_expression_cfg(
+        r#"
+            trait TestTrait {}
+            struct TestType {}
+            impl const TestTrait for TestType {}
+        "#,
+        "has_const_trait_impl",
+    );
 
     autocfg::rerun_path("build.rs");
 }

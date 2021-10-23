@@ -1,3 +1,10 @@
+# Release 0.2.15 (2020-10-23)
+
+- Add `const_conversion` feature enabling conversions between primitive integer
+  types in `const` context.  Enabled automatically once [rust#67792] stabilizes.
+
+**Contributors**: @U007D
+[rust#67792]: https://github.com/rust-lang/rust/issues/67792
 # Release 0.2.14 (2020-10-29)
 
 - Clarify the license specification as "MIT OR Apache-2.0".
