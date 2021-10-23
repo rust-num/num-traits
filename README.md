@@ -39,6 +39,30 @@ Implementations for `i128` and `u128` are only available with Rust 1.26 and
 later.  The build script automatically detects this, but you can make it
 mandatory by enabling the `i128` crate feature.
 
+The `const_conversion` feature makes it possible to perform `ToPrimitive`
+conversions in `const` context (e.g.:
+```
+const FORTY_TWO: u64 = 42;
+const FOO: u8 = FORTY_TWO.to_u8().unwrap();
+```
+Note that `unwrap()` in `const` context **does not panic**, but instead, *halts
+compilation*, thereby ensuring validity at compile-time instead of 
+runtime.
+
+As of the time of this writing, the `const_trait_impl` feature in current
+Rust (v1.56) is not yet stable.  When it does appear in stable Rust, `num-traits`
+is set up to enable it automatically if it is stable in your compiler version.
+
+If you wish to use this feature before then, set your project to a recent nightly 
+version of the Rust compiler and enable the `const_conversion` feature by adding 
+the following to the `[dependencies]`section of your `Cargo.toml` file:
+```toml
+# Cargo.toml
+[dependencies]
+# ... other dependencies your crate may have
+num-traits = { version = "0.2.15", features = ["const_conversion"] }
+```
+
 ## Releases
 
 Release notes are available in [RELEASES.md](RELEASES.md).

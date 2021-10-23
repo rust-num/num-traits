@@ -165,8 +165,8 @@ macro_rules! impl_to_primitive_int_to_uint {
 }
 
 macro_rules! impl_to_primitive_int {
-    ($T:ident) => {
-        impl ToPrimitive for $T {
+    ($T:ident $($const_kw:ident)?) => {
+        impl $($const_kw)? ToPrimitive for $T {
             impl_to_primitive_int_to_int! { $T:
                 fn to_isize -> isize;
                 fn to_i8 -> i8;
@@ -199,13 +199,32 @@ macro_rules! impl_to_primitive_int {
     };
 }
 
+#[cfg(not(any(has_const_trait_impl, feature = "const_conversion")))]
 impl_to_primitive_int!(isize);
+#[cfg(not(any(has_const_trait_impl, feature = "const_conversion")))]
 impl_to_primitive_int!(i8);
+#[cfg(not(any(has_const_trait_impl, feature = "const_conversion")))]
 impl_to_primitive_int!(i16);
+#[cfg(not(any(has_const_trait_impl, feature = "const_conversion")))]
 impl_to_primitive_int!(i32);
+#[cfg(not(any(has_const_trait_impl, feature = "const_conversion")))]
 impl_to_primitive_int!(i64);
+#[cfg(not(any(has_const_trait_impl, feature = "const_conversion")))]
 #[cfg(has_i128)]
 impl_to_primitive_int!(i128);
+
+#[cfg(any(has_const_trait_impl, feature = "const_conversion"))]
+impl_to_primitive_int!(isize const);
+#[cfg(any(has_const_trait_impl, feature = "const_conversion"))]
+impl_to_primitive_int!(i8 const);
+#[cfg(any(has_const_trait_impl, feature = "const_conversion"))]
+impl_to_primitive_int!(i16 const);
+#[cfg(any(has_const_trait_impl, feature = "const_conversion"))]
+impl_to_primitive_int!(i32 const);
+#[cfg(any(has_const_trait_impl, feature = "const_conversion"))]
+impl_to_primitive_int!(i64 const);
+#[cfg(any(has_const_trait_impl, feature = "const_conversion"))]
+impl_to_primitive_int!(i128 const);
 
 macro_rules! impl_to_primitive_uint_to_int {
     ($SrcT:ident : $( $(#[$cfg:meta])* fn $method:ident -> $DstT:ident ; )*) => {$(
@@ -238,8 +257,8 @@ macro_rules! impl_to_primitive_uint_to_uint {
 }
 
 macro_rules! impl_to_primitive_uint {
-    ($T:ident) => {
-        impl ToPrimitive for $T {
+    ($T:ident $($const_kw:ident)?) => {
+        impl $($const_kw)? ToPrimitive for $T {
             impl_to_primitive_uint_to_int! { $T:
                 fn to_isize -> isize;
                 fn to_i8 -> i8;
@@ -272,13 +291,33 @@ macro_rules! impl_to_primitive_uint {
     };
 }
 
+#[cfg(not(any(has_const_trait_impl, feature = "const_conversion")))]
 impl_to_primitive_uint!(usize);
+#[cfg(not(any(has_const_trait_impl, feature = "const_conversion")))]
 impl_to_primitive_uint!(u8);
+#[cfg(not(any(has_const_trait_impl, feature = "const_conversion")))]
 impl_to_primitive_uint!(u16);
+#[cfg(not(any(has_const_trait_impl, feature = "const_conversion")))]
 impl_to_primitive_uint!(u32);
+#[cfg(not(any(has_const_trait_impl, feature = "const_conversion")))]
 impl_to_primitive_uint!(u64);
+#[cfg(not(any(has_const_trait_impl, feature = "const_conversion")))]
 #[cfg(has_i128)]
 impl_to_primitive_uint!(u128);
+
+#[cfg(any(has_const_trait_impl, feature = "const_conversion"))]
+impl_to_primitive_uint!(usize const);
+#[cfg(any(has_const_trait_impl, feature = "const_conversion"))]
+impl_to_primitive_uint!(u8 const);
+#[cfg(any(has_const_trait_impl, feature = "const_conversion"))]
+impl_to_primitive_uint!(u16 const);
+#[cfg(any(has_const_trait_impl, feature = "const_conversion"))]
+impl_to_primitive_uint!(u32 const);
+#[cfg(any(has_const_trait_impl, feature = "const_conversion"))]
+impl_to_primitive_uint!(u64 const);
+#[cfg(any(has_const_trait_impl, feature = "const_conversion"))]
+#[cfg(has_i128)]
+impl_to_primitive_uint!(u128 const);
 
 macro_rules! impl_to_primitive_float_to_float {
     ($SrcT:ident : $( fn $method:ident -> $DstT:ident ; )*) => {$(
