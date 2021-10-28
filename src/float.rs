@@ -2304,7 +2304,7 @@ mod tests {
     }
 
     #[test]
-     #[cfg(any(feature = "std", feature = "libm"))]
+    #[cfg(any(feature = "std", feature = "libm"))]
     fn copysign() {
         use float::Float;
         test_copysign_generic(2.0_f32, -2.0_f32, f32::nan());
@@ -2331,6 +2331,7 @@ mod tests {
         assert!(nan.copysign(n).is_sign_negative());
     }
 
+    #[cfg(any(feature = "std", feature = "libm"))]
     fn test_copysign_generic<F: ::float::Float + core::fmt::Debug>(p: F, n: F, nan: F) {
         assert!(p.is_sign_positive());
         assert!(n.is_sign_negative());
