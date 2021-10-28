@@ -2154,7 +2154,6 @@ impl Float for f64 {
         libm::fmax as max(self, other: Self) -> Self;
         libm::fmin as min(self, other: Self) -> Self;
         libm::copysign as copysign(self, sign: Self) -> Self;
-        libm::copysignf as copysignf(self, sign: Self) -> Self;
     }
 }
 
