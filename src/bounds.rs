@@ -10,8 +10,10 @@ pub trait Bounded {
     // FIXME (#5527): These should be associated constants
     /// Returns the smallest finite number this type can represent
     fn min_value() -> Self;
+    fn own_min_value(&self) -> Self;
     /// Returns the largest finite number this type can represent
     fn max_value() -> Self;
+    fn own_max_value(&self) -> Self;
 }
 
 /// Numbers which have lower bounds
@@ -52,6 +54,16 @@ macro_rules! bounded_impl {
             fn max_value() -> $t {
                 $max
             }
+
+            #[inline]
+            fn own_max_value(&self) -> $t {
+                $max
+            }
+
+            #[inline]
+            fn own_min_value(&self) -> $t {
+                $max
+            }
         }
     };
 }
@@ -77,6 +89,12 @@ impl<T: Bounded> Bounded for Wrapping<T> {
         Wrapping(T::min_value())
     }
     fn max_value() -> Self {
+        Wrapping(T::max_value())
+    }
+    fn own_min_value(&self) -> Self {
+        Wrapping(T::min_value())
+    }
+    fn own_max_value(&self) -> Self {
         Wrapping(T::max_value())
     }
 }
@@ -107,6 +125,14 @@ macro_rules! bounded_tuple {
             }
             #[inline]
             fn max_value() -> Self {
+                ($($name::max_value(),)*)
+            }
+            #[inline]
+            fn own_min_value(&self) -> Self {
+                ($($name::min_value(),)*)
+            }
+            #[inline]
+            fn own_max_value(&self) -> Self {
                 ($($name::max_value(),)*)
             }
         }
