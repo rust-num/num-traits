@@ -404,7 +404,7 @@ macro_rules! prim_int_impl {
                 <$T>::count_zeros(self)
             }
 
-            #[cfg(has_leading_leading_ones)]
+            #[cfg(has_leading_trailing_ones)]
             #[inline]
             fn leading_ones(self) -> u32 {
                 <$T>::leading_ones(self)
