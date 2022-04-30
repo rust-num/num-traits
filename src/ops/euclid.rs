@@ -226,7 +226,7 @@ mod tests {
             };
         }
 
-        test_euclid!(usize u8 u16 u32 u64 isize);
+        test_euclid!(usize u8 u16 u32 u64);
     }
 
     #[test]
@@ -249,7 +249,7 @@ mod tests {
             };
         }
 
-        test_euclid!(i8 i16 i32 i64);
+        test_euclid!(isize i8 i16 i32 i64);
     }
 
     #[test]
@@ -261,7 +261,7 @@ mod tests {
                         let x: $t = 12.1;
                         let y: $t = 3.2;
                         assert!(Euclid::div_euclid(&x, &y) * y + Euclid::rem_euclid(&x, &y) - x
-                        <=46.4 * <$t as ::float::FloatCore>::epsilon());
+                        <= 46.4 * <$t as ::float::FloatCore>::epsilon());
                         assert!(Euclid::div_euclid(&x, &-y) * -y + Euclid::rem_euclid(&x, &-y) - x
                         <= 46.4 * <$t as ::float::FloatCore>::epsilon());
                         assert!(Euclid::div_euclid(&-x, &y) * y + Euclid::rem_euclid(&-x, &y) + x
@@ -291,6 +291,6 @@ mod tests {
             };
         }
 
-        test_euclid_checked!(i8 i16 i32 i64);
+        test_euclid_checked!(isize i8 i16 i32 i64);
     }
 }
