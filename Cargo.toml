@@ -23,7 +23,6 @@ libm = { version = "0.2.0", optional = true }
 default = ["std"]
 std = []
 i128 = []
-copysign = []
 
 [build-dependencies]
 autocfg = "1"
