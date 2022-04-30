@@ -48,8 +48,28 @@ pub trait Euclid: Sized + Div<Self, Output = Self> + Rem<Self, Output = Self> {
     fn rem_euclid(&self, v: &Self) -> Self;
 }
 
+macro_rules! euclid_forward_impl {
+    ($($t:ty)*) => {$(
+        #[cfg(has_div_euclid)]
+        impl Euclid for $t {
+            #[inline]
+            fn div_euclid(&self, v: &$t) -> Self {
+                <$t>::div_euclid(*self, *v)
+            }
+
+            #[inline]
+            fn rem_euclid(&self, v: &$t) -> Self {
+                <$t>::rem_euclid(*self, *v)
+            }
+        }
+    )*}
+}
+
 macro_rules! euclid_int_impl {
     ($($t:ty)*) => {$(
+        euclid_forward_impl!($t);
+
+        #[cfg(not(has_div_euclid))]
         impl Euclid for $t {
             #[inline]
             fn div_euclid(&self, v: &$t) -> Self {
@@ -79,6 +99,9 @@ macro_rules! euclid_int_impl {
 
 macro_rules! euclid_uint_impl {
     ($($t:ty)*) => {$(
+        euclid_forward_impl!($t);
+
+        #[cfg(not(has_div_euclid))]
         impl Euclid for $t {
             #[inline]
             fn div_euclid(&self, v: &$t) -> Self {
@@ -100,6 +123,10 @@ euclid_int_impl!(i128);
 #[cfg(has_i128)]
 euclid_uint_impl!(u128);
 
+#[cfg(all(has_div_euclid, feature = "std"))]
+euclid_forward_impl!(f32 f64);
+
+#[cfg(not(all(has_div_euclid, feature = "std")))]
 impl Euclid for f32 {
     #[inline]
     fn div_euclid(&self, v: &f32) -> f32 {
@@ -121,6 +148,7 @@ impl Euclid for f32 {
     }
 }
 
+#[cfg(not(all(has_div_euclid, feature = "std")))]
 impl Euclid for f64 {
     #[inline]
     fn div_euclid(&self, v: &f64) -> f64 {
@@ -152,8 +180,28 @@ pub trait CheckedEuclid: Euclid {
     fn checked_rem_euclid(&self, v: &Self) -> Option<Self>;
 }
 
+macro_rules! checked_euclid_forward_impl {
+    ($($t:ty)*) => {$(
+        #[cfg(has_div_euclid)]
+        impl CheckedEuclid for $t {
+            #[inline]
+            fn checked_div_euclid(&self, v: &$t) -> Option<Self> {
+                <$t>::checked_div_euclid(*self, *v)
+            }
+
+            #[inline]
+            fn checked_rem_euclid(&self, v: &$t) -> Option<Self> {
+                <$t>::checked_rem_euclid(*self, *v)
+            }
+        }
+    )*}
+}
+
 macro_rules! checked_euclid_int_impl {
     ($($t:ty)*) => {$(
+        checked_euclid_forward_impl!($t);
+
+        #[cfg(not(has_div_euclid))]
         impl CheckedEuclid for $t {
             #[inline]
             fn checked_div_euclid(&self, v: &$t) -> Option<$t> {
@@ -178,6 +226,9 @@ macro_rules! checked_euclid_int_impl {
 
 macro_rules! checked_euclid_uint_impl {
     ($($t:ty)*) => {$(
+        checked_euclid_forward_impl!($t);
+
+        #[cfg(not(has_div_euclid))]
         impl CheckedEuclid for $t {
             #[inline]
             fn checked_div_euclid(&self, v: &$t) -> Option<$t> {
