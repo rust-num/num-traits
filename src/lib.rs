@@ -40,6 +40,7 @@ pub use int::PrimInt;
 pub use ops::checked::{
     CheckedAdd, CheckedDiv, CheckedMul, CheckedNeg, CheckedRem, CheckedShl, CheckedShr, CheckedSub,
 };
+pub use ops::euclid::{CheckedEuclid, Euclid};
 pub use ops::inv::Inv;
 pub use ops::mul_add::{MulAdd, MulAddAssign};
 pub use ops::saturating::{Saturating, SaturatingAdd, SaturatingMul, SaturatingSub};
