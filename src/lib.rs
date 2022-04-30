@@ -95,7 +95,7 @@ pub trait Num: PartialEq + Zero + One + NumOps {
     fn from_str_radix(str: &str, radix: u32) -> Result<Self, Self::FromStrRadixErr>;
 }
 
-/// The trait for types implementing basic numeric operations
+/// Generic trait for types implementing basic numeric operations
 ///
 /// This is automatically implemented for types which implement the operators.
 pub trait NumOps<Rhs = Self, Output = Self>:
@@ -123,14 +123,16 @@ impl<T, Rhs, Output> NumOps<Rhs, Output> for T where
 pub trait NumRef: Num + for<'r> NumOps<&'r Self> {}
 impl<T> NumRef for T where T: Num + for<'r> NumOps<&'r T> {}
 
-/// The trait for references which implement numeric operations, taking the
+/// The trait for `Num` references which implement numeric operations, taking the
 /// second operand either by value or by reference.
 ///
-/// This is automatically implemented for types which implement the operators.
+/// This is automatically implemented for all types which implement the operators. It covers
+/// every type implementing the operations though, regardless of it being a reference or
+/// related to `Num`.
 pub trait RefNum<Base>: NumOps<Base, Base> + for<'r> NumOps<&'r Base, Base> {}
 impl<T, Base> RefNum<Base> for T where T: NumOps<Base, Base> + for<'r> NumOps<&'r Base, Base> {}
 
-/// The trait for types implementing numeric assignment operators (like `+=`).
+/// Generic trait for types implementing numeric assignment operators (like `+=`).
 ///
 /// This is automatically implemented for types which implement the operators.
 pub trait NumAssignOps<Rhs = Self>:
@@ -175,11 +177,7 @@ int_trait_impl!(Num for u128 i128);
 
 impl<T: Num> Num for Wrapping<T>
 where
-    Wrapping<T>: Add<Output = Wrapping<T>>
-        + Sub<Output = Wrapping<T>>
-        + Mul<Output = Wrapping<T>>
-        + Div<Output = Wrapping<T>>
-        + Rem<Output = Wrapping<T>>,
+    Wrapping<T>: NumOps,
 {
     type FromStrRadixErr = T::FromStrRadixErr;
     fn from_str_radix(str: &str, radix: u32) -> Result<Self, Self::FromStrRadixErr> {
@@ -626,5 +624,16 @@ fn check_numassign_ops() {
     assert_eq!(compute(1, 2), 1)
 }
 
-// TODO test `NumAssignRef`, but even the standard numeric types don't
-// implement this yet. (see rust pr41336)
+#[cfg(has_int_assignop_ref)]
+#[test]
+fn check_numassignref_ops() {
+    fn compute<T: NumAssignRef + Copy>(mut x: T, y: &T) -> T {
+        x *= y;
+        x /= y;
+        x %= y;
+        x += y;
+        x -= y;
+        x
+    }
+    assert_eq!(compute(1, &2), 1)
+}
