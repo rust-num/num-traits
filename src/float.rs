@@ -2314,21 +2314,21 @@ mod tests {
 
     #[cfg(any(feature = "std", feature = "libm"))]
     fn test_copysignf(p: f32, n: f32, nan: f32) {
-        use float::Float;
         use core::ops::Neg;
+        use float::Float;
 
         assert!(p.is_sign_positive());
         assert!(n.is_sign_negative());
         assert!(nan.is_nan());
 
-        assert_eq!(p, p.copysign(p));
-        assert_eq!(p.neg(), p.copysign(n));
+        assert_eq!(p, Float::copysign(p, p));
+        assert_eq!(p.neg(), Float::copysign(p, n));
 
-        assert_eq!(n, n.copysign(n));
-        assert_eq!(n.neg(), n.copysign(p));
+        assert_eq!(n, Float::copysign(n, n));
+        assert_eq!(n.neg(), Float::copysign(n, p));
 
-        assert!(nan.copysign(p).is_sign_positive());
-        assert!(nan.copysign(n).is_sign_negative());
+        assert!(Float::copysign(nan, p).is_sign_positive());
+        assert!(Float::copysign(nan, n).is_sign_negative());
     }
 
     #[cfg(any(feature = "std", feature = "libm"))]
