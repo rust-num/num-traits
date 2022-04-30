@@ -2327,12 +2327,13 @@ mod tests {
         assert_eq!(n, Float::copysign(n, n));
         assert_eq!(n.neg(), Float::copysign(n, p));
 
-        assert!(Float::copysign(nan, p).is_sign_positive());
-        assert!(Float::copysign(nan, n).is_sign_negative());
+        // FIXME: is_sign... only works on NaN starting in Rust 1.20
+        // assert!(Float::copysign(nan, p).is_sign_positive());
+        // assert!(Float::copysign(nan, n).is_sign_negative());
     }
 
     #[cfg(any(feature = "std", feature = "libm"))]
-    fn test_copysign_generic<F: ::float::Float + core::fmt::Debug>(p: F, n: F, nan: F) {
+    fn test_copysign_generic<F: ::float::Float + ::core::fmt::Debug>(p: F, n: F, nan: F) {
         assert!(p.is_sign_positive());
         assert!(n.is_sign_negative());
         assert!(nan.is_nan());
@@ -2343,7 +2344,8 @@ mod tests {
         assert_eq!(n, n.copysign(n));
         assert_eq!(n.neg(), n.copysign(p));
 
-        assert!(nan.copysign(p).is_sign_positive());
-        assert!(nan.copysign(n).is_sign_negative());
+        // FIXME: is_sign... only works on NaN starting in Rust 1.20
+        // assert!(nan.copysign(p).is_sign_positive());
+        // assert!(nan.copysign(n).is_sign_negative());
     }
 }
