@@ -21,5 +21,9 @@ fn main() {
     ac.emit_expression_cfg("{ let mut x = 1; x += &2; }", "has_int_assignop_ref");
     ac.emit_expression_cfg("1u32.div_euclid(1u32)", "has_div_euclid");
 
+    if env::var_os("CARGO_FEATURE_STD").is_some() {
+        ac.emit_expression_cfg("1f64.copysign(-1f64)", "has_copysign");
+    }
+
     autocfg::rerun_path("build.rs");
 }
