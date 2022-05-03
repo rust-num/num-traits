@@ -1,10 +1,6 @@
 //! Tests of `num_traits::cast`.
 
-#![no_std]
-
-#[cfg(feature = "std")]
-#[macro_use]
-extern crate std;
+#![cfg_attr(not(feature = "std"), no_std)]
 
 use num_traits::cast::*;
 use num_traits::Bounded;

@@ -17,12 +17,10 @@
 #![doc(html_root_url = "https://docs.rs/num-traits/0.2")]
 #![deny(unconditional_recursion)]
 #![no_std]
+
+// Need to explicitly bring the crate in for inherent float methods
 #[cfg(feature = "std")]
 extern crate std;
-
-// Only `no_std` builds actually use `libm`.
-#[cfg(all(not(feature = "std"), feature = "libm"))]
-extern crate libm;
 
 use core::fmt;
 use core::num::Wrapping;
