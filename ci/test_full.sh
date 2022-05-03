@@ -28,7 +28,6 @@ if ! check_version $MSRV ; then
 fi
 
 FEATURES=()
-check_version 1.26 && FEATURES+=(i128)
 check_version 1.27 && FEATURES+=(libm)
 echo "Testing supported features: ${FEATURES[*]}"
 

@@ -10,10 +10,8 @@ use num_traits::cast::*;
 use num_traits::Bounded;
 
 use core::{f32, f64};
-#[cfg(has_i128)]
-use core::{i128, u128};
-use core::{i16, i32, i64, i8, isize};
-use core::{u16, u32, u64, u8, usize};
+use core::{i128, i16, i32, i64, i8, isize};
+use core::{u128, u16, u32, u64, u8, usize};
 
 use core::fmt::Debug;
 use core::mem;
@@ -145,7 +143,6 @@ fn cast_to_unsigned_int_checks_overflow() {
 }
 
 #[test]
-#[cfg(has_i128)]
 fn cast_to_i128_checks_overflow() {
     let big_f: f64 = 1.0e123;
     let normal_f: f64 = 1.0;
@@ -241,7 +238,6 @@ fn cast_float_to_int_edge_cases() {
 }
 
 #[test]
-#[cfg(has_i128)]
 fn cast_float_to_i128_edge_cases() {
     float_test_edge!(f32 -> i128 u128);
     float_test_edge!(f64 -> i128 u128);
@@ -300,7 +296,6 @@ fn cast_int_to_int_edge_cases() {
 }
 
 #[test]
-#[cfg(has_i128)]
 fn cast_int_to_128_edge_cases() {
     use core::cmp::Ordering::*;
 

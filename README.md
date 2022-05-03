@@ -35,10 +35,6 @@ The `FloatCore` trait is always available.  `MulAdd` and `MulAddAssign` for `f32
 and `f64` also require `std` or `libm`, as do implementations of signed and floating-
 point exponents in `Pow`.
 
-Implementations for `i128` and `u128` are only available with Rust 1.26 and
-later.  The build script automatically detects this, but you can make it
-mandatory by enabling the `i128` crate feature.
-
 ## Releases
 
 Release notes are available in [RELEASES.md](RELEASES.md).

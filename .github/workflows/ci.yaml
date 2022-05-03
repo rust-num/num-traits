@@ -44,7 +44,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           target: thumbv6m-none-eabi
-      - run: cargo build --target thumbv6m-none-eabi --no-default-features --features i128
+      - run: cargo build --target thumbv6m-none-eabi --no-default-features
       - run: cargo build --target thumbv6m-none-eabi --no-default-features --features libm
 
   fmt:

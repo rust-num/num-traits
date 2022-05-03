@@ -116,12 +116,8 @@ macro_rules! euclid_uint_impl {
     )*}
 }
 
-euclid_int_impl!(isize i8 i16 i32 i64);
-euclid_uint_impl!(usize u8 u16 u32 u64);
-#[cfg(has_i128)]
-euclid_int_impl!(i128);
-#[cfg(has_i128)]
-euclid_uint_impl!(u128);
+euclid_int_impl!(isize i8 i16 i32 i64 i128);
+euclid_uint_impl!(usize u8 u16 u32 u64 u128);
 
 #[cfg(all(has_div_euclid, feature = "std"))]
 euclid_forward_impl!(f32 f64);
@@ -251,12 +247,8 @@ macro_rules! checked_euclid_uint_impl {
     )*}
 }
 
-checked_euclid_int_impl!(isize i8 i16 i32 i64);
-checked_euclid_uint_impl!(usize u8 u16 u32 u64);
-#[cfg(has_i128)]
-checked_euclid_int_impl!(i128);
-#[cfg(has_i128)]
-checked_euclid_uint_impl!(u128);
+checked_euclid_int_impl!(isize i8 i16 i32 i64 i128);
+checked_euclid_uint_impl!(usize u8 u16 u32 u64 u128);
 
 #[cfg(test)]
 mod tests {
@@ -300,7 +292,7 @@ mod tests {
             };
         }
 
-        test_euclid!(isize i8 i16 i32 i64);
+        test_euclid!(isize i8 i16 i32 i64 i128);
     }
 
     #[test]
@@ -342,6 +334,6 @@ mod tests {
             };
         }
 
-        test_euclid_checked!(isize i8 i16 i32 i64);
+        test_euclid_checked!(isize i8 i16 i32 i64 i128);
     }
 }

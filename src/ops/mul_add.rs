@@ -67,9 +67,8 @@ macro_rules! mul_add_impl {
     )*}
 }
 
-mul_add_impl!(MulAdd for isize usize i8 u8 i16 u16 i32 u32 i64 u64);
-#[cfg(has_i128)]
-mul_add_impl!(MulAdd for i128 u128);
+mul_add_impl!(MulAdd for isize i8 i16 i32 i64 i128);
+mul_add_impl!(MulAdd for usize u8 u16 u32 u64 u128);
 
 #[cfg(any(feature = "std", feature = "libm"))]
 impl MulAddAssign<f32, f32> for f32 {
@@ -98,9 +97,8 @@ macro_rules! mul_add_assign_impl {
     )*}
 }
 
-mul_add_assign_impl!(MulAddAssign for isize usize i8 u8 i16 u16 i32 u32 i64 u64);
-#[cfg(has_i128)]
-mul_add_assign_impl!(MulAddAssign for i128 u128);
+mul_add_assign_impl!(MulAddAssign for isize i8 i16 i32 i64 i128);
+mul_add_assign_impl!(MulAddAssign for usize u8 u16 u32 u64 u128);
 
 #[cfg(test)]
 mod tests {
