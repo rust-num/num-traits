@@ -367,12 +367,10 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
             } else {
                 self - f + one
             }
+        } else if -f < h {
+            self - f
         } else {
-            if -f < h {
-                self - f
-            } else {
-                self - f - one
-            }
+            self - f - one
         }
     }
 
