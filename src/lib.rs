@@ -49,12 +49,14 @@ pub use ops::wrapping::{
 };
 pub use pow::{checked_pow, pow, Pow};
 pub use sign::{abs, abs_sub, signum, Signed, Unsigned};
+pub use dist::{Norm, Distance};
 
 #[macro_use]
 mod macros;
 
 pub mod bounds;
 pub mod cast;
+pub mod dist;
 pub mod float;
 pub mod identities;
 pub mod int;
