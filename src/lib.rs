@@ -252,11 +252,7 @@ macro_rules! float_trait_impl {
 
                 fn slice_shift_char(src: &str) -> Option<(char, &str)> {
                     let mut chars = src.chars();
-                    if let Some(ch) = chars.next() {
-                        Some((ch, chars.as_str()))
-                    } else {
-                        None
-                    }
+                    Some((chars.next()?, chars.as_str()))
                 }
 
                 let (is_positive, src) =  match slice_shift_char(src) {
@@ -421,6 +417,7 @@ pub fn clamp<T: PartialOrd>(input: T, min: T, max: T) -> T {
 ///
 /// **Panics** in debug mode if `!(min == min)`. (This occurs if `min` is `NAN`.)
 #[inline]
+#[allow(clippy::eq_op)]
 pub fn clamp_min<T: PartialOrd>(input: T, min: T) -> T {
     debug_assert!(min == min, "min must not be NAN");
     if input < min {
@@ -438,6 +435,7 @@ pub fn clamp_min<T: PartialOrd>(input: T, min: T) -> T {
 ///
 /// **Panics** in debug mode if `!(max == max)`. (This occurs if `max` is `NAN`.)
 #[inline]
+#[allow(clippy::eq_op)]
 pub fn clamp_max<T: PartialOrd>(input: T, max: T) -> T {
     debug_assert!(max == max, "max must not be NAN");
     if input > max {
