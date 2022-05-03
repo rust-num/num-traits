@@ -1,9 +1,9 @@
 use core::ops::{BitAnd, BitOr, BitXor, Not, Shl, Shr};
 
-use bounds::Bounded;
-use ops::checked::*;
-use ops::saturating::Saturating;
-use {Num, NumCast};
+use crate::bounds::Bounded;
+use crate::ops::checked::*;
+use crate::ops::saturating::Saturating;
+use crate::{Num, NumCast};
 
 /// Generic trait for primitive integers.
 ///
@@ -513,7 +513,7 @@ prim_int_impl!(isize, isize, usize);
 
 #[cfg(test)]
 mod tests {
-    use int::PrimInt;
+    use crate::int::PrimInt;
 
     #[test]
     pub fn reverse_bits() {

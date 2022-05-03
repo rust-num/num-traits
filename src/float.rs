@@ -5,10 +5,7 @@ use core::ops::{Add, Div, Neg};
 use core::f32;
 use core::f64;
 
-use {Num, NumCast, ToPrimitive};
-
-#[cfg(all(not(feature = "std"), feature = "libm"))]
-use libm;
+use crate::{Num, NumCast, ToPrimitive};
 
 /// Generic trait for floating point numbers that works with `no_std`.
 ///
@@ -2244,7 +2241,7 @@ mod tests {
 
     #[test]
     fn convert_deg_rad() {
-        use float::FloatCore;
+        use crate::float::FloatCore;
 
         for &(deg, rad) in &DEG_RAD_PAIRS {
             assert!((FloatCore::to_degrees(rad) - deg).abs() < 1e-6);
@@ -2260,7 +2257,7 @@ mod tests {
     #[test]
     fn convert_deg_rad_std() {
         for &(deg, rad) in &DEG_RAD_PAIRS {
-            use Float;
+            use crate::Float;
 
             assert!((Float::to_degrees(rad) - deg).abs() < 1e-6);
             assert!((Float::to_radians(deg) - rad).abs() < 1e-6);
@@ -2276,7 +2273,7 @@ mod tests {
     // To avoid the failure, the test is limited to `no_std` builds.
     #[cfg(not(feature = "std"))]
     fn to_degrees_rounding() {
-        use float::FloatCore;
+        use crate::float::FloatCore;
 
         assert_eq!(
             FloatCore::to_degrees(1_f32),
@@ -2287,7 +2284,7 @@ mod tests {
     #[test]
     #[cfg(any(feature = "std", feature = "libm"))]
     fn extra_logs() {
-        use float::{Float, FloatConst};
+        use crate::float::{Float, FloatConst};
 
         fn check<F: Float + FloatConst>(diff: F) {
             let _2 = F::from(2.0).unwrap();
@@ -2306,7 +2303,7 @@ mod tests {
     #[test]
     #[cfg(any(feature = "std", feature = "libm"))]
     fn copysign() {
-        use float::Float;
+        use crate::float::Float;
         test_copysign_generic(2.0_f32, -2.0_f32, f32::nan());
         test_copysign_generic(2.0_f64, -2.0_f64, f64::nan());
         test_copysignf(2.0_f32, -2.0_f32, f32::nan());
@@ -2314,8 +2311,8 @@ mod tests {
 
     #[cfg(any(feature = "std", feature = "libm"))]
     fn test_copysignf(p: f32, n: f32, nan: f32) {
+        use crate::float::Float;
         use core::ops::Neg;
-        use float::Float;
 
         assert!(p.is_sign_positive());
         assert!(n.is_sign_negative());
@@ -2333,7 +2330,7 @@ mod tests {
     }
 
     #[cfg(any(feature = "std", feature = "libm"))]
-    fn test_copysign_generic<F: ::float::Float + ::core::fmt::Debug>(p: F, n: F, nan: F) {
+    fn test_copysign_generic<F: crate::float::Float + ::core::fmt::Debug>(p: F, n: F, nan: F) {
         assert!(p.is_sign_positive());
         assert!(n.is_sign_negative());
         assert!(nan.is_nan());

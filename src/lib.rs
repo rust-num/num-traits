@@ -29,26 +29,26 @@ use core::num::Wrapping;
 use core::ops::{Add, Div, Mul, Rem, Sub};
 use core::ops::{AddAssign, DivAssign, MulAssign, RemAssign, SubAssign};
 
-pub use bounds::Bounded;
+pub use crate::bounds::Bounded;
 #[cfg(any(feature = "std", feature = "libm"))]
-pub use float::Float;
-pub use float::FloatConst;
+pub use crate::float::Float;
+pub use crate::float::FloatConst;
 // pub use real::{FloatCore, Real}; // NOTE: Don't do this, it breaks `use num_traits::*;`.
-pub use cast::{cast, AsPrimitive, FromPrimitive, NumCast, ToPrimitive};
-pub use identities::{one, zero, One, Zero};
-pub use int::PrimInt;
-pub use ops::checked::{
+pub use crate::cast::{cast, AsPrimitive, FromPrimitive, NumCast, ToPrimitive};
+pub use crate::identities::{one, zero, One, Zero};
+pub use crate::int::PrimInt;
+pub use crate::ops::checked::{
     CheckedAdd, CheckedDiv, CheckedMul, CheckedNeg, CheckedRem, CheckedShl, CheckedShr, CheckedSub,
 };
-pub use ops::euclid::{CheckedEuclid, Euclid};
-pub use ops::inv::Inv;
-pub use ops::mul_add::{MulAdd, MulAddAssign};
-pub use ops::saturating::{Saturating, SaturatingAdd, SaturatingMul, SaturatingSub};
-pub use ops::wrapping::{
+pub use crate::ops::euclid::{CheckedEuclid, Euclid};
+pub use crate::ops::inv::Inv;
+pub use crate::ops::mul_add::{MulAdd, MulAddAssign};
+pub use crate::ops::saturating::{Saturating, SaturatingAdd, SaturatingMul, SaturatingSub};
+pub use crate::ops::wrapping::{
     WrappingAdd, WrappingMul, WrappingNeg, WrappingShl, WrappingShr, WrappingSub,
 };
-pub use pow::{checked_pow, pow, Pow};
-pub use sign::{abs, abs_sub, signum, Signed, Unsigned};
+pub use crate::pow::{checked_pow, pow, Pow};
+pub use crate::sign::{abs, abs_sub, signum, Signed, Unsigned};
 
 #[macro_use]
 mod macros;
@@ -199,7 +199,7 @@ pub struct ParseFloatError {
 }
 
 impl fmt::Display for ParseFloatError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let description = match self.kind {
             FloatErrorKind::Empty => "cannot parse float from empty string",
             FloatErrorKind::Invalid => "invalid float literal",

@@ -40,7 +40,7 @@ impl MulAdd<f32, f32> for f32 {
 
     #[inline]
     fn mul_add(self, a: Self, b: Self) -> Self::Output {
-        <Self as ::Float>::mul_add(self, a, b)
+        <Self as crate::Float>::mul_add(self, a, b)
     }
 }
 
@@ -50,7 +50,7 @@ impl MulAdd<f64, f64> for f64 {
 
     #[inline]
     fn mul_add(self, a: Self, b: Self) -> Self::Output {
-        <Self as ::Float>::mul_add(self, a, b)
+        <Self as crate::Float>::mul_add(self, a, b)
     }
 }
 
@@ -75,7 +75,7 @@ mul_add_impl!(MulAdd for i128 u128);
 impl MulAddAssign<f32, f32> for f32 {
     #[inline]
     fn mul_add_assign(&mut self, a: Self, b: Self) {
-        *self = <Self as ::Float>::mul_add(*self, a, b)
+        *self = <Self as crate::Float>::mul_add(*self, a, b)
     }
 }
 
@@ -83,7 +83,7 @@ impl MulAddAssign<f32, f32> for f32 {
 impl MulAddAssign<f64, f64> for f64 {
     #[inline]
     fn mul_add_assign(&mut self, a: Self, b: Self) {
-        *self = <Self as ::Float>::mul_add(*self, a, b)
+        *self = <Self as crate::Float>::mul_add(*self, a, b)
     }
 }
 

@@ -1,6 +1,6 @@
+use crate::{CheckedMul, One};
 use core::num::Wrapping;
 use core::ops::Mul;
-use {CheckedMul, One};
 
 /// Binary operator for raising a value to a power.
 pub trait Pow<RHS> {
@@ -155,7 +155,7 @@ pow_impl!(Wrapping<isize>);
 #[cfg(any(feature = "std", feature = "libm"))]
 mod float_impls {
     use super::Pow;
-    use Float;
+    use crate::Float;
 
     pow_impl!(f32, i8, i32, <f32 as Float>::powi);
     pow_impl!(f32, u8, i32, <f32 as Float>::powi);

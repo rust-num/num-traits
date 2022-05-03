@@ -12,6 +12,7 @@ version = "0.2.15"
 readme = "README.md"
 build = "build.rs"
 exclude = ["/bors.toml", "/ci/*", "/.github/*"]
+edition = "2018"
 
 [package.metadata.docs.rs]
 features = ["std"]

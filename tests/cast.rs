@@ -6,8 +6,6 @@
 #[macro_use]
 extern crate std;
 
-extern crate num_traits;
-
 use num_traits::cast::*;
 use num_traits::Bounded;
 
@@ -163,7 +161,7 @@ fn cast_to_i128_checks_overflow() {
 }
 
 #[cfg(feature = "std")]
-fn dbg(args: ::core::fmt::Arguments) {
+fn dbg(args: ::core::fmt::Arguments<'_>) {
     println!("{}", args);
 }
 

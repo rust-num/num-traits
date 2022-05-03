@@ -1,5 +1,3 @@
-extern crate autocfg;
-
 use std::env;
 
 fn main() {
