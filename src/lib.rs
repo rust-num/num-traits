@@ -12,7 +12,7 @@
 //!
 //! ## Compatibility
 //!
-//! The `num-traits` crate is tested for rustc 1.8 and greater.
+//! The `num-traits` crate is tested for rustc 1.31 and greater.
 
 #![doc(html_root_url = "https://docs.rs/num-traits/0.2")]
 #![deny(unconditional_recursion)]
