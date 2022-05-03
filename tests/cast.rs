@@ -171,9 +171,9 @@ macro_rules! float_test_edge {
         let small = if $t::MIN == 0 || mem::size_of::<$t>() < mem::size_of::<$f>() {
             $t::MIN as $f - 1.0
         } else {
-            ($t::MIN as $f).raw_offset(1).floor()
+            ($t::MIN as $f).raw_inc().floor()
         };
-        let fmin = small.raw_offset(-1);
+        let fmin = small.raw_dec();
         dbg!("  testing min {}\n\tvs. {:.0}\n\tand {:.0}", $t::MIN, fmin, small);
         assert_eq!(Some($t::MIN), cast::<$f, $t>($t::MIN as $f));
         assert_eq!(Some($t::MIN), cast::<$f, $t>(fmin));
@@ -183,11 +183,11 @@ macro_rules! float_test_edge {
             ($t::MAX, $t::MAX as $f + 1.0)
         } else {
             let large = $t::MAX as $f; // rounds up!
-            let max = large.raw_offset(-1) as $t; // the next smallest possible
+            let max = large.raw_dec() as $t; // the next smallest possible
             assert_eq!(max.count_ones(), $f::MANTISSA_DIGITS);
             (max, large)
         };
-        let fmax = large.raw_offset(-1);
+        let fmax = large.raw_dec();
         dbg!("  testing max {}\n\tvs. {:.0}\n\tand {:.0}", max, fmax, large);
         assert_eq!(Some(max), cast::<$f, $t>(max as $f));
         assert_eq!(Some(max), cast::<$f, $t>(fmax));
@@ -201,27 +201,27 @@ macro_rules! float_test_edge {
 }
 
 trait RawOffset: Sized {
-    type Raw;
-    fn raw_offset(self, offset: Self::Raw) -> Self;
+    fn raw_inc(self) -> Self;
+    fn raw_dec(self) -> Self;
 }
 
 impl RawOffset for f32 {
-    type Raw = i32;
-    fn raw_offset(self, offset: Self::Raw) -> Self {
-        unsafe {
-            let raw: Self::Raw = mem::transmute(self);
-            mem::transmute(raw + offset)
-        }
+    fn raw_inc(self) -> Self {
+        Self::from_bits(self.to_bits() + 1)
+    }
+
+    fn raw_dec(self) -> Self {
+        Self::from_bits(self.to_bits() - 1)
     }
 }
 
 impl RawOffset for f64 {
-    type Raw = i64;
-    fn raw_offset(self, offset: Self::Raw) -> Self {
-        unsafe {
-            let raw: Self::Raw = mem::transmute(self);
-            mem::transmute(raw + offset)
-        }
+    fn raw_inc(self) -> Self {
+        Self::from_bits(self.to_bits() + 1)
+    }
+
+    fn raw_dec(self) -> Self {
+        Self::from_bits(self.to_bits() - 1)
     }
 }
 
