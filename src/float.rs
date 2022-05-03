@@ -505,8 +505,7 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     }
 
     /// Returns `true` if `self` is positive, including `+0.0` and
-    /// `FloatCore::infinity()`, and since Rust 1.20 also
-    /// `FloatCore::nan()`.
+    /// `FloatCore::infinity()`, and `FloatCore::nan()`.
     ///
     /// # Examples
     ///
@@ -524,6 +523,7 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     /// check(-0.0f64, false);
     /// check(f64::NEG_INFINITY, false);
     /// check(f64::MIN_POSITIVE, true);
+    /// check(f64::NAN, true);
     /// check(-f64::NAN, false);
     /// ```
     #[inline]
@@ -532,8 +532,7 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     }
 
     /// Returns `true` if `self` is negative, including `-0.0` and
-    /// `FloatCore::neg_infinity()`, and since Rust 1.20 also
-    /// `-FloatCore::nan()`.
+    /// `FloatCore::neg_infinity()`, and `-FloatCore::nan()`.
     ///
     /// # Examples
     ///
@@ -552,6 +551,7 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     /// check(f64::NEG_INFINITY, true);
     /// check(f64::MIN_POSITIVE, false);
     /// check(f64::NAN, false);
+    /// check(-f64::NAN, true);
     /// ```
     #[inline]
     fn is_sign_negative(self) -> bool {
@@ -1263,12 +1263,13 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     fn signum(self) -> Self;
 
     /// Returns `true` if `self` is positive, including `+0.0`,
-    /// `Float::infinity()`, and since Rust 1.20 also `Float::nan()`.
+    /// `Float::infinity()`, and `Float::nan()`.
     ///
     /// ```
     /// use num_traits::Float;
     /// use std::f64;
     ///
+    /// let nan: f64 = f64::NAN;
     /// let neg_nan: f64 = -f64::NAN;
     ///
     /// let f = 7.0;
@@ -1276,18 +1277,20 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     ///
     /// assert!(f.is_sign_positive());
     /// assert!(!g.is_sign_positive());
+    /// assert!(nan.is_sign_positive());
     /// assert!(!neg_nan.is_sign_positive());
     /// ```
     fn is_sign_positive(self) -> bool;
 
     /// Returns `true` if `self` is negative, including `-0.0`,
-    /// `Float::neg_infinity()`, and since Rust 1.20 also `-Float::nan()`.
+    /// `Float::neg_infinity()`, and `-Float::nan()`.
     ///
     /// ```
     /// use num_traits::Float;
     /// use std::f64;
     ///
     /// let nan: f64 = f64::NAN;
+    /// let neg_nan: f64 = -f64::NAN;
     ///
     /// let f = 7.0;
     /// let g = -7.0;
@@ -1295,6 +1298,7 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// assert!(!f.is_sign_negative());
     /// assert!(g.is_sign_negative());
     /// assert!(!nan.is_sign_negative());
+    /// assert!(neg_nan.is_sign_negative());
     /// ```
     fn is_sign_negative(self) -> bool;
 
@@ -2324,9 +2328,8 @@ mod tests {
         assert_eq!(n, Float::copysign(n, n));
         assert_eq!(n.neg(), Float::copysign(n, p));
 
-        // FIXME: is_sign... only works on NaN starting in Rust 1.20
-        // assert!(Float::copysign(nan, p).is_sign_positive());
-        // assert!(Float::copysign(nan, n).is_sign_negative());
+        assert!(Float::copysign(nan, p).is_sign_positive());
+        assert!(Float::copysign(nan, n).is_sign_negative());
     }
 
     #[cfg(any(feature = "std", feature = "libm"))]
@@ -2341,8 +2344,7 @@ mod tests {
         assert_eq!(n, n.copysign(n));
         assert_eq!(n.neg(), n.copysign(p));
 
-        // FIXME: is_sign... only works on NaN starting in Rust 1.20
-        // assert!(nan.copysign(p).is_sign_positive());
-        // assert!(nan.copysign(n).is_sign_negative());
+        assert!(nan.copysign(p).is_sign_positive());
+        assert!(nan.copysign(n).is_sign_negative());
     }
 }
