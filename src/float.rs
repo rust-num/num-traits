@@ -2258,9 +2258,6 @@ mod tests {
     }
 
     #[test]
-    // This fails with the forwarded `std` implementation in Rust 1.8.
-    // To avoid the failure, the test is limited to `no_std` builds.
-    #[cfg(not(feature = "std"))]
     fn to_degrees_rounding() {
         use crate::float::FloatCore;
 
