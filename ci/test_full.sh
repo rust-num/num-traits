@@ -27,8 +27,7 @@ if ! check_version $MSRV ; then
   exit 1
 fi
 
-FEATURES=()
-check_version 1.27 && FEATURES+=(libm)
+FEATURES=(libm)
 echo "Testing supported features: ${FEATURES[*]}"
 
 set -x
