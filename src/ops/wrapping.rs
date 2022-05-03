@@ -285,8 +285,7 @@ fn test_wrapping_traits() {
     assert_eq!(wrapping_add(255, 1), (Wrapping(255u8) + Wrapping(1u8)).0);
     assert_eq!(wrapping_sub(0, 1), (Wrapping(0u8) - Wrapping(1u8)).0);
     assert_eq!(wrapping_mul(255, 2), (Wrapping(255u8) * Wrapping(2u8)).0);
-    // TODO: Test for Wrapping::Neg. Not possible yet since core::ops::Neg was
-    // only added to core::num::Wrapping<_> in Rust 1.10.
+    assert_eq!(wrapping_neg(255), (-Wrapping(255u8)).0);
     assert_eq!(wrapping_shl(255, 8), (Wrapping(255u8) << 8).0);
     assert_eq!(wrapping_shr(255, 8), (Wrapping(255u8) >> 8).0);
 }
@@ -309,8 +308,11 @@ fn wrapping_is_wrappingmul() {
     require_wrappingmul(&Wrapping(42));
 }
 
-// TODO: Test for Wrapping::Neg. Not possible yet since core::ops::Neg was
-// only added to core::num::Wrapping<_> in Rust 1.10.
+#[test]
+fn wrapping_is_wrappingneg() {
+    fn require_wrappingneg<T: WrappingNeg>(_: &T) {}
+    require_wrappingneg(&Wrapping(42));
+}
 
 #[test]
 fn wrapping_is_wrappingshl() {
