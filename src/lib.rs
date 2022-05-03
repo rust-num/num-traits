@@ -279,13 +279,13 @@ macro_rules! float_trait_impl {
                     match c.to_digit(radix) {
                         Some(digit) => {
                             // shift significand one digit left
-                            sig = sig * (radix as $t);
+                            sig *= radix as $t;
 
                             // add/subtract current digit depending on sign
                             if is_positive {
-                                sig = sig + ((digit as isize) as $t);
+                                sig += (digit as isize) as $t;
                             } else {
-                                sig = sig - ((digit as isize) as $t);
+                                sig -= (digit as isize) as $t;
                             }
 
                             // Detect overflow by comparing to last value, except
@@ -327,7 +327,7 @@ macro_rules! float_trait_impl {
                         match c.to_digit(radix) {
                             Some(digit) => {
                                 // Decrease power one order of magnitude
-                                power = power / (radix as $t);
+                                power /= radix as $t;
                                 // add/subtract current digit depending on sign
                                 sig = if is_positive {
                                     sig + (digit as $t) * power
