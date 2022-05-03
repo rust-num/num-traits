@@ -1,5 +1,10 @@
 status = [
   "Test (1.31.0)",
+  "Test (1.35.0)",
+  "Test (1.37.0)",
+  "Test (1.38.0)",
+  "Test (1.44.0)",
+  "Test (1.46.0)",
   "Test (stable)",
   "Test (beta)",
   "Test (nightly)",
