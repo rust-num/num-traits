@@ -222,18 +222,8 @@ pub fn checked_pow<T: Clone + One + CheckedMul>(mut base: T, mut exp: usize) -> 
         return Some(T::one());
     }
 
-    macro_rules! optry {
-        ($expr:expr) => {
-            if let Some(val) = $expr {
-                val
-            } else {
-                return None;
-            }
-        };
-    }
-
     while exp & 1 == 0 {
-        base = optry!(base.checked_mul(&base));
+        base = base.checked_mul(&base)?;
         exp >>= 1;
     }
     if exp == 1 {
@@ -243,9 +233,9 @@ pub fn checked_pow<T: Clone + One + CheckedMul>(mut base: T, mut exp: usize) -> 
     let mut acc = base.clone();
     while exp > 1 {
         exp >>= 1;
-        base = optry!(base.checked_mul(&base));
+        base = base.checked_mul(&base)?;
         if exp & 1 == 1 {
-            acc = optry!(acc.checked_mul(&base));
+            acc = acc.checked_mul(&base)?;
         }
     }
     Some(acc)
