@@ -1,14 +1,10 @@
-use core::mem;
 use core::num::FpCategory;
 use core::ops::{Add, Div, Neg};
 
 use core::f32;
 use core::f64;
 
-use {Num, NumCast, ToPrimitive};
-
-#[cfg(all(not(feature = "std"), feature = "libm"))]
-use libm;
+use crate::{Num, NumCast, ToPrimitive};
 
 /// Generic trait for floating point numbers that works with `no_std`.
 ///
@@ -170,6 +166,7 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     /// check(0.0f64, false);
     /// ```
     #[inline]
+    #[allow(clippy::eq_op)]
     fn is_nan(self) -> bool {
         self != self
     }
@@ -370,12 +367,10 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
             } else {
                 self - f + one
             }
+        } else if -f < h {
+            self - f
         } else {
-            if -f < h {
-                self - f
-            } else {
-                self - f - one
-            }
+            self - f - one
         }
     }
 
@@ -508,8 +503,7 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     }
 
     /// Returns `true` if `self` is positive, including `+0.0` and
-    /// `FloatCore::infinity()`, and since Rust 1.20 also
-    /// `FloatCore::nan()`.
+    /// `FloatCore::infinity()`, and `FloatCore::nan()`.
     ///
     /// # Examples
     ///
@@ -527,6 +521,7 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     /// check(-0.0f64, false);
     /// check(f64::NEG_INFINITY, false);
     /// check(f64::MIN_POSITIVE, true);
+    /// check(f64::NAN, true);
     /// check(-f64::NAN, false);
     /// ```
     #[inline]
@@ -535,8 +530,7 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     }
 
     /// Returns `true` if `self` is negative, including `-0.0` and
-    /// `FloatCore::neg_infinity()`, and since Rust 1.20 also
-    /// `-FloatCore::nan()`.
+    /// `FloatCore::neg_infinity()`, and `-FloatCore::nan()`.
     ///
     /// # Examples
     ///
@@ -555,6 +549,7 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     /// check(f64::NEG_INFINITY, true);
     /// check(f64::MIN_POSITIVE, false);
     /// check(f64::NAN, false);
+    /// check(-f64::NAN, true);
     /// ```
     #[inline]
     fn is_sign_negative(self) -> bool {
@@ -769,9 +764,7 @@ impl FloatCore for f32 {
         const EXP_MASK: u32 = 0x7f800000;
         const MAN_MASK: u32 = 0x007fffff;
 
-        // Safety: this identical to the implementation of f32::to_bits(),
-        // which is only available starting at Rust 1.20
-        let bits: u32 = unsafe { mem::transmute(self) };
+        let bits: u32 = self.to_bits();
         match (bits & MAN_MASK, bits & EXP_MASK) {
             (0, 0) => FpCategory::Zero,
             (_, 0) => FpCategory::Subnormal,
@@ -786,10 +779,7 @@ impl FloatCore for f32 {
     fn is_sign_negative(self) -> bool {
         const SIGN_MASK: u32 = 0x80000000;
 
-        // Safety: this identical to the implementation of f32::to_bits(),
-        // which is only available starting at Rust 1.20
-        let bits: u32 = unsafe { mem::transmute(self) };
-        bits & SIGN_MASK != 0
+        self.to_bits() & SIGN_MASK != 0
     }
 
     #[inline]
@@ -871,9 +861,7 @@ impl FloatCore for f64 {
         const EXP_MASK: u64 = 0x7ff0000000000000;
         const MAN_MASK: u64 = 0x000fffffffffffff;
 
-        // Safety: this identical to the implementation of f64::to_bits(),
-        // which is only available starting at Rust 1.20
-        let bits: u64 = unsafe { mem::transmute(self) };
+        let bits: u64 = self.to_bits();
         match (bits & MAN_MASK, bits & EXP_MASK) {
             (0, 0) => FpCategory::Zero,
             (_, 0) => FpCategory::Subnormal,
@@ -888,10 +876,7 @@ impl FloatCore for f64 {
     fn is_sign_negative(self) -> bool {
         const SIGN_MASK: u64 = 0x8000000000000000;
 
-        // Safety: this identical to the implementation of f64::to_bits(),
-        // which is only available starting at Rust 1.20
-        let bits: u64 = unsafe { mem::transmute(self) };
-        bits & SIGN_MASK != 0
+        self.to_bits() & SIGN_MASK != 0
     }
 
     #[inline]
@@ -1266,12 +1251,13 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     fn signum(self) -> Self;
 
     /// Returns `true` if `self` is positive, including `+0.0`,
-    /// `Float::infinity()`, and since Rust 1.20 also `Float::nan()`.
+    /// `Float::infinity()`, and `Float::nan()`.
     ///
     /// ```
     /// use num_traits::Float;
     /// use std::f64;
     ///
+    /// let nan: f64 = f64::NAN;
     /// let neg_nan: f64 = -f64::NAN;
     ///
     /// let f = 7.0;
@@ -1279,18 +1265,20 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     ///
     /// assert!(f.is_sign_positive());
     /// assert!(!g.is_sign_positive());
+    /// assert!(nan.is_sign_positive());
     /// assert!(!neg_nan.is_sign_positive());
     /// ```
     fn is_sign_positive(self) -> bool;
 
     /// Returns `true` if `self` is negative, including `-0.0`,
-    /// `Float::neg_infinity()`, and since Rust 1.20 also `-Float::nan()`.
+    /// `Float::neg_infinity()`, and `-Float::nan()`.
     ///
     /// ```
     /// use num_traits::Float;
     /// use std::f64;
     ///
     /// let nan: f64 = f64::NAN;
+    /// let neg_nan: f64 = -f64::NAN;
     ///
     /// let f = 7.0;
     /// let g = -7.0;
@@ -1298,6 +1286,7 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// assert!(!f.is_sign_negative());
     /// assert!(g.is_sign_negative());
     /// assert!(!nan.is_sign_negative());
+    /// assert!(neg_nan.is_sign_negative());
     /// ```
     fn is_sign_negative(self) -> bool;
 
@@ -2025,9 +2014,7 @@ macro_rules! float_impl_libm {
 }
 
 fn integer_decode_f32(f: f32) -> (u64, i16, i8) {
-    // Safety: this identical to the implementation of f32::to_bits(),
-    // which is only available starting at Rust 1.20
-    let bits: u32 = unsafe { mem::transmute(f) };
+    let bits: u32 = f.to_bits();
     let sign: i8 = if bits >> 31 == 0 { 1 } else { -1 };
     let mut exponent: i16 = ((bits >> 23) & 0xff) as i16;
     let mantissa = if exponent == 0 {
@@ -2041,9 +2028,7 @@ fn integer_decode_f32(f: f32) -> (u64, i16, i8) {
 }
 
 fn integer_decode_f64(f: f64) -> (u64, i16, i8) {
-    // Safety: this identical to the implementation of f64::to_bits(),
-    // which is only available starting at Rust 1.20
-    let bits: u64 = unsafe { mem::transmute(f) };
+    let bits: u64 = f.to_bits();
     let sign: i8 = if bits >> 63 == 0 { 1 } else { -1 };
     let mut exponent: i16 = ((bits >> 52) & 0x7ff) as i16;
     let mantissa = if exponent == 0 {
@@ -2244,7 +2229,7 @@ mod tests {
 
     #[test]
     fn convert_deg_rad() {
-        use float::FloatCore;
+        use crate::float::FloatCore;
 
         for &(deg, rad) in &DEG_RAD_PAIRS {
             assert!((FloatCore::to_degrees(rad) - deg).abs() < 1e-6);
@@ -2260,7 +2245,7 @@ mod tests {
     #[test]
     fn convert_deg_rad_std() {
         for &(deg, rad) in &DEG_RAD_PAIRS {
-            use Float;
+            use crate::Float;
 
             assert!((Float::to_degrees(rad) - deg).abs() < 1e-6);
             assert!((Float::to_radians(deg) - rad).abs() < 1e-6);
@@ -2272,11 +2257,8 @@ mod tests {
     }
 
     #[test]
-    // This fails with the forwarded `std` implementation in Rust 1.8.
-    // To avoid the failure, the test is limited to `no_std` builds.
-    #[cfg(not(feature = "std"))]
     fn to_degrees_rounding() {
-        use float::FloatCore;
+        use crate::float::FloatCore;
 
         assert_eq!(
             FloatCore::to_degrees(1_f32),
@@ -2287,7 +2269,7 @@ mod tests {
     #[test]
     #[cfg(any(feature = "std", feature = "libm"))]
     fn extra_logs() {
-        use float::{Float, FloatConst};
+        use crate::float::{Float, FloatConst};
 
         fn check<F: Float + FloatConst>(diff: F) {
             let _2 = F::from(2.0).unwrap();
@@ -2306,7 +2288,7 @@ mod tests {
     #[test]
     #[cfg(any(feature = "std", feature = "libm"))]
     fn copysign() {
-        use float::Float;
+        use crate::float::Float;
         test_copysign_generic(2.0_f32, -2.0_f32, f32::nan());
         test_copysign_generic(2.0_f64, -2.0_f64, f64::nan());
         test_copysignf(2.0_f32, -2.0_f32, f32::nan());
@@ -2314,8 +2296,8 @@ mod tests {
 
     #[cfg(any(feature = "std", feature = "libm"))]
     fn test_copysignf(p: f32, n: f32, nan: f32) {
+        use crate::float::Float;
         use core::ops::Neg;
-        use float::Float;
 
         assert!(p.is_sign_positive());
         assert!(n.is_sign_negative());
@@ -2327,13 +2309,12 @@ mod tests {
         assert_eq!(n, Float::copysign(n, n));
         assert_eq!(n.neg(), Float::copysign(n, p));
 
-        // FIXME: is_sign... only works on NaN starting in Rust 1.20
-        // assert!(Float::copysign(nan, p).is_sign_positive());
-        // assert!(Float::copysign(nan, n).is_sign_negative());
+        assert!(Float::copysign(nan, p).is_sign_positive());
+        assert!(Float::copysign(nan, n).is_sign_negative());
     }
 
     #[cfg(any(feature = "std", feature = "libm"))]
-    fn test_copysign_generic<F: ::float::Float + ::core::fmt::Debug>(p: F, n: F, nan: F) {
+    fn test_copysign_generic<F: crate::float::Float + ::core::fmt::Debug>(p: F, n: F, nan: F) {
         assert!(p.is_sign_positive());
         assert!(n.is_sign_negative());
         assert!(nan.is_nan());
@@ -2344,8 +2325,7 @@ mod tests {
         assert_eq!(n, n.copysign(n));
         assert_eq!(n.neg(), n.copysign(p));
 
-        // FIXME: is_sign... only works on NaN starting in Rust 1.20
-        // assert!(nan.copysign(p).is_sign_positive());
-        // assert!(nan.copysign(n).is_sign_negative());
+        assert!(nan.copysign(p).is_sign_positive());
+        assert!(nan.copysign(n).is_sign_negative());
     }
 }

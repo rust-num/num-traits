@@ -12,6 +12,8 @@ version = "0.2.15"
 readme = "README.md"
 build = "build.rs"
 exclude = ["/bors.toml", "/ci/*", "/.github/*"]
+edition = "2018"
+rust-version = "1.31"
 
 [package.metadata.docs.rs]
 features = ["std"]
@@ -22,6 +24,8 @@ libm = { version = "0.2.0", optional = true }
 [features]
 default = ["std"]
 std = []
+
+# vestigial features, now always in effect
 i128 = []
 
 [build-dependencies]
