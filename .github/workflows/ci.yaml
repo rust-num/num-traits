@@ -14,85 +14,45 @@ jobs:
       matrix:
         rust: [1.8.0, 1.15.0, 1.20.0, 1.26.0, 1.31.0, stable, beta, nightly]
     steps:
-      - name: Rust install
-        uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust }}
-          profile: minimal
-          override: true
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Build
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-      - name: Test
-        run: ./ci/test_full.sh
+      - run: cargo build
+      - run: ./ci/test_full.sh
 
   # i586 presents floating point challenges for lack of SSE/SSE2
   i586:
     name: Test (i586)
     runs-on: ubuntu-latest
     steps:
-      - name: System install
-        run: |
+      - run: |
           sudo apt-get update
           sudo apt-get install gcc-multilib
-      - name: Rust install
-        uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: stable
-          profile: minimal
-          override: true
           target: i586-unknown-linux-gnu
-      - name: Checkout
-        uses: actions/checkout@v1
-      - name: Test
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --target i586-unknown-linux-gnu --all-features
+      - run: cargo test --target i586-unknown-linux-gnu --all-features
 
   # try a target that doesn't have std at all
   no_std:
     name: No Std
     runs-on: ubuntu-latest
     steps:
-      - name: Rust install
-        uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: stable
-          profile: minimal
-          override: true
           target: thumbv6m-none-eabi
-      - name: Checkout
-        uses: actions/checkout@v1
-      - name: Build
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --target thumbv6m-none-eabi --no-default-features --features i128
-      - name: Build (libm)
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --target thumbv6m-none-eabi --no-default-features --features libm
+      - run: cargo build --target thumbv6m-none-eabi --no-default-features --features i128
+      - run: cargo build --target thumbv6m-none-eabi --no-default-features --features libm
 
   fmt:
     name: Format
     runs-on: ubuntu-latest
     steps:
-      - name: Rust install
-        uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@1.62.0
         with:
-          toolchain: 1.42.0
-          profile: minimal
-          override: true
           components: rustfmt
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Check formatting
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
+      - run: cargo fmt --all --check
