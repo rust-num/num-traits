@@ -21,9 +21,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Build
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
+        run: cargo build
       - name: Test
         run: ./ci/test_full.sh
 
@@ -43,10 +41,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Test
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --target i586-unknown-linux-gnu --all-features
+        run: cargo test --target i586-unknown-linux-gnu --all-features
 
   # try a target that doesn't have std at all
   no_std:
@@ -60,15 +55,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Build
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --target thumbv6m-none-eabi --no-default-features --features i128
+        run: cargo build --target thumbv6m-none-eabi --no-default-features --features i128
       - name: Build (libm)
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --target thumbv6m-none-eabi --no-default-features --features libm
+        run: cargo build --target thumbv6m-none-eabi --no-default-features --features libm
 
   fmt:
     name: Format
@@ -81,7 +70,4 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Check formatting
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all --check
+        run: cargo fmt --all --check
