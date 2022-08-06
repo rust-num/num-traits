@@ -47,6 +47,7 @@ pub use crate::ops::wrapping::{
 };
 pub use crate::pow::{checked_pow, pow, Pow};
 pub use crate::sign::{abs, abs_sub, signum, Signed, Unsigned};
+pub use crate::atomics::{Atomic, IntoAtomic};
 
 #[macro_use]
 mod macros;
@@ -60,6 +61,7 @@ pub mod ops;
 pub mod pow;
 pub mod real;
 pub mod sign;
+pub mod atomics;
 
 /// The base trait for numeric types, covering `0` and `1` values,
 /// comparisons, basic numeric operations, and string conversion.
