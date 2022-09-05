@@ -1,6 +1,6 @@
 use core::sync::atomic::*;
 
-pub trait Atomic: Sized {
+pub trait Atomic: Sized + Send + Sync {
     type NonAtomicType: Copy;
 
     fn new(value: Self::NonAtomicType) -> Self;
