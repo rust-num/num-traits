@@ -32,6 +32,7 @@ pub trait Atomic: Sized {
     ) -> Self::NonAtomicType;
 
     fn fetch_add(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType;
+    fn fetch_saturating_add(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType;
     fn fetch_and(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType;
     fn fetch_max(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType;
     fn fetch_min(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType;
@@ -156,6 +157,28 @@ impl Atomic for $atomic {
     fn fetch_add(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType{
         <$atomic>::fetch_add(self, value, order)
     }
+    
+    #[inline]
+    fn fetch_saturating_add(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType{
+        let mut base = <$atomic>::load(self, order);
+        loop {
+            let new = base.saturating_add(value);
+            let res = <$atomic>::compare_exchange_weak(
+                self,
+                base,
+                new,
+                order,
+                order,
+            );
+            match res {
+                Ok(val) => {return val},
+                Err(val) => {
+                    base = val;
+                }
+            }
+        }
+    }
+
     #[inline]
     fn fetch_and(&self, value: Self::NonAtomicType, order: Ordering) -> Self::NonAtomicType{
         <$atomic>::fetch_and(self, value, order)
