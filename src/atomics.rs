@@ -9,6 +9,11 @@ pub trait Atomic: Sized {
     fn get_mut(&mut self) -> &mut Self::NonAtomicType;
     fn into_inner(self) -> Self::NonAtomicType;
 
+    #[cfg(feature="atomic_from_mut")]
+    fn get_mut_slice(this: &mut [Self]) -> &mut [Self::NonAtomicType];
+    #[cfg(feature="atomic_from_mut")]
+    fn from_mut_slice(this: &mut [Self::NonAtomicType]) -> &mut [Self];
+
     fn compare_exchange(
         &self,
         current: Self::NonAtomicType,
@@ -66,8 +71,15 @@ pub trait Atomic: Sized {
 ///     <R>::new(value)
 /// }
 /// ```
-pub trait IntoAtomic {
+pub trait IntoAtomic: Sized + Send + Sync {
     type AtomicType: Atomic<NonAtomicType=Self>;
+
+    #[cfg(feature="atomic_from_mut")]
+    fn get_mut_slice(this: &mut [Self::AtomicType]) -> &mut [Self];
+    
+    #[cfg(feature="atomic_from_mut")]
+    fn from_mut_slice(this: &mut [Self]) -> &mut [Self::AtomicType];
+
 }
 
 macro_rules! impl_atomic_trait {
@@ -75,6 +87,18 @@ macro_rules! impl_atomic_trait {
 
 impl IntoAtomic for $non_atomic {
     type AtomicType = $atomic;
+
+    #[cfg(feature="atomic_from_mut")]
+    #[inline]
+    fn get_mut_slice(this: &mut [Self::AtomicType]) -> &mut [Self]{
+        <$atomic>::get_mut_slice(this)
+    }
+
+    #[cfg(feature="atomic_from_mut")]
+    #[inline]
+    fn from_mut_slice(this: &mut [Self]) -> &mut [Self::AtomicType]{
+        <$atomic>::from_mut_slice(this)
+    }
 }
 
 impl Atomic for $atomic {
@@ -103,6 +127,18 @@ impl Atomic for $atomic {
     #[inline]
     fn into_inner(self) -> Self::NonAtomicType {
         <$atomic>::into_inner(self)
+    }
+
+    #[cfg(feature="atomic_from_mut")]
+    #[inline]
+    fn get_mut_slice(this: &mut [Self]) -> &mut [Self::NonAtomicType]{
+        <$atomic>::get_mut_slice(this)
+    }
+
+    #[cfg(feature="atomic_from_mut")]
+    #[inline]
+    fn from_mut_slice(this: &mut [Self::NonAtomicType]) -> &mut [Self]{
+        <$atomic>::from_mut_slice(this)
     }
 
     #[inline]
