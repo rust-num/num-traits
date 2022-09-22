@@ -10,6 +10,7 @@ macro_rules! macro_impl_coerce {
                 fn coerce_into(self) -> $tyy {
                     self as $tyy
                 }
+                
                 fn coerce_from(other: $tyy) -> Self {
                     other as $ty
                 }
