@@ -4,22 +4,13 @@ pub trait Coerced<F> {
 }
 
 macro_rules! macro_impl_coerce {
-    ($($ty:ty)*) => {
+    ($tyy:ty, $($ty:ty)*) => {
         $(
-            impl Coerced<f32> for $ty {
-                fn coerce_into(self) -> f32 {
-                    self as f32
+            impl Coerced<$tyy> for $ty {
+                fn coerce_into(self) -> $tyy {
+                    self as $tyy
                 }
-                fn coerce_from(other: f32) -> Self {
-                    other as $ty
-                }
-            }
-
-            impl Coerced<f64> for $ty {
-                fn coerce_into(self) -> f64 {
-                    self as f64
-                }
-                fn coerce_from(other: f64) -> Self {
+                fn coerce_from(other: $tyy) -> Self {
                     other as $ty
                 }
             }
@@ -27,4 +18,12 @@ macro_rules! macro_impl_coerce {
     }
 }
 
-macro_impl_coerce!(f32 f64 i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 usize);
+macro_rules! macro_impl_coerce2 {
+    ($($ty:ty)*) => {
+        $(
+            macro_impl_coerce!($ty, f32 f64 i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 usize);
+        )*
+    }
+}
+
+macro_impl_coerce2!(f32 f64 i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 usize);
