@@ -130,8 +130,8 @@ fn wrapping_bounded() {
             $(
                 assert_eq!(<Wrapping<$t> as Bounded>::MIN.0, <$t>::MIN);
                 assert_eq!(<Wrapping<$t> as Bounded>::MAX.0, <$t>::MAX);
-                assert_eq!(<Wrapping<$t> as Bounded>::MIN.0 - 1, <$t>::MAX);
-                assert_eq!(<Wrapping<$t> as Bounded>::MAX.0 + 1, <$t>::MIN);
+                assert_eq!(<Wrapping<$t> as Bounded>::MIN.0.wrapping_sub(1), <$t>::MAX);
+                assert_eq!(<Wrapping<$t> as Bounded>::MAX.0.wrapping_add(1), <$t>::MIN);
             )+
         };
     }
@@ -146,8 +146,8 @@ fn wrapping_bounded_i128() {
             $(
                 assert_eq!(<Wrapping<$t> as Bounded>::MIN.0, <$t>::MIN);
                 assert_eq!(<Wrapping<$t> as Bounded>::MAX.0, <$t>::MAX);
-                assert_eq!(<Wrapping<$t> as Bounded>::MIN.0 - 1, <$t>::MAX);
-                assert_eq!(<Wrapping<$t> as Bounded>::MAX.0 + 1, <$t>::MIN);
+                assert_eq!(<Wrapping<$t> as Bounded>::MIN.0.wrapping_sub(1), <$t>::MAX);
+                assert_eq!(<Wrapping<$t> as Bounded>::MAX.0.wrapping_add(1), <$t>::MIN);
             )+
         };
     }
