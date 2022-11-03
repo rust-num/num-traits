@@ -1,15 +1,15 @@
 use crate::identities::Zero;
 use crate::CheckedAdd;
 
-/// This trait represents types of which an iterator can be summed up with overflow checking.
+/// Trait to represent types that can be created by summing up an iterator with overflow checking.
 /// This trait should rarely be called directly.
-pub trait CheckedSum<Result = Self> {
-    /// Adds the elements of an iterator, returning `None` if an overflow would occur.
+pub trait CheckedSum<A = Self>: Sized {
+    /// Method which takes an iterator and generates Self from the elements by “summing up” the items with overflow checking, returning `None` if the addition would overflow.
     ///
-    /// Summing an empty iterator returns a value representing Zero.
+    /// An empty iterator returns the one value of the type.
     ///
-    /// For signed numbers, the order of elements may effect whether the result is `None`.    
-    fn checked_sum<I: Iterator<Item = Self>>(iter: I) -> Option<Result>;
+    /// For signed numbers, the order of elements may effect whether the result is `None`.
+    fn checked_sum<I: Iterator<Item = A>>(iter: I) -> Option<Self>;
 }
 
 impl<T> CheckedSum<T> for T
@@ -21,40 +21,26 @@ where
     }
 }
 
-impl<'a, T> CheckedSum<T> for &'a T
+impl<'a, T> CheckedSum<&'a T> for T
 where
-    T: CheckedAdd + Sized + Zero,
+    T: CheckedAdd + Zero,
 {
-    fn checked_sum<I: Iterator<Item = Self>>(mut iter: I) -> Option<T> {
-        iter.try_fold(T::zero(), |acc, x| acc.checked_add(x))
+    fn checked_sum<I: Iterator<Item = &'a Self>>(mut iter: I) -> Option<Self> {
+        iter.try_fold(Self::zero(), |acc, x| acc.checked_add(&x))
     }
 }
 
-///This trait is for iterators that can be summed up with overflow checking.
-trait CheckedSumIter<T, Result>: Iterator<Item = T> {
-    /// Adds the elements of an iterator, returning `None` if an overflow would occur.
-    ///
-    /// Summing an empty iterator returns a value representing Zero.
-    ///
-    /// For signed numbers, the order of elements may effect whether the result is `None`.    
-    fn checked_sum(self) -> Option<Result>;
-}
-
-impl<Result, T: CheckedSum<Result>, I: Iterator<Item = T>> CheckedSumIter<T, Result> for I {
-    fn checked_sum(self) -> Option<Result> {
-        T::checked_sum(self)
-    }
-}
 
 #[test]
 fn checked_sum_returns_none_instead_of_overflowing() {
     use crate::identities::One;
+    use crate::iter::num_iter::NumIter;
 
     macro_rules! test_checked_sum {
         ($($t:ty)+) => {
             $(
-                assert_eq!(None, [<$t>::MAX, <$t>::one()].iter().checked_sum() );
-                assert_eq!(None,IntoIterator::into_iter([<$t>::MAX, <$t>::one()]).checked_sum() );
+                assert_eq!(None::<$t>, [<$t>::MAX, <$t>::one()].iter().checked_sum() );
+                assert_eq!(None::<$t>,IntoIterator::into_iter([<$t>::MAX, <$t>::one()]).checked_sum() );
             )+
         };
     }
@@ -64,6 +50,8 @@ fn checked_sum_returns_none_instead_of_overflowing() {
 
 #[test]
 fn checked_sum_returns_zero_if_empty() {
+    use crate::iter::num_iter::NumIter;
+
     macro_rules! test_checked_sum {
         ($($t:ty)+) => {
             $(
@@ -78,6 +66,8 @@ fn checked_sum_returns_zero_if_empty() {
 
 #[test]
 fn checked_sum_returns_correct_sum() {
+    use crate::iter::num_iter::NumIter;
+
     macro_rules! test_checked_sum {
         ($($t:ty)+) => {
             $(
@@ -92,6 +82,8 @@ fn checked_sum_returns_correct_sum() {
 
 #[test]
 fn checked_sum_adds_left_to_right() {
-    assert_eq!(None, [120i8, 8i8, -1i8].iter().checked_sum());
+    use crate::iter::num_iter::NumIter;
+    
+    assert_eq!(None::<i8>, [120i8, 8i8, -1i8].iter().checked_sum());
     assert_eq!(Some(127), [-1i8, 120i8, 8i8].iter().checked_sum());
 }

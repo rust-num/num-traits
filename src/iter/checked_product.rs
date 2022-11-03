@@ -1,15 +1,15 @@
 use crate::identities::One;
 use crate::CheckedMul;
 
-/// This trait represents types of which an iterator can be multiplied up with overflow checking.
+/// Trait to represent types that can be created by multiplying elements of an iterator with overflow checking.
 /// This trait should rarely be called directly.
-pub trait CheckedProduct<Result = Self> {
-    /// Multiplies up the elements of an iterator, returning `None` if an overflow would occur.
+pub trait CheckedProduct<A = Self> : Sized {
+    /// Method which takes an iterator and generates Self from the elements by multiplying the items with overflow checking, returning `None` if the multiplication would overflow.
     ///
-    /// Multiplies up an empty iterator returns a value representing One.
+    /// An empty iterator returns the one value of the type.
     ///
-    /// If the iterator contains Zero, the order of elements may effect whether the result is `None`.
-    fn checked_product<I: Iterator<Item = Self>>(iter: I) -> Option<Result>;
+    /// For iterators containing zero, the order of elements may effect whether the result is `None`.
+    fn checked_product<I: Iterator<Item = A>>(iter: I) -> Option<Self>;
 }
 
 impl<T> CheckedProduct<T> for T
@@ -21,38 +21,24 @@ where
     }
 }
 
-impl<'a, T> CheckedProduct<T> for &'a T
+impl<'a, T> CheckedProduct<&'a T> for T
 where
-    T: CheckedMul + Sized + One,
+    T: CheckedMul + One,
 {
-    fn checked_product<I: Iterator<Item = Self>>(mut iter: I) -> Option<T> {
-        iter.try_fold(T::one(), |acc, x| acc.checked_mul(x))
-    }
-}
-
-///This trait is for iterators that can be multiplied up with overflow checking.
-trait CheckedProductIter<T, Result>: Iterator<Item = T> {
-    /// Multiplies up the elements of an iterator, returning `None` if an overflow would occur.
-    ///
-    /// Multiplies up an empty iterator returns a value representing One.
-    ///
-    /// If the iterator contains Zero, the order of elements may effect whether the result is `None`.
-    fn checked_product(self) -> Option<Result>;
-}
-
-impl<Result, T: CheckedProduct<Result>, I: Iterator<Item = T>> CheckedProductIter<T, Result> for I {
-    fn checked_product(self) -> Option<Result> {
-        T::checked_product(self)
+    fn checked_product<I: Iterator<Item = &'a Self>>(mut iter: I) -> Option<Self> {
+        iter.try_fold(Self::one(), |acc, x| acc.checked_mul(&x))
     }
 }
 
 #[test]
 fn checked_product_returns_none_instead_of_overflowing() {
+    use crate::iter::num_iter::NumIter;
+
     macro_rules! test_checked_product {
         ($($t:ty)+) => {
             $(
-                assert_eq!(None, [<$t>::MAX, 2 ].iter().checked_product() );
-                assert_eq!(None,IntoIterator::into_iter([<$t>::MAX, 2]).checked_product() );
+                assert_eq!(None::<$t>, [<$t>::MAX, 2 ].iter().checked_product() );
+                assert_eq!(None::<$t>,IntoIterator::into_iter([<$t>::MAX, 2]).checked_product() );
             )+
         };
     }
@@ -62,6 +48,8 @@ fn checked_product_returns_none_instead_of_overflowing() {
 
 #[test]
 fn checked_product_returns_one_if_empty() {
+    use crate::iter::num_iter::NumIter;
+
     macro_rules! test_checked_product {
         ($($t:ty)+) => {
             $(
@@ -76,6 +64,8 @@ fn checked_product_returns_one_if_empty() {
 
 #[test]
 fn checked_product_returns_correct_product() {
+    use crate::iter::num_iter::NumIter;
+
     macro_rules! test_checked_product {
         ($($t:ty)+) => {
             $(
@@ -90,6 +80,8 @@ fn checked_product_returns_correct_product() {
 
 #[test]
 fn checked_product_multiplies_left_to_right() {
-    assert_eq!(None, [100u8, 3u8, 0u8].iter().checked_product());
+    use crate::iter::num_iter::NumIter;
+
+    assert_eq!(None::<u8>, [100u8, 3u8, 0u8].iter().checked_product());
     assert_eq!(Some(0), [0u8, 100u8, 3u8].iter().checked_product());
 }
