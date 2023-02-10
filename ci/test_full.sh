@@ -30,6 +30,11 @@ fi
 FEATURES=(libm)
 echo "Testing supported features: ${FEATURES[*]}"
 
+cargo generate-lockfile
+
+# libm 0.2.6 started using {float}::EPSILON
+check_version 1.43 || cargo update -p libm --precise 0.2.5
+
 set -x
 
 # test the default

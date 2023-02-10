@@ -29,6 +29,9 @@ jobs:
         with:
           toolchain: ${{ matrix.rust }}
       - run: cargo build
+        env:
+          # https://github.com/rust-lang/cargo/issues/10303
+          CARGO_NET_GIT_FETCH_WITH_CLI: true
       - run: ./ci/test_full.sh
 
   # i586 presents floating point challenges for lack of SSE/SSE2
