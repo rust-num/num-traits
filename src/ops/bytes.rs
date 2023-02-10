@@ -286,6 +286,7 @@ int_to_from_bytes_impl!(u8, 1);
 int_to_from_bytes_impl!(u16, 2);
 int_to_from_bytes_impl!(u32, 4);
 int_to_from_bytes_impl!(u64, 8);
+int_to_from_bytes_impl!(u128, 16);
 #[cfg(target_pointer_width = "64")]
 int_to_from_bytes_impl!(usize, 8);
 #[cfg(target_pointer_width = "32")]
@@ -295,15 +296,11 @@ int_to_from_bytes_impl!(i8, 1);
 int_to_from_bytes_impl!(i16, 2);
 int_to_from_bytes_impl!(i32, 4);
 int_to_from_bytes_impl!(i64, 8);
+int_to_from_bytes_impl!(i128, 16);
 #[cfg(target_pointer_width = "64")]
 int_to_from_bytes_impl!(isize, 8);
 #[cfg(target_pointer_width = "32")]
 int_to_from_bytes_impl!(isize, 4);
-
-#[cfg(has_i128)]
-int_to_from_bytes_impl!(u128, 16);
-#[cfg(has_i128)]
-int_to_from_bytes_impl!(i128, 16);
 
 float_to_from_bytes_impl!(f32, u32, 4);
 float_to_from_bytes_impl!(f64, u64, 8);
@@ -339,14 +336,8 @@ mod tests {
 
     #[test]
     fn convert_between_int_and_bytes() {
-        check_to_from_bytes!(u8 u16 u32 u64 usize);
-        check_to_from_bytes!(i8 i16 i32 i64 isize);
-    }
-
-    #[cfg(has_i128)]
-    #[test]
-    fn convert_between_int_and_bytes_128() {
-        check_to_from_bytes!(i128 u128);
+        check_to_from_bytes!(u8 u16 u32 u64 u128 usize);
+        check_to_from_bytes!(i8 i16 i32 i64 i128 isize);
     }
 
     #[test]
