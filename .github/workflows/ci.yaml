@@ -5,6 +5,9 @@ on:
       - staging
       - trying
 
+permissions:
+  contents: read
+
 jobs:
 
   test:
