@@ -2362,6 +2362,7 @@ mod tests {
         assert!(p.is_sign_positive());
         assert!(n.is_sign_negative());
         assert!(nan.is_nan());
+        assert!(!nan.is_subnormal());
 
         assert_eq!(p, p.copysign(p));
         assert_eq!(p.neg(), p.copysign(n));
@@ -2371,5 +2372,24 @@ mod tests {
 
         assert!(nan.copysign(p).is_sign_positive());
         assert!(nan.copysign(n).is_sign_negative());
+    }
+
+    #[cfg(any(feature = "std", feature = "libm"))]
+    fn test_subnormal<F: crate::float::Float + ::core::fmt::Debug>() {
+        let lower_than_min: F = F::from(1.0e-308_f64).unwrap();
+        assert!(lower_than_min.is_subnormal());
+    }
+
+    #[test]
+    #[cfg(any(feature = "std", feature = "libm"))]
+    fn subnormal() {
+        test_subnormal::<f64>();
+    }
+
+    #[test]
+    #[should_panic]
+    #[cfg(any(feature = "std", feature = "libm"))]
+    fn subnormal_f32() {
+        test_subnormal::<f32>();
     }
 }
