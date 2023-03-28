@@ -240,6 +240,28 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     fn is_normal(self) -> bool {
         self.classify() == FpCategory::Normal
     }
+    
+    /// Returns `true` if the number is [subnormal].
+    ///
+    /// ```
+    /// let min = f64::MIN_POSITIVE; // 2.2250738585072014e-308_f64
+    /// let max = f64::MAX;
+    /// let lower_than_min = 1.0e-308_f64;
+    /// let zero = 0.0_f64;
+    ///
+    /// assert!(!min.is_subnormal());
+    /// assert!(!max.is_subnormal());
+    ///
+    /// assert!(!zero.is_subnormal());
+    /// assert!(!f64::NAN.is_subnormal());
+    /// assert!(!f64::INFINITY.is_subnormal());
+    /// // Values between `0` and `min` are Subnormal.
+    /// assert!(lower_than_min.is_subnormal());
+    /// ```
+    /// [subnormal]: https://en.wikipedia.org/wiki/Denormal_number
+    fn is_subnormal(self) -> bool {
+        self.classify() == FpCategory::Subnormal
+    }
 
     /// Returns the floating point category of the number. If only one property
     /// is going to be tested, it is generally faster to use the specific
@@ -900,6 +922,7 @@ impl FloatCore for f64 {
         Self::is_infinite(self) -> bool;
         Self::is_finite(self) -> bool;
         Self::is_normal(self) -> bool;
+        Self::is_subnormal(self) -> bool;
         Self::classify(self) -> FpCategory;
         Self::floor(self) -> Self;
         Self::ceil(self) -> Self;
@@ -1125,6 +1148,26 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// ```
     /// [subnormal]: http://en.wikipedia.org/wiki/Denormal_number
     fn is_normal(self) -> bool;
+
+    /// Returns `true` if the number is [subnormal].
+    ///
+    /// ```
+    /// let min = f64::MIN_POSITIVE; // 2.2250738585072014e-308_f64
+    /// let max = f64::MAX;
+    /// let lower_than_min = 1.0e-308_f64;
+    /// let zero = 0.0_f64;
+    ///
+    /// assert!(!min.is_subnormal());
+    /// assert!(!max.is_subnormal());
+    ///
+    /// assert!(!zero.is_subnormal());
+    /// assert!(!f64::NAN.is_subnormal());
+    /// assert!(!f64::INFINITY.is_subnormal());
+    /// // Values between `0` and `min` are Subnormal.
+    /// assert!(lower_than_min.is_subnormal());
+    /// ```
+    /// [subnormal]: https://en.wikipedia.org/wiki/Denormal_number
+    fn is_subnormal(self) -> bool;
 
     /// Returns the floating point category of the number. If only one property
     /// is going to be tested, it is generally faster to use the specific
@@ -1913,6 +1956,7 @@ macro_rules! float_impl_std {
                 Self::is_infinite(self) -> bool;
                 Self::is_finite(self) -> bool;
                 Self::is_normal(self) -> bool;
+                Self::is_subnormal(self) -> bool;
                 Self::classify(self) -> FpCategory;
                 Self::floor(self) -> Self;
                 Self::ceil(self) -> Self;
