@@ -2,6 +2,7 @@ use core::borrow::{Borrow, BorrowMut};
 use core::cmp::{Eq, Ord, PartialEq, PartialOrd};
 use core::fmt::Debug;
 use core::hash::Hash;
+#[cfg(not(has_int_to_from_bytes))]
 use core::mem::transmute;
 
 pub trait NumBytes:
@@ -160,7 +161,7 @@ pub trait FromBytes {
 
 macro_rules! float_to_from_bytes_impl {
     ($T:ty, $I:ty, $L:expr) => {
-        #[cfg(feature = "has_float_to_from_bytes")]
+        #[cfg(has_float_to_from_bytes)]
         impl ToBytes for $T {
             type Bytes = [u8; $L];
 
@@ -180,7 +181,7 @@ macro_rules! float_to_from_bytes_impl {
             }
         }
 
-        #[cfg(feature = "has_float_to_from_bytes")]
+        #[cfg(has_float_to_from_bytes)]
         impl FromBytes for $T {
             type Bytes = [u8; $L];
 
@@ -200,7 +201,7 @@ macro_rules! float_to_from_bytes_impl {
             }
         }
 
-        #[cfg(not(feature = "has_float_to_from_bytes"))]
+        #[cfg(not(has_float_to_from_bytes))]
         impl ToBytes for $T {
             type Bytes = [u8; $L];
 
@@ -220,7 +221,7 @@ macro_rules! float_to_from_bytes_impl {
             }
         }
 
-        #[cfg(not(feature = "has_float_to_from_bytes"))]
+        #[cfg(not(has_float_to_from_bytes))]
         impl FromBytes for $T {
             type Bytes = [u8; $L];
 
@@ -244,7 +245,7 @@ macro_rules! float_to_from_bytes_impl {
 
 macro_rules! int_to_from_bytes_impl {
     ($T:ty, $L:expr) => {
-        #[cfg(feature = "has_int_to_from_bytes")]
+        #[cfg(has_int_to_from_bytes)]
         impl ToBytes for $T {
             type Bytes = [u8; $L];
 
@@ -264,7 +265,7 @@ macro_rules! int_to_from_bytes_impl {
             }
         }
 
-        #[cfg(feature = "has_int_to_from_bytes")]
+        #[cfg(has_int_to_from_bytes)]
         impl FromBytes for $T {
             type Bytes = [u8; $L];
 
@@ -284,7 +285,7 @@ macro_rules! int_to_from_bytes_impl {
             }
         }
 
-        #[cfg(not(feature = "has_int_to_from_bytes"))]
+        #[cfg(not(has_int_to_from_bytes))]
         impl ToBytes for $T {
             type Bytes = [u8; $L];
 
@@ -304,7 +305,7 @@ macro_rules! int_to_from_bytes_impl {
             }
         }
 
-        #[cfg(not(feature = "has_int_to_from_bytes"))]
+        #[cfg(not(has_int_to_from_bytes))]
         impl FromBytes for $T {
             type Bytes = [u8; $L];
 
