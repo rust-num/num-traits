@@ -241,6 +241,7 @@ fn cast_float_to_i128_edge_cases() {
 
 macro_rules! int_test_edge {
     ($f:ident -> { $($t:ident)+ } with $BigS:ident $BigU:ident ) => { $({
+        #[allow(arithmetic_overflow)] // https://github.com/rust-lang/rust/issues/109731
         fn test_edge() {
             dbg!("testing cast edge cases for {} -> {}", stringify!($f), stringify!($t));
 
