@@ -45,13 +45,8 @@ pub trait ToBytes {
     /// ```
     /// use num_traits::ToBytes;
     ///
-    /// # #[cfg(has_int_to_from_bytes)]
-    /// # fn main() {
-    /// let bytes = 0x12345678u32.to_be_bytes();
+    /// let bytes = ToBytes::to_be_bytes(&0x12345678u32);
     /// assert_eq!(bytes, [0x12, 0x34, 0x56, 0x78]);
-    /// # }
-    /// # #[cfg(not(has_int_to_from_bytes))]
-    /// # fn main() {}
     /// ```
     fn to_be_bytes(&self) -> Self::Bytes;
 
@@ -62,13 +57,8 @@ pub trait ToBytes {
     /// ```
     /// use num_traits::ToBytes;
     ///
-    /// # #[cfg(has_int_to_from_bytes)]
-    /// # fn main() {
-    /// let bytes = 0x12345678u32.to_le_bytes();
+    /// let bytes = ToBytes::to_le_bytes(&0x12345678u32);
     /// assert_eq!(bytes, [0x78, 0x56, 0x34, 0x12]);
-    /// # }
-    /// # #[cfg(not(has_int_to_from_bytes))]
-    /// # fn main() {}
     /// ```
     fn to_le_bytes(&self) -> Self::Bytes;
 
@@ -85,19 +75,14 @@ pub trait ToBytes {
     /// ```
     /// use num_traits::ToBytes;
     ///
-    /// # #[cfg(has_int_to_from_bytes)]
-    /// # fn main() {
     /// #[cfg(target_endian = "big")]
     /// let expected = [0x12, 0x34, 0x56, 0x78];
     ///
-    /// #[cfg(not(target_endian = "big"))]
+    /// #[cfg(target_endian = "little")]
     /// let expected = [0x78, 0x56, 0x34, 0x12];
     ///
-    /// let bytes = 0x12345678u32.to_ne_bytes();
+    /// let bytes = ToBytes::to_ne_bytes(&0x12345678u32);
     /// assert_eq!(bytes, expected)
-    /// # }
-    /// # #[cfg(not(has_int_to_from_bytes))]
-    /// # fn main() {}
     /// ```
     fn to_ne_bytes(&self) -> Self::Bytes {
         #[cfg(target_endian = "big")]
@@ -118,7 +103,7 @@ pub trait FromBytes: Sized {
     /// ```
     /// use num_traits::FromBytes;
     ///
-    /// let value = <u32 as FromBytes>::from_be_bytes(&[0x12, 0x34, 0x56, 0x78]);
+    /// let value: u32 = FromBytes::from_be_bytes(&[0x12, 0x34, 0x56, 0x78]);
     /// assert_eq!(value, 0x12345678);
     /// ```
     fn from_be_bytes(bytes: &Self::Bytes) -> Self;
@@ -130,7 +115,7 @@ pub trait FromBytes: Sized {
     /// ```
     /// use num_traits::FromBytes;
     ///
-    /// let value = <u32 as FromBytes>::from_le_bytes(&[0x78, 0x56, 0x34, 0x12]);
+    /// let value: u32 = FromBytes::from_le_bytes(&[0x78, 0x56, 0x34, 0x12]);
     /// assert_eq!(value, 0x12345678);
     /// ```
     fn from_le_bytes(bytes: &Self::Bytes) -> Self;
@@ -148,19 +133,14 @@ pub trait FromBytes: Sized {
     /// ```
     /// use num_traits::FromBytes;
     ///
-    /// # #[cfg(has_int_to_from_bytes)]
-    /// # fn main() {
     /// #[cfg(target_endian = "big")]
     /// let bytes = [0x12, 0x34, 0x56, 0x78];
     ///
-    /// #[cfg(not(target_endian = "big"))]
+    /// #[cfg(target_endian = "little")]
     /// let bytes = [0x78, 0x56, 0x34, 0x12];
     ///
-    /// let value = <u32 as FromBytes>::from_ne_bytes(&bytes);
+    /// let value: u32 = FromBytes::from_ne_bytes(&bytes);
     /// assert_eq!(value, 0x12345678)
-    /// # }
-    /// # #[cfg(not(has_int_to_from_bytes))]
-    /// # fn main() {}
     /// ```
     fn from_ne_bytes(bytes: &Self::Bytes) -> Self {
         #[cfg(target_endian = "big")]
