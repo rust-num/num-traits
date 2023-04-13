@@ -16,7 +16,6 @@ pub trait NumBytes:
     + Hash
     + Borrow<[u8]>
     + BorrowMut<[u8]>
-    + Default
 {
 }
 
@@ -31,7 +30,7 @@ impl<T> NumBytes for T where
         + Hash
         + Borrow<[u8]>
         + BorrowMut<[u8]>
-        + Default
+        + ?Sized
 {
 }
 
@@ -94,7 +93,7 @@ pub trait ToBytes {
 }
 
 pub trait FromBytes: Sized {
-    type Bytes: NumBytes;
+    type Bytes: NumBytes + ?Sized;
 
     /// Create a number from its representation as a byte array in big endian.
     ///
