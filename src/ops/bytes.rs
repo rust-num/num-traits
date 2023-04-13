@@ -172,7 +172,7 @@ pub trait FromBytes: Sized {
 }
 
 macro_rules! float_to_from_bytes_impl {
-    ($T:ty, $I:ty, $L:expr) => {
+    ($T:ty, $L:expr) => {
         #[cfg(has_float_to_from_bytes)]
         impl ToBytes for $T {
             type Bytes = [u8; $L];
@@ -219,17 +219,17 @@ macro_rules! float_to_from_bytes_impl {
 
             #[inline]
             fn to_be_bytes(&self) -> Self::Bytes {
-                <$I as ToBytes>::to_be_bytes(&self.to_bits())
+                ToBytes::to_be_bytes(&self.to_bits())
             }
 
             #[inline]
             fn to_le_bytes(&self) -> Self::Bytes {
-                <$I as ToBytes>::to_le_bytes(&self.to_bits())
+                ToBytes::to_le_bytes(&self.to_bits())
             }
 
             #[inline]
             fn to_ne_bytes(&self) -> Self::Bytes {
-                <$I as ToBytes>::to_ne_bytes(&self.to_bits())
+                ToBytes::to_ne_bytes(&self.to_bits())
             }
         }
 
@@ -239,17 +239,17 @@ macro_rules! float_to_from_bytes_impl {
 
             #[inline]
             fn from_be_bytes(bytes: &Self::Bytes) -> Self {
-                Self::from_bits(<$I as FromBytes>::from_be_bytes(&bytes))
+                Self::from_bits(FromBytes::from_be_bytes(bytes))
             }
 
             #[inline]
             fn from_le_bytes(bytes: &Self::Bytes) -> Self {
-                Self::from_bits(<$I as FromBytes>::from_le_bytes(&bytes))
+                Self::from_bits(FromBytes::from_le_bytes(bytes))
             }
 
             #[inline]
             fn from_ne_bytes(bytes: &Self::Bytes) -> Self {
-                Self::from_bits(<$I as FromBytes>::from_ne_bytes(&bytes))
+                Self::from_bits(FromBytes::from_ne_bytes(bytes))
             }
         }
     };
@@ -359,8 +359,8 @@ int_to_from_bytes_impl!(isize, 8);
 #[cfg(target_pointer_width = "32")]
 int_to_from_bytes_impl!(isize, 4);
 
-float_to_from_bytes_impl!(f32, u32, 4);
-float_to_from_bytes_impl!(f64, u64, 8);
+float_to_from_bytes_impl!(f32, 4);
+float_to_from_bytes_impl!(f64, 8);
 
 #[cfg(test)]
 mod tests {
