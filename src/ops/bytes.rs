@@ -99,10 +99,16 @@ pub trait ToBytes {
     /// # #[cfg(not(has_int_to_from_bytes))]
     /// # fn main() {}
     /// ```
-    fn to_ne_bytes(&self) -> Self::Bytes;
+    fn to_ne_bytes(&self) -> Self::Bytes {
+        #[cfg(target_endian = "big")]
+        let bytes = self.to_be_bytes();
+        #[cfg(target_endian = "little")]
+        let bytes = self.to_le_bytes();
+        bytes
+    }
 }
 
-pub trait FromBytes {
+pub trait FromBytes: Sized {
     type Bytes: NumBytes;
 
     /// Create a number from its representation as a byte array in big endian.
@@ -156,7 +162,13 @@ pub trait FromBytes {
     /// # #[cfg(not(has_int_to_from_bytes))]
     /// # fn main() {}
     /// ```
-    fn from_ne_bytes(bytes: &Self::Bytes) -> Self;
+    fn from_ne_bytes(bytes: &Self::Bytes) -> Self {
+        #[cfg(target_endian = "big")]
+        let this = Self::from_be_bytes(bytes);
+        #[cfg(target_endian = "little")]
+        let this = Self::from_le_bytes(bytes);
+        this
+    }
 }
 
 macro_rules! float_to_from_bytes_impl {
