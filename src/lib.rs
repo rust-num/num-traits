@@ -32,6 +32,7 @@ pub use crate::bounds::Bounded;
 pub use crate::float::Float;
 pub use crate::float::FloatConst;
 // pub use real::{FloatCore, Real}; // NOTE: Don't do this, it breaks `use num_traits::*;`.
+pub use crate::bits::Bits;
 pub use crate::cast::{cast, AsPrimitive, FromPrimitive, NumCast, ToPrimitive};
 pub use crate::identities::{one, zero, One, Zero};
 pub use crate::int::PrimInt;
@@ -51,6 +52,7 @@ pub use crate::sign::{abs, abs_sub, signum, Signed, Unsigned};
 #[macro_use]
 mod macros;
 
+pub mod bits;
 pub mod bounds;
 pub mod cast;
 pub mod float;
