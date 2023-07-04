@@ -18,6 +18,11 @@
 #![deny(unconditional_recursion)]
 #![no_std]
 
+#![feature(const_trait_impl)]
+#![feature(const_fn_floating_point_arithmetic)]
+#![feature(const_mut_refs)]
+#![feature(const_refs_to_cell)]
+
 // Need to explicitly bring the crate in for inherent float methods
 #[cfg(feature = "std")]
 extern crate std;

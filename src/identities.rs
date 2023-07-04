@@ -1,3 +1,4 @@
+use core::marker::Destruct;
 use core::num::Wrapping;
 use core::ops::{Add, Mul};
 
@@ -9,6 +10,7 @@ use core::ops::{Add, Mul};
 /// a + 0 = a       ∀ a ∈ Self
 /// 0 + a = a       ∀ a ∈ Self
 /// ```
+#[const_trait]
 pub trait Zero: Sized + Add<Self, Output = Self> {
     /// Returns the additive identity element of `Self`, `0`.
     /// # Purity
@@ -20,7 +22,8 @@ pub trait Zero: Sized + Add<Self, Output = Self> {
     fn zero() -> Self;
 
     /// Sets `self` to the additive identity element of `Self`, `0`.
-    fn set_zero(&mut self) {
+    fn set_zero(&mut self)
+    where Self: ~const Destruct {
         *self = Zero::zero();
     }
 
@@ -30,7 +33,7 @@ pub trait Zero: Sized + Add<Self, Output = Self> {
 
 macro_rules! zero_impl {
     ($t:ty, $v:expr) => {
-        impl Zero for $t {
+        impl const Zero for $t {
             #[inline]
             fn zero() -> $t {
                 $v
@@ -60,7 +63,7 @@ zero_impl!(i128, 0);
 zero_impl!(f32, 0.0);
 zero_impl!(f64, 0.0);
 
-impl<T: Zero> Zero for Wrapping<T>
+impl<T: ~const Zero> const Zero for Wrapping<T>
 where
     Wrapping<T>: Add<Output = Wrapping<T>>,
 {
@@ -68,7 +71,8 @@ where
         self.0.is_zero()
     }
 
-    fn set_zero(&mut self) {
+    fn set_zero(&mut self)
+    where T: ~const Destruct {
         self.0.set_zero();
     }
 
@@ -85,6 +89,7 @@ where
 /// a * 1 = a       ∀ a ∈ Self
 /// 1 * a = a       ∀ a ∈ Self
 /// ```
+#[const_trait]
 pub trait One: Sized + Mul<Self, Output = Self> {
     /// Returns the multiplicative identity element of `Self`, `1`.
     ///
@@ -97,7 +102,8 @@ pub trait One: Sized + Mul<Self, Output = Self> {
     fn one() -> Self;
 
     /// Sets `self` to the multiplicative identity element of `Self`, `1`.
-    fn set_one(&mut self) {
+    fn set_one(&mut self)
+    where Self: ~const Destruct {
         *self = One::one();
     }
 
@@ -109,7 +115,7 @@ pub trait One: Sized + Mul<Self, Output = Self> {
     #[inline]
     fn is_one(&self) -> bool
     where
-        Self: PartialEq,
+        Self: ~const PartialEq + ~const Destruct,
     {
         *self == Self::one()
     }
@@ -117,7 +123,7 @@ pub trait One: Sized + Mul<Self, Output = Self> {
 
 macro_rules! one_impl {
     ($t:ty, $v:expr) => {
-        impl One for $t {
+        impl const One for $t {
             #[inline]
             fn one() -> $t {
                 $v
@@ -147,11 +153,12 @@ one_impl!(i128, 1);
 one_impl!(f32, 1.0);
 one_impl!(f64, 1.0);
 
-impl<T: One> One for Wrapping<T>
+impl<T: ~const One> const One for Wrapping<T>
 where
     Wrapping<T>: Mul<Output = Wrapping<T>>,
 {
-    fn set_one(&mut self) {
+    fn set_one(&mut self)
+    where T: ~const Destruct {
         self.0.set_one();
     }
 
@@ -164,13 +171,13 @@ where
 
 /// Returns the additive identity, `0`.
 #[inline(always)]
-pub fn zero<T: Zero>() -> T {
+pub const fn zero<T: ~const Zero>() -> T {
     Zero::zero()
 }
 
 /// Returns the multiplicative identity, `1`.
 #[inline(always)]
-pub fn one<T: One>() -> T {
+pub const fn one<T: ~const One>() -> T {
     One::one()
 }
 
