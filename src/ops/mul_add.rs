@@ -28,9 +28,9 @@ pub trait MulAdd<A = Self, B = Self> {
     fn mul_add(self, a: A, b: B) -> Self::Output;
 }
 
-/// The fused multiply-add assignment operation `self = (self * a) + b`
+/// The fused multiply-add assignment operation `*self = (*self * a) + b`
 pub trait MulAddAssign<A = Self, B = Self> {
-    /// Performs the fused multiply-add assignment operation `self = (self * a) + b`
+    /// Performs the fused multiply-add assignment operation `*self = (*self * a) + b`
     fn mul_add_assign(&mut self, a: A, b: B);
 }
 
