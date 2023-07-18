@@ -35,6 +35,7 @@ pub use crate::float::FloatConst;
 pub use crate::cast::{cast, AsPrimitive, FromPrimitive, NumCast, ToPrimitive};
 pub use crate::identities::{one, zero, One, Zero};
 pub use crate::int::PrimInt;
+pub use crate::iter::{checked_product::CheckedProduct, checked_sum::CheckedSum, num_iter::NumIter};
 pub use crate::ops::checked::{
     CheckedAdd, CheckedDiv, CheckedMul, CheckedNeg, CheckedRem, CheckedShl, CheckedShr, CheckedSub,
 };
@@ -56,6 +57,7 @@ pub mod cast;
 pub mod float;
 pub mod identities;
 pub mod int;
+pub mod iter;
 pub mod ops;
 pub mod pow;
 pub mod real;
