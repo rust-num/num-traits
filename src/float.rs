@@ -241,6 +241,32 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
         self.classify() == FpCategory::Normal
     }
 
+    /// Returns `true` if the number is [subnormal].
+    ///
+    /// ```
+    /// use num_traits::float::FloatCore;
+    /// use std::f64;
+    ///
+    /// let min = f64::MIN_POSITIVE; // 2.2250738585072014e-308_f64
+    /// let max = f64::MAX;
+    /// let lower_than_min = 1.0e-308_f64;
+    /// let zero = 0.0_f64;
+    ///
+    /// assert!(!min.is_subnormal());
+    /// assert!(!max.is_subnormal());
+    ///
+    /// assert!(!zero.is_subnormal());
+    /// assert!(!f64::NAN.is_subnormal());
+    /// assert!(!f64::INFINITY.is_subnormal());
+    /// // Values between `0` and `min` are Subnormal.
+    /// assert!(lower_than_min.is_subnormal());
+    /// ```
+    /// [subnormal]: https://en.wikipedia.org/wiki/Subnormal_number
+    #[inline]
+    fn is_subnormal(self) -> bool {
+        self.classify() == FpCategory::Subnormal
+    }
+
     /// Returns the floating point category of the number. If only one property
     /// is going to be tested, it is generally faster to use the specific
     /// predicate instead.
@@ -918,6 +944,11 @@ impl FloatCore for f64 {
         Self::to_radians(self) -> Self;
     }
 
+    #[cfg(has_is_subnormal)]
+    forward! {
+        Self::is_subnormal(self) -> bool;
+    }
+
     #[cfg(all(not(feature = "std"), feature = "libm"))]
     forward! {
         libm::floor as floor(self) -> Self;
@@ -1123,8 +1154,34 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// // Values between `0` and `min` are Subnormal.
     /// assert!(!lower_than_min.is_normal());
     /// ```
-    /// [subnormal]: http://en.wikipedia.org/wiki/Denormal_number
+    /// [subnormal]: http://en.wikipedia.org/wiki/Subnormal_number
     fn is_normal(self) -> bool;
+
+    /// Returns `true` if the number is [subnormal].
+    ///
+    /// ```
+    /// use num_traits::Float;
+    /// use std::f64;
+    ///
+    /// let min = f64::MIN_POSITIVE; // 2.2250738585072014e-308_f64
+    /// let max = f64::MAX;
+    /// let lower_than_min = 1.0e-308_f64;
+    /// let zero = 0.0_f64;
+    ///
+    /// assert!(!min.is_subnormal());
+    /// assert!(!max.is_subnormal());
+    ///
+    /// assert!(!zero.is_subnormal());
+    /// assert!(!f64::NAN.is_subnormal());
+    /// assert!(!f64::INFINITY.is_subnormal());
+    /// // Values between `0` and `min` are Subnormal.
+    /// assert!(lower_than_min.is_subnormal());
+    /// ```
+    /// [subnormal]: https://en.wikipedia.org/wiki/Subnormal_number
+    #[inline]
+    fn is_subnormal(self) -> bool {
+        self.classify() == FpCategory::Subnormal
+    }
 
     /// Returns the floating point category of the number. If only one property
     /// is going to be tested, it is generally faster to use the specific
@@ -1959,9 +2016,13 @@ macro_rules! float_impl_std {
             }
 
             #[cfg(has_copysign)]
-            #[inline]
-            fn copysign(self, sign: Self) -> Self {
-                Self::copysign(self, sign)
+            forward! {
+                Self::copysign(self, sign: Self) -> Self;
+            }
+
+            #[cfg(has_is_subnormal)]
+            forward! {
+                Self::is_subnormal(self) -> bool;
             }
         }
     };
@@ -2318,6 +2379,7 @@ mod tests {
         assert!(p.is_sign_positive());
         assert!(n.is_sign_negative());
         assert!(nan.is_nan());
+        assert!(!nan.is_subnormal());
 
         assert_eq!(p, p.copysign(p));
         assert_eq!(p.neg(), p.copysign(n));
@@ -2327,5 +2389,20 @@ mod tests {
 
         assert!(nan.copysign(p).is_sign_positive());
         assert!(nan.copysign(n).is_sign_negative());
+    }
+
+    #[cfg(any(feature = "std", feature = "libm"))]
+    fn test_subnormal<F: crate::float::Float + ::core::fmt::Debug>() {
+        let min_positive = F::min_positive_value();
+        let lower_than_min = min_positive / F::from(2.0f32).unwrap();
+        assert!(!min_positive.is_subnormal());
+        assert!(lower_than_min.is_subnormal());
+    }
+
+    #[test]
+    #[cfg(any(feature = "std", feature = "libm"))]
+    fn subnormal() {
+        test_subnormal::<f64>();
+        test_subnormal::<f32>();
     }
 }
