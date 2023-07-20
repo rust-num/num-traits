@@ -784,51 +784,28 @@ impl FloatCore for f32 {
         integer_decode_f32(self)
     }
 
-    #[inline]
-    #[cfg(not(feature = "std"))]
-    fn classify(self) -> FpCategory {
-        const EXP_MASK: u32 = 0x7f800000;
-        const MAN_MASK: u32 = 0x007fffff;
-
-        let bits: u32 = self.to_bits();
-        match (bits & MAN_MASK, bits & EXP_MASK) {
-            (0, 0) => FpCategory::Zero,
-            (_, 0) => FpCategory::Subnormal,
-            (0, EXP_MASK) => FpCategory::Infinite,
-            (_, EXP_MASK) => FpCategory::Nan,
-            _ => FpCategory::Normal,
-        }
-    }
-
-    #[inline]
-    #[cfg(not(feature = "std"))]
-    fn is_sign_negative(self) -> bool {
-        const SIGN_MASK: u32 = 0x80000000;
-
-        self.to_bits() & SIGN_MASK != 0
-    }
-
-    #[inline]
-    #[cfg(not(feature = "std"))]
-    fn to_degrees(self) -> Self {
-        // Use a constant for better precision.
-        const PIS_IN_180: f32 = 57.2957795130823208767981548141051703_f32;
-        self * PIS_IN_180
-    }
-
-    #[inline]
-    #[cfg(not(feature = "std"))]
-    fn to_radians(self) -> Self {
-        self * (f32::consts::PI / 180.0)
-    }
-
-    #[cfg(feature = "std")]
     forward! {
         Self::is_nan(self) -> bool;
         Self::is_infinite(self) -> bool;
         Self::is_finite(self) -> bool;
         Self::is_normal(self) -> bool;
         Self::classify(self) -> FpCategory;
+        Self::is_sign_positive(self) -> bool;
+        Self::is_sign_negative(self) -> bool;
+        Self::min(self, other: Self) -> Self;
+        Self::max(self, other: Self) -> Self;
+        Self::recip(self) -> Self;
+        Self::to_degrees(self) -> Self;
+        Self::to_radians(self) -> Self;
+    }
+
+    #[cfg(has_is_subnormal)]
+    forward! {
+        Self::is_subnormal(self) -> bool;
+    }
+
+    #[cfg(feature = "std")]
+    forward! {
         Self::floor(self) -> Self;
         Self::ceil(self) -> Self;
         Self::round(self) -> Self;
@@ -836,14 +813,7 @@ impl FloatCore for f32 {
         Self::fract(self) -> Self;
         Self::abs(self) -> Self;
         Self::signum(self) -> Self;
-        Self::is_sign_positive(self) -> bool;
-        Self::is_sign_negative(self) -> bool;
-        Self::min(self, other: Self) -> Self;
-        Self::max(self, other: Self) -> Self;
-        Self::recip(self) -> Self;
         Self::powi(self, n: i32) -> Self;
-        Self::to_degrees(self) -> Self;
-        Self::to_radians(self) -> Self;
     }
 
     #[cfg(all(not(feature = "std"), feature = "libm"))]
@@ -853,8 +823,6 @@ impl FloatCore for f32 {
         libm::roundf as round(self) -> Self;
         libm::truncf as trunc(self) -> Self;
         libm::fabsf as abs(self) -> Self;
-        libm::fminf as min(self, other: Self) -> Self;
-        libm::fmaxf as max(self, other: Self) -> Self;
     }
 
     #[cfg(all(not(feature = "std"), feature = "libm"))]
@@ -881,65 +849,17 @@ impl FloatCore for f64 {
         integer_decode_f64(self)
     }
 
-    #[inline]
-    #[cfg(not(feature = "std"))]
-    fn classify(self) -> FpCategory {
-        const EXP_MASK: u64 = 0x7ff0000000000000;
-        const MAN_MASK: u64 = 0x000fffffffffffff;
-
-        let bits: u64 = self.to_bits();
-        match (bits & MAN_MASK, bits & EXP_MASK) {
-            (0, 0) => FpCategory::Zero,
-            (_, 0) => FpCategory::Subnormal,
-            (0, EXP_MASK) => FpCategory::Infinite,
-            (_, EXP_MASK) => FpCategory::Nan,
-            _ => FpCategory::Normal,
-        }
-    }
-
-    #[inline]
-    #[cfg(not(feature = "std"))]
-    fn is_sign_negative(self) -> bool {
-        const SIGN_MASK: u64 = 0x8000000000000000;
-
-        self.to_bits() & SIGN_MASK != 0
-    }
-
-    #[inline]
-    #[cfg(not(feature = "std"))]
-    fn to_degrees(self) -> Self {
-        // The division here is correctly rounded with respect to the true
-        // value of 180/π. (This differs from f32, where a constant must be
-        // used to ensure a correctly rounded result.)
-        self * (180.0 / f64::consts::PI)
-    }
-
-    #[inline]
-    #[cfg(not(feature = "std"))]
-    fn to_radians(self) -> Self {
-        self * (f64::consts::PI / 180.0)
-    }
-
-    #[cfg(feature = "std")]
     forward! {
         Self::is_nan(self) -> bool;
         Self::is_infinite(self) -> bool;
         Self::is_finite(self) -> bool;
         Self::is_normal(self) -> bool;
         Self::classify(self) -> FpCategory;
-        Self::floor(self) -> Self;
-        Self::ceil(self) -> Self;
-        Self::round(self) -> Self;
-        Self::trunc(self) -> Self;
-        Self::fract(self) -> Self;
-        Self::abs(self) -> Self;
-        Self::signum(self) -> Self;
         Self::is_sign_positive(self) -> bool;
         Self::is_sign_negative(self) -> bool;
         Self::min(self, other: Self) -> Self;
         Self::max(self, other: Self) -> Self;
         Self::recip(self) -> Self;
-        Self::powi(self, n: i32) -> Self;
         Self::to_degrees(self) -> Self;
         Self::to_radians(self) -> Self;
     }
@@ -949,6 +869,18 @@ impl FloatCore for f64 {
         Self::is_subnormal(self) -> bool;
     }
 
+    #[cfg(feature = "std")]
+    forward! {
+        Self::floor(self) -> Self;
+        Self::ceil(self) -> Self;
+        Self::round(self) -> Self;
+        Self::trunc(self) -> Self;
+        Self::fract(self) -> Self;
+        Self::abs(self) -> Self;
+        Self::signum(self) -> Self;
+        Self::powi(self, n: i32) -> Self;
+    }
+
     #[cfg(all(not(feature = "std"), feature = "libm"))]
     forward! {
         libm::floor as floor(self) -> Self;
@@ -956,8 +888,6 @@ impl FloatCore for f64 {
         libm::round as round(self) -> Self;
         libm::trunc as trunc(self) -> Self;
         libm::fabs as abs(self) -> Self;
-        libm::fmin as min(self, other: Self) -> Self;
-        libm::fmax as max(self, other: Self) -> Self;
     }
 
     #[cfg(all(not(feature = "std"), feature = "libm"))]
@@ -2058,18 +1988,28 @@ macro_rules! float_impl_libm {
         }
 
         forward! {
-            FloatCore::is_nan(self) -> bool;
-            FloatCore::is_infinite(self) -> bool;
-            FloatCore::is_finite(self) -> bool;
-            FloatCore::is_normal(self) -> bool;
-            FloatCore::classify(self) -> FpCategory;
+            Self::is_nan(self) -> bool;
+            Self::is_infinite(self) -> bool;
+            Self::is_finite(self) -> bool;
+            Self::is_normal(self) -> bool;
+            Self::classify(self) -> FpCategory;
+            Self::is_sign_positive(self) -> bool;
+            Self::is_sign_negative(self) -> bool;
+            Self::min(self, other: Self) -> Self;
+            Self::max(self, other: Self) -> Self;
+            Self::recip(self) -> Self;
+            Self::to_degrees(self) -> Self;
+            Self::to_radians(self) -> Self;
+        }
+
+        #[cfg(has_is_subnormal)]
+        forward! {
+            Self::is_subnormal(self) -> bool;
+        }
+
+        forward! {
             FloatCore::signum(self) -> Self;
-            FloatCore::is_sign_positive(self) -> bool;
-            FloatCore::is_sign_negative(self) -> bool;
-            FloatCore::recip(self) -> Self;
             FloatCore::powi(self, n: i32) -> Self;
-            FloatCore::to_degrees(self) -> Self;
-            FloatCore::to_radians(self) -> Self;
         }
     };
 }
@@ -2149,8 +2089,6 @@ impl Float for f32 {
         libm::asinhf as asinh(self) -> Self;
         libm::acoshf as acosh(self) -> Self;
         libm::atanhf as atanh(self) -> Self;
-        libm::fmaxf as max(self, other: Self) -> Self;
-        libm::fminf as min(self, other: Self) -> Self;
         libm::copysignf as copysign(self, other: Self) -> Self;
     }
 }
@@ -2197,8 +2135,6 @@ impl Float for f64 {
         libm::asinh as asinh(self) -> Self;
         libm::acosh as acosh(self) -> Self;
         libm::atanh as atanh(self) -> Self;
-        libm::fmax as max(self, other: Self) -> Self;
-        libm::fmin as min(self, other: Self) -> Self;
         libm::copysign as copysign(self, sign: Self) -> Self;
     }
 }
