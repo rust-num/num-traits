@@ -2387,7 +2387,9 @@ mod tests {
 
     #[cfg(any(feature = "std", feature = "libm"))]
     fn test_subnormal<F: crate::float::Float + ::core::fmt::Debug>() {
-        let lower_than_min: F = F::from(1.0e-308_f64).unwrap();
+        let min_positive = F::min_positive_value();
+        let lower_than_min = min_positive / F::from(2.0f32).unwrap();
+        assert!(!min_positive.is_subnormal());
         assert!(lower_than_min.is_subnormal());
     }
 
@@ -2395,12 +2397,6 @@ mod tests {
     #[cfg(any(feature = "std", feature = "libm"))]
     fn subnormal() {
         test_subnormal::<f64>();
-    }
-
-    #[test]
-    #[should_panic]
-    #[cfg(any(feature = "std", feature = "libm"))]
-    fn subnormal_f32() {
         test_subnormal::<f32>();
     }
 }
