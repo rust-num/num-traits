@@ -240,7 +240,7 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     fn is_normal(self) -> bool {
         self.classify() == FpCategory::Normal
     }
-    
+
     /// Returns `true` if the number is [subnormal].
     ///
     /// ```
@@ -258,7 +258,8 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     /// // Values between `0` and `min` are Subnormal.
     /// assert!(lower_than_min.is_subnormal());
     /// ```
-    /// [subnormal]: https://en.wikipedia.org/wiki/Denormal_number
+    /// [subnormal]: https://en.wikipedia.org/wiki/Subnormal_number
+    #[inline]
     fn is_subnormal(self) -> bool {
         self.classify() == FpCategory::Subnormal
     }
@@ -1146,7 +1147,7 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// // Values between `0` and `min` are Subnormal.
     /// assert!(!lower_than_min.is_normal());
     /// ```
-    /// [subnormal]: http://en.wikipedia.org/wiki/Denormal_number
+    /// [subnormal]: http://en.wikipedia.org/wiki/Subnormal_number
     fn is_normal(self) -> bool;
 
     /// Returns `true` if the number is [subnormal].
@@ -1166,8 +1167,11 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// // Values between `0` and `min` are Subnormal.
     /// assert!(lower_than_min.is_subnormal());
     /// ```
-    /// [subnormal]: https://en.wikipedia.org/wiki/Denormal_number
-    fn is_subnormal(self) -> bool;
+    /// [subnormal]: https://en.wikipedia.org/wiki/Subnormal_number
+    #[inline]
+    fn is_subnormal(self) -> bool {
+        self.classify() == FpCategory::Subnormal
+    }
 
     /// Returns the floating point category of the number. If only one property
     /// is going to be tested, it is generally faster to use the specific
