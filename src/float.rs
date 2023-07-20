@@ -923,7 +923,6 @@ impl FloatCore for f64 {
         Self::is_infinite(self) -> bool;
         Self::is_finite(self) -> bool;
         Self::is_normal(self) -> bool;
-        Self::is_subnormal(self) -> bool;
         Self::classify(self) -> FpCategory;
         Self::floor(self) -> Self;
         Self::ceil(self) -> Self;
@@ -940,6 +939,11 @@ impl FloatCore for f64 {
         Self::powi(self, n: i32) -> Self;
         Self::to_degrees(self) -> Self;
         Self::to_radians(self) -> Self;
+    }
+
+    #[cfg(has_is_subnormal)]
+    forward! {
+        Self::is_subnormal(self) -> bool;
     }
 
     #[cfg(all(not(feature = "std"), feature = "libm"))]
@@ -1960,7 +1964,6 @@ macro_rules! float_impl_std {
                 Self::is_infinite(self) -> bool;
                 Self::is_finite(self) -> bool;
                 Self::is_normal(self) -> bool;
-                Self::is_subnormal(self) -> bool;
                 Self::classify(self) -> FpCategory;
                 Self::floor(self) -> Self;
                 Self::ceil(self) -> Self;
@@ -2007,9 +2010,13 @@ macro_rules! float_impl_std {
             }
 
             #[cfg(has_copysign)]
-            #[inline]
-            fn copysign(self, sign: Self) -> Self {
-                Self::copysign(self, sign)
+            forward! {
+                Self::copysign(self, sign: Self) -> Self;
+            }
+
+            #[cfg(has_is_subnormal)]
+            forward! {
+                Self::is_subnormal(self) -> bool;
             }
         }
     };
