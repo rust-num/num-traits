@@ -17,6 +17,7 @@ rust-version = "1.31"
 
 [package.metadata.docs.rs]
 features = ["std"]
+rustdoc-args = ["--generate-link-to-definition"]
 
 [dependencies]
 libm = { version = "0.2.0", optional = true }
