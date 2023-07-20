@@ -244,6 +244,9 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     /// Returns `true` if the number is [subnormal].
     ///
     /// ```
+    /// use num_traits::float::FloatCore;
+    /// use std::f64;
+    ///
     /// let min = f64::MIN_POSITIVE; // 2.2250738585072014e-308_f64
     /// let max = f64::MAX;
     /// let lower_than_min = 1.0e-308_f64;
@@ -1157,6 +1160,9 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// Returns `true` if the number is [subnormal].
     ///
     /// ```
+    /// use num_traits::Float;
+    /// use std::f64;
+    ///
     /// let min = f64::MIN_POSITIVE; // 2.2250738585072014e-308_f64
     /// let max = f64::MAX;
     /// let lower_than_min = 1.0e-308_f64;
