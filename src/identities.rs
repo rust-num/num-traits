@@ -5,7 +5,7 @@ use core::ops::{Add, Mul};
 ///
 /// # Laws
 ///
-/// ```{.text}
+/// ```text
 /// a + 0 = a       ∀ a ∈ Self
 /// 0 + a = a       ∀ a ∈ Self
 /// ```
@@ -81,7 +81,7 @@ where
 ///
 /// # Laws
 ///
-/// ```{.text}
+/// ```text
 /// a * 1 = a       ∀ a ∈ Self
 /// 1 * a = a       ∀ a ∈ Self
 /// ```
