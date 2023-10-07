@@ -1,3 +1,11 @@
+# Release 0.2.17 (2023-10-07)
+
+- [Fix a doc warning about custom classes with newer rustdoc.][286]
+
+**Contributors**: @robamu
+
+[286]: https://github.com/rust-num/num-traits/pull/286
+
 # Release 0.2.16 (2023-07-20)
 
 - [Upgrade to 2018 edition, **MSRV 1.31**][240]
