@@ -46,6 +46,14 @@ pub trait Euclid: Sized + Div<Self, Output = Self> + Rem<Self, Output = Self> {
     /// assert_eq!(Euclid::rem_euclid(&-a, &-b), 1);
     /// ```
     fn rem_euclid(&self, v: &Self) -> Self;
+
+    /// Returns both the euclidian division quotien and remainer
+    ///
+    /// By default, it internaly calls both `Euclid::div_euclid` and `Euclid::rem_euclid`,
+    /// but it can be overwritten in order to implement some optimization.
+    fn div_with_rem_euclid(&self, v: &Self) -> (Self, Self) {
+        (self.div_euclid(v), self.rem_euclid(v))
+    }
 }
 
 macro_rules! euclid_forward_impl {
@@ -174,6 +182,14 @@ pub trait CheckedEuclid: Euclid {
     /// Finds the euclid remainder of dividing two numbers, checking for underflow, overflow and
     /// division by zero. If any of that happens, `None` is returned.
     fn checked_rem_euclid(&self, v: &Self) -> Option<Self>;
+
+    /// Returns both the checked euclidian division quotien and remainer
+    ///
+    /// By default, it internaly calls both `Euclid::div_euclid` and `Euclid::rem_euclid`,
+    /// but it can be overwritten in order to implement some optimization.
+    fn checked_div_with_rem_euclid(&self, v: &Self) -> Option<(Self, Self)> {
+        Some((self.checked_div_euclid(v)?, self.checked_rem_euclid(v)?))
+    }
 }
 
 macro_rules! checked_euclid_forward_impl {
