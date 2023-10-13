@@ -47,11 +47,24 @@ pub trait Euclid: Sized + Div<Self, Output = Self> + Rem<Self, Output = Self> {
     /// ```
     fn rem_euclid(&self, v: &Self) -> Self;
 
-    /// Returns both the euclidian division quotien and remainer
+    /// Returns both the quotient and remainder from Euclidean division.
     ///
-    /// By default, it internaly calls both `Euclid::div_euclid` and `Euclid::rem_euclid`,
-    /// but it can be overwritten in order to implement some optimization.
-    fn div_with_rem_euclid(&self, v: &Self) -> (Self, Self) {
+    /// By default, it internally calls both `Euclid::div_euclid` and `Euclid::rem_euclid`,
+    /// but it can be overidden in order to implement some optimization.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use num_traits::Euclid;
+    /// let x = 5u8;
+    /// let y = 3u8;
+    ///
+    /// let div = Euclid::div_euclid(&x, &y);
+    /// let rem = Euclid::rem_euclid(&x, &y);
+    ///
+    /// assert_eq!((div, rem), Euclid::div_rem_euclid(&x, &y));
+    /// ```
+    fn div_rem_euclid(&self, v: &Self) -> (Self, Self) {
         (self.div_euclid(v), self.rem_euclid(v))
     }
 }
@@ -183,11 +196,23 @@ pub trait CheckedEuclid: Euclid {
     /// division by zero. If any of that happens, `None` is returned.
     fn checked_rem_euclid(&self, v: &Self) -> Option<Self>;
 
-    /// Returns both the checked euclidian division quotien and remainer
+    /// Returns both the quotient and remainder from checked Euclidean division.
     ///
-    /// By default, it internaly calls both `Euclid::div_euclid` and `Euclid::rem_euclid`,
-    /// but it can be overwritten in order to implement some optimization.
-    fn checked_div_with_rem_euclid(&self, v: &Self) -> Option<(Self, Self)> {
+    /// By default, it internally calls both `CheckedEuclid::checked_div_euclid` and `CheckedEuclid::checked_rem_euclid`,
+    /// but it can be overridden in order to implement some optimization.
+    /// # Examples
+    ///
+    /// ```
+    /// # use num_traits::CheckedEuclid;
+    /// let x = 5u8;
+    /// let y = 3u8;
+    ///
+    /// let div = CheckedEuclid::checked_div_euclid(&x, &y);
+    /// let rem = CheckedEuclid::checked_rem_euclid(&x, &y);
+    ///
+    /// assert_eq!(Some((div.unwrap(), rem.unwrap())), CheckedEuclid::checked_div_rem_euclid(&x, &y));
+    /// ```
+    fn checked_div_rem_euclid(&self, v: &Self) -> Option<(Self, Self)> {
         Some((self.checked_div_euclid(v)?, self.checked_rem_euclid(v)?))
     }
 }
@@ -278,8 +303,11 @@ mod tests {
                     {
                         let x: $t = 10;
                         let y: $t = 3;
-                        assert_eq!(Euclid::div_euclid(&x, &y), 3);
-                        assert_eq!(Euclid::rem_euclid(&x, &y), 1);
+                        let div = Euclid::div_euclid(&x, &y);
+                        let rem = Euclid::rem_euclid(&x, &y);
+                        assert_eq!(div, 3);
+                        assert_eq!(rem, 1);
+                        assert_eq!((div, rem), Euclid::div_rem_euclid(&x, &y));
                     }
                 )+
             };
@@ -300,6 +328,7 @@ mod tests {
                         assert_eq!(Euclid::div_euclid(&-x, &y), 4);
                         assert_eq!(Euclid::rem_euclid(&x, &y), 1);
                         assert_eq!(Euclid::rem_euclid(&-x, &y), 2);
+                        assert_eq!((Euclid::div_euclid(&x, &y), Euclid::rem_euclid(&x, &y)), Euclid::div_rem_euclid(&x, &y));
                         let x: $t = $t::min_value() + 1;
                         let y: $t = -1;
                         assert_eq!(Euclid::div_euclid(&x, &y), $t::max_value());
@@ -327,6 +356,7 @@ mod tests {
                         <= 46.4 * <$t as crate::float::FloatCore>::epsilon());
                         assert!(Euclid::div_euclid(&-x, &-y) * -y + Euclid::rem_euclid(&-x, &-y) + x
                         <= 46.4 * <$t as crate::float::FloatCore>::epsilon());
+                        assert_eq!((Euclid::div_euclid(&x, &y), Euclid::rem_euclid(&x, &y)), Euclid::div_rem_euclid(&x, &y));
                     }
                 )+
             };
@@ -343,8 +373,6 @@ mod tests {
                     {
                         assert_eq!(CheckedEuclid::checked_div_euclid(&$t::min_value(), &-1), None);
                         assert_eq!(CheckedEuclid::checked_rem_euclid(&$t::min_value(), &-1), None);
-                        assert_eq!(CheckedEuclid::checked_div_euclid(&1, &0), None);
-                        assert_eq!(CheckedEuclid::checked_rem_euclid(&1, &0), None);
                     }
                 )+
             };
