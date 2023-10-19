@@ -34,10 +34,10 @@ pub trait Signed: Sized + Num + Neg<Output = Self> {
     /// * `-1` if the number is negative
     fn signum(&self) -> Self;
 
-    /// Returns true if the number is positive and false if the number is zero or negative.
+    /// Returns `true` if the number is positive and `false` if the number is zero or negative.
     fn is_positive(&self) -> bool;
 
-    /// Returns true if the number is negative and false if the number is zero or positive.
+    /// Returns `true` if the number is negative and `false` if the number is zero or positive.
     fn is_negative(&self) -> bool;
 }
 

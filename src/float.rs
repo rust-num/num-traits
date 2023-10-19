@@ -8,7 +8,7 @@ use crate::{Num, NumCast, ToPrimitive};
 
 /// Generic trait for floating point numbers that works with `no_std`.
 ///
-/// This trait implements a subset of the `Float` trait.
+/// This trait implements a subset of the [`Float`] trait.
 pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     /// Returns positive infinity.
     ///
@@ -267,9 +267,9 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
         self.classify() == FpCategory::Subnormal
     }
 
-    /// Returns the floating point category of the number. If only one property
-    /// is going to be tested, it is generally faster to use the specific
-    /// predicate instead.
+    /// Returns the [floating point category](FpCategory) of the number. If
+    /// only one property is going to be tested, it is generally faster to
+    /// use the specific predicate instead.
     ///
     /// # Examples
     ///
@@ -463,8 +463,8 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
         }
     }
 
-    /// Computes the absolute value of `self`. Returns `FloatCore::nan()` if the
-    /// number is `FloatCore::nan()`.
+    /// Computes the absolute value of `self`. Returns [`FloatCore::nan()`] if the
+    /// number is [`FloatCore::nan()`].
     ///
     /// # Examples
     ///
@@ -496,9 +496,9 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
 
     /// Returns a number that represents the sign of `self`.
     ///
-    /// - `1.0` if the number is positive, `+0.0` or `FloatCore::infinity()`
-    /// - `-1.0` if the number is negative, `-0.0` or `FloatCore::neg_infinity()`
-    /// - `FloatCore::nan()` if the number is `FloatCore::nan()`
+    /// - `1.0` if the number is positive, `+0.0` or [`FloatCore::infinity()`]
+    /// - `-1.0` if the number is negative, `-0.0` or [`FloatCore::neg_infinity()`]
+    /// - [`FloatCore::nan()`] if the number is [`FloatCore::nan()`]
     ///
     /// # Examples
     ///
@@ -529,7 +529,7 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     }
 
     /// Returns `true` if `self` is positive, including `+0.0` and
-    /// `FloatCore::infinity()`, and `FloatCore::nan()`.
+    /// [`FloatCore::infinity()`], and [`FloatCore::nan()`].
     ///
     /// # Examples
     ///
@@ -556,7 +556,7 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     }
 
     /// Returns `true` if `self` is negative, including `-0.0` and
-    /// `FloatCore::neg_infinity()`, and `-FloatCore::nan()`.
+    /// [`FloatCore::neg_infinity()`], and [`-FloatCore::nan()`](FloatCore::nan).
     ///
     /// # Examples
     ///
@@ -676,7 +676,7 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
 
     /// Raise a number to an integer power.
     ///
-    /// Using this function is generally faster than using `powf`
+    /// Using this function is generally faster than using `powf`.
     ///
     /// # Examples
     ///
@@ -1010,7 +1010,7 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// ```
     fn max_value() -> Self;
 
-    /// Returns `true` if this value is `NaN` and false otherwise.
+    /// Returns `true` if this value is `NaN` and `false` otherwise.
     ///
     /// ```
     /// use num_traits::Float;
@@ -1025,7 +1025,7 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     fn is_nan(self) -> bool;
 
     /// Returns `true` if this value is positive infinity or negative infinity and
-    /// false otherwise.
+    /// `false` otherwise.
     ///
     /// ```
     /// use num_traits::Float;
