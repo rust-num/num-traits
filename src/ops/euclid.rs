@@ -373,6 +373,8 @@ mod tests {
                     {
                         assert_eq!(CheckedEuclid::checked_div_euclid(&$t::min_value(), &-1), None);
                         assert_eq!(CheckedEuclid::checked_rem_euclid(&$t::min_value(), &-1), None);
+                        assert_eq!(CheckedEuclid::checked_div_euclid(&1, &0), None);
+                        assert_eq!(CheckedEuclid::checked_rem_euclid(&1, &0), None);
                     }
                 )+
             };
