@@ -2210,6 +2210,74 @@ float_const_impl! {
     SQRT_2,
 }
 
+/// Trait for floating point numbers that provide an implementation
+/// of the `totalOrder` predicate as defined in the IEEE 754 (2008 revision)
+/// floating point standard.
+pub trait TotalOrder {
+    /// Return the ordering between `self` and `other`.
+    ///
+    /// Unlike the standard partial comparison between floating point numbers,
+    /// this comparison always produces an ordering in accordance to
+    /// the `totalOrder` predicate as defined in the IEEE 754 (2008 revision)
+    /// floating point standard. The values are ordered in the following sequence:
+    ///
+    /// - negative quiet NaN
+    /// - negative signaling NaN
+    /// - negative infinity
+    /// - negative numbers
+    /// - negative subnormal numbers
+    /// - negative zero
+    /// - positive zero
+    /// - positive subnormal numbers
+    /// - positive numbers
+    /// - positive infinity
+    /// - positive signaling NaN
+    /// - positive quiet NaN.
+    ///
+    /// The ordering established by this function does not always agree with the
+    /// [`PartialOrd`] and [`PartialEq`] implementations. For example,
+    /// they consider negative and positive zero equal, while `total_cmp`
+    /// doesn't.
+    ///
+    /// The interpretation of the signaling NaN bit follows the definition in
+    /// the IEEE 754 standard, which may not match the interpretation by some of
+    /// the older, non-conformant (e.g. MIPS) hardware implementations.
+    ///
+    /// # Examples
+    /// ```
+    /// use num_traits::float::TotalOrder;
+    /// use std::{f32, f64};
+    ///
+    /// fn check_eq<T: TotalOrder>(x: T, y: T) {
+    ///     assert_eq!(x.total_cmp(&y), std::cmp::Ordering::Equal);
+    /// }
+    ///
+    /// check_eq(f64::NAN, f64::NAN);
+    /// check_eq(f32::NAN, f32::NAN);
+    ///
+    /// fn check_lt<T: TotalOrder>(x: T, y: T) {
+    ///     assert_eq!(x.total_cmp(&y), std::cmp::Ordering::Less);
+    /// }
+    ///
+    /// check_lt(-f64::NAN, f64::NAN);
+    /// check_lt(f64::INFINITY, f64::NAN);
+    /// check_lt(-0.0_f64, 0.0_f64);
+    /// ```
+    fn total_cmp(&self, other: &Self) -> std::cmp::Ordering;
+}
+macro_rules! totalorder_impl {
+    ($T:ident) => {
+        impl TotalOrder for $T {
+            #[inline]
+            fn total_cmp(&self, other: &Self) -> std::cmp::Ordering {
+                Self::total_cmp(&self, other)
+            }
+        }
+    };
+}
+totalorder_impl!(f64);
+totalorder_impl!(f32);
+
 #[cfg(test)]
 mod tests {
     use core::f64::consts;
@@ -2340,5 +2408,51 @@ mod tests {
     fn subnormal() {
         test_subnormal::<f64>();
         test_subnormal::<f32>();
+    }
+
+    #[test]
+    fn total_cmp() {
+        use crate::float::{Float, TotalOrder};
+        fn check_eq<T: Float + TotalOrder>(x: T, y: T) {
+            assert_eq!(x.total_cmp(&y), std::cmp::Ordering::Equal);
+        }
+        fn check_lt<T: Float + TotalOrder>(x: T, y: T) {
+            assert_eq!(x.total_cmp(&y), std::cmp::Ordering::Less);
+        }
+        fn check_gt<T: Float + TotalOrder>(x: T, y: T) {
+            assert_eq!(x.total_cmp(&y), std::cmp::Ordering::Greater);
+        }
+
+        check_eq(f64::NAN, f64::NAN);
+        check_eq(f32::NAN, f32::NAN);
+
+        check_lt(-0.0_f64, 0.0_f64);
+        check_lt(-0.0_f32, 0.0_f32);
+
+        let s_nan = unsafe { std::mem::transmute::<u64, f64>(0x7ff4000000000000) };
+        let q_nan = unsafe { std::mem::transmute::<u64, f64>(0x7ff8000000000000) };
+        check_lt(s_nan, q_nan);
+
+        let neg_s_nan = unsafe { std::mem::transmute::<u64, f64>(0xfff4000000000000) };
+        let neg_q_nan = unsafe { std::mem::transmute::<u64, f64>(0xfff8000000000000) };
+        check_lt(neg_q_nan, neg_s_nan);
+
+        let s_nan = unsafe { std::mem::transmute::<u32, f32>(0x7fa00000) };
+        let q_nan = unsafe { std::mem::transmute::<u32, f32>(0x7fc00000) };
+        check_lt(s_nan, q_nan);
+
+        let neg_s_nan = unsafe { std::mem::transmute::<u32, f32>(0xffa00000) };
+        let neg_q_nan = unsafe { std::mem::transmute::<u32, f32>(0xffc00000) };
+        check_lt(neg_q_nan, neg_s_nan);
+
+        check_lt(-f64::NAN, f64::NEG_INFINITY);
+        check_gt(1.0_f64, -f64::NAN);
+        check_lt(f64::INFINITY, f64::NAN);
+        check_gt(f64::NAN, 1.0_f64);
+
+        check_lt(-f32::NAN, f32::NEG_INFINITY);
+        check_gt(1.0_f32, -f32::NAN);
+        check_lt(f32::INFINITY, f32::NAN);
+        check_gt(f32::NAN, 1.0_f32);
     }
 }
