@@ -16,6 +16,7 @@ pub trait NumBytes:
     + Hash
     + Borrow<[u8]>
     + BorrowMut<[u8]>
+    + IntoIterator<Item = u8>
 {
 }
 
@@ -30,6 +31,7 @@ impl<T> NumBytes for T where
         + Hash
         + Borrow<[u8]>
         + BorrowMut<[u8]>
+        + IntoIterator<Item = u8>
         + ?Sized
 {
 }
