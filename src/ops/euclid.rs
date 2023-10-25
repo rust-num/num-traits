@@ -50,7 +50,7 @@ pub trait Euclid: Sized + Div<Self, Output = Self> + Rem<Self, Output = Self> {
     /// Returns both the quotient and remainder from Euclidean division.
     ///
     /// By default, it internally calls both `Euclid::div_euclid` and `Euclid::rem_euclid`,
-    /// but it can be overidden in order to implement some optimization.
+    /// but it can be overridden in order to implement some optimization.
     ///
     /// # Examples
     ///
