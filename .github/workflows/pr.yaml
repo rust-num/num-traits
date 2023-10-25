@@ -11,7 +11,7 @@ jobs:
       matrix:
         rust: [1.31.0, stable]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust }}
@@ -25,5 +25,5 @@ jobs:
       - uses: dtolnay/rust-toolchain@1.62.0
         with:
           components: rustfmt
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: cargo fmt --all --check
