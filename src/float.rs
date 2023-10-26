@@ -1,3 +1,4 @@
+use core::cmp::Ordering;
 use core::num::FpCategory;
 use core::ops::{Add, Div, Neg};
 
@@ -2246,30 +2247,31 @@ pub trait TotalOrder {
     /// # Examples
     /// ```
     /// use num_traits::float::TotalOrder;
+    /// use std::cmp::Ordering;
     /// use std::{f32, f64};
     ///
     /// fn check_eq<T: TotalOrder>(x: T, y: T) {
-    ///     assert_eq!(x.total_cmp(&y), std::cmp::Ordering::Equal);
+    ///     assert_eq!(x.total_cmp(&y), Ordering::Equal);
     /// }
     ///
     /// check_eq(f64::NAN, f64::NAN);
     /// check_eq(f32::NAN, f32::NAN);
     ///
     /// fn check_lt<T: TotalOrder>(x: T, y: T) {
-    ///     assert_eq!(x.total_cmp(&y), std::cmp::Ordering::Less);
+    ///     assert_eq!(x.total_cmp(&y), Ordering::Less);
     /// }
     ///
     /// check_lt(-f64::NAN, f64::NAN);
     /// check_lt(f64::INFINITY, f64::NAN);
     /// check_lt(-0.0_f64, 0.0_f64);
     /// ```
-    fn total_cmp(&self, other: &Self) -> std::cmp::Ordering;
+    fn total_cmp(&self, other: &Self) -> Ordering;
 }
 macro_rules! totalorder_impl {
     ($T:ident) => {
         impl TotalOrder for $T {
             #[inline]
-            fn total_cmp(&self, other: &Self) -> std::cmp::Ordering {
+            fn total_cmp(&self, other: &Self) -> Ordering {
                 Self::total_cmp(&self, other)
             }
         }
@@ -2413,14 +2415,17 @@ mod tests {
     #[test]
     fn total_cmp() {
         use crate::float::{Float, TotalOrder};
+        use core::cmp::Ordering;
+        use core::{f32, f64};
+
         fn check_eq<T: Float + TotalOrder>(x: T, y: T) {
-            assert_eq!(x.total_cmp(&y), std::cmp::Ordering::Equal);
+            assert_eq!(x.total_cmp(&y), Ordering::Equal);
         }
         fn check_lt<T: Float + TotalOrder>(x: T, y: T) {
-            assert_eq!(x.total_cmp(&y), std::cmp::Ordering::Less);
+            assert_eq!(x.total_cmp(&y), Ordering::Less);
         }
         fn check_gt<T: Float + TotalOrder>(x: T, y: T) {
-            assert_eq!(x.total_cmp(&y), std::cmp::Ordering::Greater);
+            assert_eq!(x.total_cmp(&y), Ordering::Greater);
         }
 
         check_eq(f64::NAN, f64::NAN);
