@@ -31,7 +31,6 @@ pub use crate::bounds::Bounded;
 #[cfg(any(feature = "std", feature = "libm"))]
 pub use crate::float::Float;
 pub use crate::float::FloatConst;
-pub use crate::float::TotalOrder;
 // pub use real::{FloatCore, Real}; // NOTE: Don't do this, it breaks `use num_traits::*;`.
 pub use crate::cast::{cast, AsPrimitive, FromPrimitive, NumCast, ToPrimitive};
 pub use crate::identities::{one, zero, One, Zero};
