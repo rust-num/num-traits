@@ -2414,17 +2414,17 @@ mod tests {
 
     #[test]
     fn total_cmp() {
-        use crate::float::{Float, TotalOrder};
+        use crate::float::TotalOrder;
         use core::cmp::Ordering;
         use core::{f32, f64};
 
-        fn check_eq<T: Float + TotalOrder>(x: T, y: T) {
+        fn check_eq<T: TotalOrder>(x: T, y: T) {
             assert_eq!(x.total_cmp(&y), Ordering::Equal);
         }
-        fn check_lt<T: Float + TotalOrder>(x: T, y: T) {
+        fn check_lt<T: TotalOrder>(x: T, y: T) {
             assert_eq!(x.total_cmp(&y), Ordering::Less);
         }
-        fn check_gt<T: Float + TotalOrder>(x: T, y: T) {
+        fn check_gt<T: TotalOrder>(x: T, y: T) {
             assert_eq!(x.total_cmp(&y), Ordering::Greater);
         }
 
