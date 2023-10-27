@@ -2448,21 +2448,26 @@ mod tests {
         check_lt(-0.0_f64, 0.0_f64);
         check_lt(-0.0_f32, 0.0_f32);
 
-        let s_nan = f64::from_bits(0x7ff4000000000000);
-        let q_nan = f64::from_bits(0x7ff8000000000000);
-        check_lt(s_nan, q_nan);
+        // x87 registers don't preserve the exact value of signaling NaN:
+        // https://github.com/rust-lang/rust/issues/115567
+        #[cfg(not(target_arch = "x86"))]
+        {
+            let s_nan = f64::from_bits(0x7ff4000000000000);
+            let q_nan = f64::from_bits(0x7ff8000000000000);
+            check_lt(s_nan, q_nan);
 
-        let neg_s_nan = f64::from_bits(0xfff4000000000000);
-        let neg_q_nan = f64::from_bits(0xfff8000000000000);
-        check_lt(neg_q_nan, neg_s_nan);
+            let neg_s_nan = f64::from_bits(0xfff4000000000000);
+            let neg_q_nan = f64::from_bits(0xfff8000000000000);
+            check_lt(neg_q_nan, neg_s_nan);
 
-        let s_nan = f32::from_bits(0x7fa00000);
-        let q_nan = f32::from_bits(0x7fc00000);
-        check_lt(s_nan, q_nan);
+            let s_nan = f32::from_bits(0x7fa00000);
+            let q_nan = f32::from_bits(0x7fc00000);
+            check_lt(s_nan, q_nan);
 
-        let neg_s_nan = f32::from_bits(0xffa00000);
-        let neg_q_nan = f32::from_bits(0xffc00000);
-        check_lt(neg_q_nan, neg_s_nan);
+            let neg_s_nan = f32::from_bits(0xffa00000);
+            let neg_q_nan = f32::from_bits(0xffc00000);
+            check_lt(neg_q_nan, neg_s_nan);
+        }
 
         check_lt(-f64::NAN, f64::NEG_INFINITY);
         check_gt(1.0_f64, -f64::NAN);
