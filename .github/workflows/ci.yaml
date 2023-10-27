@@ -20,6 +20,7 @@ jobs:
           1.44.0, # has_to_int_unchecked
           1.46.0, # has_leading_trailing_ones
           1.53.0, # has_is_subnormal
+          1.62.0, # has_total_cmp
           stable,
           beta,
           nightly,
