@@ -56,6 +56,7 @@ pub mod bounds;
 pub mod cast;
 pub mod float;
 pub mod identities;
+pub mod induction;
 pub mod int;
 pub mod ops;
 pub mod pow;
