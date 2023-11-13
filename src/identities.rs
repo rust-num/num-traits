@@ -10,6 +10,8 @@ use core::ops::{Add, Mul};
 /// 0 + a = a       ∀ a ∈ Self
 /// ```
 pub trait Zero: Sized + Add<Self, Output = Self> {
+    const ZERO: Self;
+
     /// Returns the additive identity element of `Self`, `0`.
     /// # Purity
     ///
@@ -31,6 +33,8 @@ pub trait Zero: Sized + Add<Self, Output = Self> {
 macro_rules! zero_impl {
     ($t:ty, $v:expr) => {
         impl Zero for $t {
+            const ZERO: Self = 0 as Self;
+
             #[inline]
             fn zero() -> $t {
                 $v
@@ -64,6 +68,8 @@ impl<T: Zero> Zero for Wrapping<T>
 where
     Wrapping<T>: Add<Output = Wrapping<T>>,
 {
+    const ZERO: Self = Wrapping(T::ZERO);
+
     fn is_zero(&self) -> bool {
         self.0.is_zero()
     }
@@ -86,6 +92,8 @@ where
 /// 1 * a = a       ∀ a ∈ Self
 /// ```
 pub trait One: Sized + Mul<Self, Output = Self> {
+    const ONE: Self;
+
     /// Returns the multiplicative identity element of `Self`, `1`.
     ///
     /// # Purity
@@ -118,6 +126,8 @@ pub trait One: Sized + Mul<Self, Output = Self> {
 macro_rules! one_impl {
     ($t:ty, $v:expr) => {
         impl One for $t {
+            const ONE: Self = 1 as Self;
+
             #[inline]
             fn one() -> $t {
                 $v
@@ -151,6 +161,8 @@ impl<T: One> One for Wrapping<T>
 where
     Wrapping<T>: Mul<Output = Wrapping<T>>,
 {
+    const ONE: Self = Wrapping(T::ONE);
+
     fn set_one(&mut self) {
         self.0.set_one();
     }
