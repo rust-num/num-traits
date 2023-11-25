@@ -18,17 +18,24 @@ pub trait Pow<RHS> {
 }
 
 macro_rules! pow_impl {
+    (prim_int $t:ty) => {
+        pow_impl!($t, u8);
+        pow_impl!($t, u16);
+        pow_impl!($t, u32, u32, <$t>::pow);
+        pow_impl!($t, u64);
+        pow_impl!($t, u128);
+        pow_impl!($t, usize);
+    };
     ($t:ty) => {
         pow_impl!($t, u8);
+        pow_impl!($t, u16);
+        pow_impl!($t, u32);
+        pow_impl!($t, u64);
+        pow_impl!($t, u128);
         pow_impl!($t, usize);
-
-        // FIXME: these should be possible
-        // pow_impl!($t, u16);
-        // pow_impl!($t, u32);
-        // pow_impl!($t, u64);
     };
     ($t:ty, $rhs:ty) => {
-        pow_impl!($t, $rhs, usize, pow);
+        pow_impl!($t, $rhs, $rhs, pow);
     };
     ($t:ty, $rhs:ty, $desired_rhs:ty, $method:expr) => {
         impl Pow<$rhs> for $t {
@@ -65,57 +72,19 @@ macro_rules! pow_impl {
     };
 }
 
-pow_impl!(u8, u8, u32, u8::pow);
-pow_impl!(u8, u16, u32, u8::pow);
-pow_impl!(u8, u32, u32, u8::pow);
-pow_impl!(u8, usize);
-pow_impl!(i8, u8, u32, i8::pow);
-pow_impl!(i8, u16, u32, i8::pow);
-pow_impl!(i8, u32, u32, i8::pow);
-pow_impl!(i8, usize);
-pow_impl!(u16, u8, u32, u16::pow);
-pow_impl!(u16, u16, u32, u16::pow);
-pow_impl!(u16, u32, u32, u16::pow);
-pow_impl!(u16, usize);
-pow_impl!(i16, u8, u32, i16::pow);
-pow_impl!(i16, u16, u32, i16::pow);
-pow_impl!(i16, u32, u32, i16::pow);
-pow_impl!(i16, usize);
-pow_impl!(u32, u8, u32, u32::pow);
-pow_impl!(u32, u16, u32, u32::pow);
-pow_impl!(u32, u32, u32, u32::pow);
-pow_impl!(u32, usize);
-pow_impl!(i32, u8, u32, i32::pow);
-pow_impl!(i32, u16, u32, i32::pow);
-pow_impl!(i32, u32, u32, i32::pow);
-pow_impl!(i32, usize);
-pow_impl!(u64, u8, u32, u64::pow);
-pow_impl!(u64, u16, u32, u64::pow);
-pow_impl!(u64, u32, u32, u64::pow);
-pow_impl!(u64, usize);
-pow_impl!(i64, u8, u32, i64::pow);
-pow_impl!(i64, u16, u32, i64::pow);
-pow_impl!(i64, u32, u32, i64::pow);
-pow_impl!(i64, usize);
+pow_impl!(prim_int u8);
+pow_impl!(prim_int u16);
+pow_impl!(prim_int u32);
+pow_impl!(prim_int u64);
+pow_impl!(prim_int u128);
+pow_impl!(prim_int i8);
+pow_impl!(prim_int i16);
+pow_impl!(prim_int i32);
+pow_impl!(prim_int i64);
+pow_impl!(prim_int i128);
+pow_impl!(prim_int usize);
+pow_impl!(prim_int isize);
 
-pow_impl!(u128, u8, u32, u128::pow);
-pow_impl!(u128, u16, u32, u128::pow);
-pow_impl!(u128, u32, u32, u128::pow);
-pow_impl!(u128, usize);
-
-pow_impl!(i128, u8, u32, i128::pow);
-pow_impl!(i128, u16, u32, i128::pow);
-pow_impl!(i128, u32, u32, i128::pow);
-pow_impl!(i128, usize);
-
-pow_impl!(usize, u8, u32, usize::pow);
-pow_impl!(usize, u16, u32, usize::pow);
-pow_impl!(usize, u32, u32, usize::pow);
-pow_impl!(usize, usize);
-pow_impl!(isize, u8, u32, isize::pow);
-pow_impl!(isize, u16, u32, isize::pow);
-pow_impl!(isize, u32, u32, isize::pow);
-pow_impl!(isize, usize);
 pow_impl!(Wrapping<u8>);
 pow_impl!(Wrapping<i8>);
 pow_impl!(Wrapping<u16>);
@@ -128,18 +97,6 @@ pow_impl!(Wrapping<u128>);
 pow_impl!(Wrapping<i128>);
 pow_impl!(Wrapping<usize>);
 pow_impl!(Wrapping<isize>);
-
-// FIXME: these should be possible
-// pow_impl!(u8, u64);
-// pow_impl!(i16, u64);
-// pow_impl!(i8, u64);
-// pow_impl!(u16, u64);
-// pow_impl!(u32, u64);
-// pow_impl!(i32, u64);
-// pow_impl!(u64, u64);
-// pow_impl!(i64, u64);
-// pow_impl!(usize, u64);
-// pow_impl!(isize, u64);
 
 #[cfg(any(feature = "std", feature = "libm"))]
 mod float_impls {
