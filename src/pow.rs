@@ -1,6 +1,5 @@
-use crate::{CheckedMul, One};
+use crate::{CheckedMul, One, PrimInt, Unsigned};
 use core::num::Wrapping;
-use core::ops::Mul;
 
 /// Binary operator for raising a value to a power.
 pub trait Pow<RHS> {
@@ -171,29 +170,33 @@ mod float_impls {
 /// ```rust
 /// use num_traits::pow;
 ///
-/// assert_eq!(pow(2i8, 4), 16);
-/// assert_eq!(pow(6u8, 3), 216);
-/// assert_eq!(pow(0u8, 0), 1); // Be aware if this case affects you
+/// assert_eq!(pow(2i8, 4u32), 16);
+/// assert_eq!(pow(6u8, 3u32), 216);
+/// assert_eq!(pow(0u8, 0u32), 1); // Be aware if this case affects you
 /// ```
 #[inline]
-pub fn pow<T: Clone + One + Mul<T, Output = T>>(mut base: T, mut exp: usize) -> T {
-    if exp == 0 {
+pub fn pow<T, U>(mut base: T, mut exp: U) -> T
+where
+    T: Clone + One,
+    U: PrimInt + Unsigned,
+{
+    if exp == U::zero() {
         return T::one();
     }
 
-    while exp & 1 == 0 {
+    while exp & U::one() == U::zero() {
         base = base.clone() * base;
-        exp >>= 1;
+        exp = exp >> 1;
     }
-    if exp == 1 {
+    if exp == U::one() {
         return base;
     }
 
     let mut acc = base.clone();
-    while exp > 1 {
-        exp >>= 1;
+    while exp > U::one() {
+        exp = exp >> 1;
         base = base.clone() * base;
-        if exp & 1 == 1 {
+        if exp & U::one() == U::one() {
             acc = acc * base.clone();
         }
     }
@@ -211,30 +214,34 @@ pub fn pow<T: Clone + One + Mul<T, Output = T>>(mut base: T, mut exp: usize) -> 
 /// ```rust
 /// use num_traits::checked_pow;
 ///
-/// assert_eq!(checked_pow(2i8, 4), Some(16));
-/// assert_eq!(checked_pow(7i8, 8), None);
-/// assert_eq!(checked_pow(7u32, 8), Some(5_764_801));
-/// assert_eq!(checked_pow(0u32, 0), Some(1)); // Be aware if this case affect you
+/// assert_eq!(checked_pow(2i8, 4u32), Some(16));
+/// assert_eq!(checked_pow(7i8, 8u32), None);
+/// assert_eq!(checked_pow(7u32, 8u32), Some(5_764_801));
+/// assert_eq!(checked_pow(0u32, 0u32), Some(1)); // Be aware if this case affect you
 /// ```
 #[inline]
-pub fn checked_pow<T: Clone + One + CheckedMul>(mut base: T, mut exp: usize) -> Option<T> {
-    if exp == 0 {
+pub fn checked_pow<T, U>(mut base: T, mut exp: U) -> Option<T>
+where
+    T: Clone + One + CheckedMul,
+    U: PrimInt + Unsigned,
+{
+    if exp == U::zero() {
         return Some(T::one());
     }
 
-    while exp & 1 == 0 {
+    while exp & U::one() == U::zero() {
         base = base.checked_mul(&base)?;
-        exp >>= 1;
+        exp = exp >> 1;
     }
-    if exp == 1 {
+    if exp == U::one() {
         return Some(base);
     }
 
     let mut acc = base.clone();
-    while exp > 1 {
-        exp >>= 1;
+    while exp > U::one() {
+        exp = exp >> 1;
         base = base.checked_mul(&base)?;
-        if exp & 1 == 1 {
+        if exp & U::one() == U::one() {
             acc = acc.checked_mul(&base)?;
         }
     }
