@@ -1,4 +1,4 @@
-use core::borrow::{Borrow, BorrowMut};
+use core::borrow::Borrow;
 use core::cmp::{Eq, Ord, PartialEq, PartialOrd};
 use core::fmt::Debug;
 use core::hash::Hash;
@@ -8,28 +8,24 @@ use core::mem::transmute;
 pub trait NumBytes:
     Debug
     + AsRef<[u8]>
-    + AsMut<[u8]>
     + PartialEq
     + Eq
     + PartialOrd
     + Ord
     + Hash
     + Borrow<[u8]>
-    + BorrowMut<[u8]>
 {
 }
 
 impl<T> NumBytes for T where
     T: Debug
         + AsRef<[u8]>
-        + AsMut<[u8]>
         + PartialEq
         + Eq
         + PartialOrd
         + Ord
         + Hash
         + Borrow<[u8]>
-        + BorrowMut<[u8]>
         + ?Sized
 {
 }
