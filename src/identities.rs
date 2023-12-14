@@ -28,17 +28,32 @@ pub trait Zero: Sized + Add<Self, Output = Self> {
     fn is_zero(&self) -> bool;
 }
 
+/// Defines an associated constant representing the additive identity element
+/// for `Self`.
+///
+/// Types which impl both this trait and [`PartialEq`] will receive a blanket
+/// impl of the [`Zero`] trait.
+pub trait ZeroConstant: Zero {
+    /// The additive identity element of `Self`, `0`.
+    const ZERO: Self;
+}
+
+impl<T: ZeroConstant + PartialEq> Zero for T {
+    #[inline(always)]
+    fn zero() -> T {
+        Self::ZERO
+    }
+
+    #[inline(always)]
+    fn is_zero(&self) -> bool {
+        self == &Self::ZERO
+    }
+}
+
 macro_rules! zero_impl {
     ($t:ty, $v:expr) => {
-        impl Zero for $t {
-            #[inline]
-            fn zero() -> $t {
-                $v
-            }
-            #[inline]
-            fn is_zero(&self) -> bool {
-                *self == $v
-            }
+        impl ZeroConstant for $t {
+            const ZERO: Self = $v;
         }
     };
 }
@@ -115,17 +130,32 @@ pub trait One: Sized + Mul<Self, Output = Self> {
     }
 }
 
+/// Defines an associated constant representing the multiplicative identity
+/// element for `Self`.
+///
+/// Types which impl both this trait and [`PartialEq`] will receive a blanket
+/// impl of the [`One`] trait.
+pub trait OneConstant: One {
+    /// The multiplicative identity element of `Self`, `1`.
+    const ONE: Self;
+}
+
+impl<T: OneConstant + PartialEq> One for T {
+    #[inline(always)]
+    fn one() -> T {
+        Self::ONE
+    }
+
+    #[inline(always)]
+    fn is_one(&self) -> bool {
+        self == &Self::ONE
+    }
+}
+
 macro_rules! one_impl {
     ($t:ty, $v:expr) => {
-        impl One for $t {
-            #[inline]
-            fn one() -> $t {
-                $v
-            }
-            #[inline]
-            fn is_one(&self) -> bool {
-                *self == $v
-            }
+        impl OneConstant for $t {
+            const ONE: Self = $v;
         }
     };
 }
