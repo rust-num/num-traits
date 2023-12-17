@@ -38,20 +38,19 @@ pub trait ZeroConstant: Zero {
     const ZERO: Self;
 }
 
-impl<T: ZeroConstant + PartialEq> Zero for T {
-    #[inline(always)]
-    fn zero() -> T {
-        Self::ZERO
-    }
-
-    #[inline(always)]
-    fn is_zero(&self) -> bool {
-        self == &Self::ZERO
-    }
-}
-
 macro_rules! zero_impl {
     ($t:ty, $v:expr) => {
+        impl Zero for $t {
+            #[inline]
+            fn zero() -> $t {
+                $v
+            }
+            #[inline]
+            fn is_zero(&self) -> bool {
+                *self == $v
+            }
+        }
+
         impl ZeroConstant for $t {
             const ZERO: Self = $v;
         }
@@ -90,6 +89,13 @@ where
     fn zero() -> Self {
         Wrapping(T::zero())
     }
+}
+
+impl<T: ZeroConstant> ZeroConstant for Wrapping<T>
+where
+    Wrapping<T>: Add<Output = Wrapping<T>>,
+{
+    const ZERO: Self = Self(T::ZERO);
 }
 
 /// Defines a multiplicative identity element for `Self`.
@@ -140,20 +146,19 @@ pub trait OneConstant: One {
     const ONE: Self;
 }
 
-impl<T: OneConstant + PartialEq> One for T {
-    #[inline(always)]
-    fn one() -> T {
-        Self::ONE
-    }
-
-    #[inline(always)]
-    fn is_one(&self) -> bool {
-        self == &Self::ONE
-    }
-}
-
 macro_rules! one_impl {
     ($t:ty, $v:expr) => {
+        impl One for $t {
+            #[inline]
+            fn one() -> $t {
+                $v
+            }
+            #[inline]
+            fn is_one(&self) -> bool {
+                *self == $v
+            }
+        }
+
         impl OneConstant for $t {
             const ONE: Self = $v;
         }
@@ -188,6 +193,13 @@ where
     fn one() -> Self {
         Wrapping(T::one())
     }
+}
+
+impl<T: OneConstant> OneConstant for Wrapping<T>
+where
+    Wrapping<T>: Mul<Output = Wrapping<T>>,
+{
+    const ONE: Self = Self(T::ONE);
 }
 
 // Some helper functions provided for backwards compatibility.
