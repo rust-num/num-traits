@@ -33,7 +33,7 @@ pub trait Zero: Sized + Add<Self, Output = Self> {
 ///
 /// Types which impl both this trait and [`PartialEq`] will receive a blanket
 /// impl of the [`Zero`] trait.
-pub trait ZeroConstant: Zero {
+pub trait ConstZero: Zero {
     /// The additive identity element of `Self`, `0`.
     const ZERO: Self;
 }
@@ -51,7 +51,7 @@ macro_rules! zero_impl {
             }
         }
 
-        impl ZeroConstant for $t {
+        impl ConstZero for $t {
             const ZERO: Self = $v;
         }
     };
@@ -91,7 +91,7 @@ where
     }
 }
 
-impl<T: ZeroConstant> ZeroConstant for Wrapping<T>
+impl<T: ConstZero> ConstZero for Wrapping<T>
 where
     Wrapping<T>: Add<Output = Wrapping<T>>,
 {
@@ -141,7 +141,7 @@ pub trait One: Sized + Mul<Self, Output = Self> {
 ///
 /// Types which impl both this trait and [`PartialEq`] will receive a blanket
 /// impl of the [`One`] trait.
-pub trait OneConstant: One {
+pub trait ConstOne: One {
     /// The multiplicative identity element of `Self`, `1`.
     const ONE: Self;
 }
@@ -159,7 +159,7 @@ macro_rules! one_impl {
             }
         }
 
-        impl OneConstant for $t {
+        impl ConstOne for $t {
             const ONE: Self = $v;
         }
     };
@@ -195,7 +195,7 @@ where
     }
 }
 
-impl<T: OneConstant> OneConstant for Wrapping<T>
+impl<T: ConstOne> ConstOne for Wrapping<T>
 where
     Wrapping<T>: Mul<Output = Wrapping<T>>,
 {

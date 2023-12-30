@@ -33,7 +33,7 @@ pub use crate::float::Float;
 pub use crate::float::FloatConst;
 // pub use real::{FloatCore, Real}; // NOTE: Don't do this, it breaks `use num_traits::*;`.
 pub use crate::cast::{cast, AsPrimitive, FromPrimitive, NumCast, ToPrimitive};
-pub use crate::identities::{one, zero, One, Zero};
+pub use crate::identities::{one, zero, ConstOne, ConstZero, One, Zero};
 pub use crate::int::PrimInt;
 pub use crate::ops::bytes::{FromBytes, ToBytes};
 pub use crate::ops::checked::{
