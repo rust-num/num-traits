@@ -30,9 +30,6 @@ pub trait Zero: Sized + Add<Self, Output = Self> {
 
 /// Defines an associated constant representing the additive identity element
 /// for `Self`.
-///
-/// Types which impl both this trait and [`PartialEq`] will receive a blanket
-/// impl of the [`Zero`] trait.
 pub trait ConstZero: Zero {
     /// The additive identity element of `Self`, `0`.
     const ZERO: Self;
