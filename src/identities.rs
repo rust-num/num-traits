@@ -135,9 +135,6 @@ pub trait One: Sized + Mul<Self, Output = Self> {
 
 /// Defines an associated constant representing the multiplicative identity
 /// element for `Self`.
-///
-/// Types which impl both this trait and [`PartialEq`] will receive a blanket
-/// impl of the [`One`] trait.
 pub trait ConstOne: One {
     /// The multiplicative identity element of `Self`, `1`.
     const ONE: Self;
