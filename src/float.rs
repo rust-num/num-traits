@@ -652,6 +652,36 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
         }
     }
 
+    /// A value bounded by a minimum and a maximum
+    ///
+    ///  If input is less than min then this returns min.
+    ///  If input is greater than max then this returns max.
+    ///  Otherwise this returns input.
+    ///
+    /// **Panics** in debug mode if `!(min <= max)`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use num_traits::float::FloatCore;
+    ///
+    /// fn check<T: FloatCore>(val: T, min: T, max: T, expected: T) {
+    ///     assert!(val.clamp(min, max) == expected);
+    /// }
+    ///
+    ///
+    /// check(1.0f32, 0.0, 2.0, 1.0);
+    /// check(1.0f32, 2.0, 3.0, 2.0);
+    /// check(3.0f32, 0.0, 2.0, 2.0);
+    ///
+    /// check(1.0f64, 0.0, 2.0, 1.0);
+    /// check(1.0f64, 2.0, 3.0, 2.0);
+    /// check(3.0f64, 0.0, 2.0, 2.0);
+    /// ```
+    fn clamp(self, min: Self, max: Self) -> Self {
+        crate::clamp(self, min, max)
+    }
+
     /// Returns the reciprocal (multiplicative inverse) of the number.
     ///
     /// # Examples
@@ -791,6 +821,7 @@ impl FloatCore for f32 {
         Self::is_finite(self) -> bool;
         Self::is_normal(self) -> bool;
         Self::is_subnormal(self) -> bool;
+        Self::clamp(self, min: Self, max: Self) -> Self;
         Self::classify(self) -> FpCategory;
         Self::is_sign_positive(self) -> bool;
         Self::is_sign_negative(self) -> bool;
@@ -852,6 +883,7 @@ impl FloatCore for f64 {
         Self::is_finite(self) -> bool;
         Self::is_normal(self) -> bool;
         Self::is_subnormal(self) -> bool;
+        Self::clamp(self, min: Self, max: Self) -> Self;
         Self::classify(self) -> FpCategory;
         Self::is_sign_positive(self) -> bool;
         Self::is_sign_negative(self) -> bool;
@@ -1497,6 +1529,19 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// ```
     fn min(self, other: Self) -> Self;
 
+    /// Clamps a value between a min and max.
+    ///
+    /// ```
+    /// use num_traits::Float;
+    ///
+    /// let x = 1.0;
+    /// let y = 2.0;
+    /// let z = 3.0;
+    ///
+    /// assert_eq!(x.clamp(y, z), 2.0);
+    /// ```
+    fn clamp(self, min: Self, max: Self) -> Self;
+
     /// The positive difference of two numbers.
     ///
     /// * If `self <= other`: `0:0`
@@ -1895,6 +1940,7 @@ macro_rules! float_impl_std {
                 Self::is_normal(self) -> bool;
                 Self::is_subnormal(self) -> bool;
                 Self::classify(self) -> FpCategory;
+                Self::clamp(self, min: Self, max: Self) -> Self;
                 Self::floor(self) -> Self;
                 Self::ceil(self) -> Self;
                 Self::round(self) -> Self;
@@ -1978,6 +2024,7 @@ macro_rules! float_impl_libm {
             Self::is_finite(self) -> bool;
             Self::is_normal(self) -> bool;
             Self::is_subnormal(self) -> bool;
+            Self::clamp(self, min: Self, max: Self) -> Self;
             Self::classify(self) -> FpCategory;
             Self::is_sign_positive(self) -> bool;
             Self::is_sign_negative(self) -> bool;
