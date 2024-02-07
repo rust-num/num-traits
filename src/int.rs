@@ -461,7 +461,6 @@ macro_rules! prim_int_impl {
                 <$T>::swap_bytes(self)
             }
 
-            #[cfg(has_reverse_bits)]
             #[inline]
             fn reverse_bits(self) -> Self {
                 <$T>::reverse_bits(self)

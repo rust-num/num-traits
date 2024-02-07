@@ -3,7 +3,6 @@ use std::env;
 fn main() {
     let ac = autocfg::new();
 
-    ac.emit_expression_cfg("1u32.reverse_bits()", "has_reverse_bits");
     ac.emit_expression_cfg("1u32.trailing_ones()", "has_leading_trailing_ones");
     ac.emit_expression_cfg("1u32.div_euclid(1u32)", "has_div_euclid");
 
