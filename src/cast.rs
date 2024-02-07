@@ -277,19 +277,11 @@ macro_rules! impl_to_primitive_float_to_float {
     )*}
 }
 
-#[cfg(has_to_int_unchecked)]
 macro_rules! float_to_int_unchecked {
     // SAFETY: Must not be NaN or infinite; must be representable as the integer after truncating.
     // We already checked that the float is in the exclusive range `(MIN-1, MAX+1)`.
     ($float:expr => $int:ty) => {
         unsafe { $float.to_int_unchecked::<$int>() }
-    };
-}
-
-#[cfg(not(has_to_int_unchecked))]
-macro_rules! float_to_int_unchecked {
-    ($float:expr => $int:ty) => {
-        $float as $int
     };
 }
 
