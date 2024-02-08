@@ -1944,10 +1944,6 @@ macro_rules! float_impl_std {
                 Self::asinh(self) -> Self;
                 Self::acosh(self) -> Self;
                 Self::atanh(self) -> Self;
-            }
-
-            #[cfg(has_copysign)]
-            forward! {
                 Self::copysign(self, sign: Self) -> Self;
             }
 
