@@ -71,7 +71,6 @@ pub trait Euclid: Sized + Div<Self, Output = Self> + Rem<Self, Output = Self> {
 
 macro_rules! euclid_forward_impl {
     ($($t:ty)*) => {$(
-        #[cfg(has_div_euclid)]
         impl Euclid for $t {
             #[inline]
             fn div_euclid(&self, v: &$t) -> Self {
@@ -86,64 +85,13 @@ macro_rules! euclid_forward_impl {
     )*}
 }
 
-macro_rules! euclid_int_impl {
-    ($($t:ty)*) => {$(
-        euclid_forward_impl!($t);
+euclid_forward_impl!(isize i8 i16 i32 i64 i128);
+euclid_forward_impl!(usize u8 u16 u32 u64 u128);
 
-        #[cfg(not(has_div_euclid))]
-        impl Euclid for $t {
-            #[inline]
-            fn div_euclid(&self, v: &$t) -> Self {
-                let q = self / v;
-                if self % v < 0 {
-                    return if *v > 0 { q - 1 } else { q + 1 }
-                }
-                q
-            }
-
-            #[inline]
-            fn rem_euclid(&self, v: &$t) -> Self {
-                let r = self % v;
-                if r < 0 {
-                    if *v < 0 {
-                        r - v
-                    } else {
-                        r + v
-                    }
-                } else {
-                    r
-                }
-            }
-        }
-    )*}
-}
-
-macro_rules! euclid_uint_impl {
-    ($($t:ty)*) => {$(
-        euclid_forward_impl!($t);
-
-        #[cfg(not(has_div_euclid))]
-        impl Euclid for $t {
-            #[inline]
-            fn div_euclid(&self, v: &$t) -> Self {
-                self / v
-            }
-
-            #[inline]
-            fn rem_euclid(&self, v: &$t) -> Self {
-                self % v
-            }
-        }
-    )*}
-}
-
-euclid_int_impl!(isize i8 i16 i32 i64 i128);
-euclid_uint_impl!(usize u8 u16 u32 u64 u128);
-
-#[cfg(all(has_div_euclid, feature = "std"))]
+#[cfg(feature = "std")]
 euclid_forward_impl!(f32 f64);
 
-#[cfg(not(all(has_div_euclid, feature = "std")))]
+#[cfg(not(feature = "std"))]
 impl Euclid for f32 {
     #[inline]
     fn div_euclid(&self, v: &f32) -> f32 {
@@ -165,7 +113,7 @@ impl Euclid for f32 {
     }
 }
 
-#[cfg(not(all(has_div_euclid, feature = "std")))]
+#[cfg(not(feature = "std"))]
 impl Euclid for f64 {
     #[inline]
     fn div_euclid(&self, v: &f64) -> f64 {
@@ -219,7 +167,6 @@ pub trait CheckedEuclid: Euclid {
 
 macro_rules! checked_euclid_forward_impl {
     ($($t:ty)*) => {$(
-        #[cfg(has_div_euclid)]
         impl CheckedEuclid for $t {
             #[inline]
             fn checked_div_euclid(&self, v: &$t) -> Option<Self> {
@@ -234,62 +181,8 @@ macro_rules! checked_euclid_forward_impl {
     )*}
 }
 
-macro_rules! checked_euclid_int_impl {
-    ($($t:ty)*) => {$(
-        checked_euclid_forward_impl!($t);
-
-        #[cfg(not(has_div_euclid))]
-        impl CheckedEuclid for $t {
-            #[inline]
-            fn checked_div_euclid(&self, v: &$t) -> Option<$t> {
-                if *v == 0 || (*self == Self::min_value() && *v == -1) {
-                    None
-                } else {
-                    Some(Euclid::div_euclid(self, v))
-                }
-            }
-
-            #[inline]
-            fn checked_rem_euclid(&self, v: &$t) -> Option<$t> {
-                if *v == 0 || (*self == Self::min_value() && *v == -1) {
-                    None
-                } else {
-                    Some(Euclid::rem_euclid(self, v))
-                }
-            }
-        }
-    )*}
-}
-
-macro_rules! checked_euclid_uint_impl {
-    ($($t:ty)*) => {$(
-        checked_euclid_forward_impl!($t);
-
-        #[cfg(not(has_div_euclid))]
-        impl CheckedEuclid for $t {
-            #[inline]
-            fn checked_div_euclid(&self, v: &$t) -> Option<$t> {
-                if *v == 0 {
-                    None
-                } else {
-                    Some(Euclid::div_euclid(self, v))
-                }
-            }
-
-            #[inline]
-            fn checked_rem_euclid(&self, v: &$t) -> Option<$t> {
-                if *v == 0 {
-                    None
-                } else {
-                    Some(Euclid::rem_euclid(self, v))
-                }
-            }
-        }
-    )*}
-}
-
-checked_euclid_int_impl!(isize i8 i16 i32 i64 i128);
-checked_euclid_uint_impl!(usize u8 u16 u32 u64 u128);
+checked_euclid_forward_impl!(isize i8 i16 i32 i64 i128);
+checked_euclid_forward_impl!(usize u8 u16 u32 u64 u128);
 
 #[cfg(test)]
 mod tests {

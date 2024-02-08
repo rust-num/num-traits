@@ -3,8 +3,6 @@ use std::env;
 fn main() {
     let ac = autocfg::new();
 
-    ac.emit_expression_cfg("1u32.div_euclid(1u32)", "has_div_euclid");
-
     if env::var_os("CARGO_FEATURE_STD").is_some() {
         ac.emit_expression_cfg("1f64.copysign(-1f64)", "has_copysign");
     }
