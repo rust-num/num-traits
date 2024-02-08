@@ -2,7 +2,7 @@
 
 [![crate](https://img.shields.io/crates/v/num-traits.svg)](https://crates.io/crates/num-traits)
 [![documentation](https://docs.rs/num-traits/badge.svg)](https://docs.rs/num-traits)
-[![minimum rustc 1.31](https://img.shields.io/badge/rustc-1.31+-red.svg)](https://rust-lang.github.io/rfcs/2495-min-rust-version.html)
+[![minimum rustc 1.60](https://img.shields.io/badge/rustc-1.60+-red.svg)](https://rust-lang.github.io/rfcs/2495-min-rust-version.html)
 [![build status](https://github.com/rust-num/num-traits/workflows/master/badge.svg)](https://github.com/rust-num/num-traits/actions)
 
 Numeric traits for generic mathematics in Rust.
@@ -40,7 +40,7 @@ Release notes are available in [RELEASES.md](RELEASES.md).
 
 ## Compatibility
 
-The `num-traits` crate is tested for rustc 1.31 and greater.
+The `num-traits` crate is tested for rustc 1.60 and greater.
 
 ## License
 
