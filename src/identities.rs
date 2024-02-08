@@ -92,7 +92,7 @@ impl<T: ConstZero> ConstZero for Wrapping<T>
 where
     Wrapping<T>: Add<Output = Wrapping<T>>,
 {
-    const ZERO: Self = Self(T::ZERO);
+    const ZERO: Self = Wrapping(T::ZERO);
 }
 
 /// Defines a multiplicative identity element for `Self`.
@@ -193,7 +193,7 @@ impl<T: ConstOne> ConstOne for Wrapping<T>
 where
     Wrapping<T>: Mul<Output = Wrapping<T>>,
 {
-    const ONE: Self = Self(T::ONE);
+    const ONE: Self = Wrapping(T::ONE);
 }
 
 // Some helper functions provided for backwards compatibility.
