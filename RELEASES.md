@@ -1,3 +1,17 @@
+# Release 0.2.18 (2024-02-07)
+
+- [The new `Euclid::div_rem_euclid` and `CheckedEuclid::checked_div_rem_euclid` methods][291]
+  compute and return the quotient and remainder at the same time.
+- [The new `TotalOrder` trait implements the IEEE 754 `totalOrder` predicate.][295]
+- [The new `ConstZero` and `ConstOne` traits offered associated constants][303],
+  extending the non-const `Zero` and `One` traits for types that have constant values.
+
+**Contributors**: @andrewjradcliffe, @cuviper, @tarcieri, @tdelabro, @waywardmonkeys
+
+[291]: https://github.com/rust-num/num-traits/pull/291
+[295]: https://github.com/rust-num/num-traits/pull/295
+[303]: https://github.com/rust-num/num-traits/pull/303
+
 # Release 0.2.17 (2023-10-07)
 
 - [Fix a doc warning about custom classes with newer rustdoc.][286]
