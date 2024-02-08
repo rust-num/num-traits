@@ -2,8 +2,6 @@ use core::borrow::{Borrow, BorrowMut};
 use core::cmp::{Eq, Ord, PartialEq, PartialOrd};
 use core::fmt::Debug;
 use core::hash::Hash;
-#[cfg(not(has_int_to_from_bytes))]
-use core::mem::transmute;
 
 pub trait NumBytes:
     Debug
@@ -236,7 +234,6 @@ macro_rules! float_to_from_bytes_impl {
 
 macro_rules! int_to_from_bytes_impl {
     ($T:ty, $L:expr) => {
-        #[cfg(has_int_to_from_bytes)]
         impl ToBytes for $T {
             type Bytes = [u8; $L];
 
@@ -256,7 +253,6 @@ macro_rules! int_to_from_bytes_impl {
             }
         }
 
-        #[cfg(has_int_to_from_bytes)]
         impl FromBytes for $T {
             type Bytes = [u8; $L];
 
@@ -273,46 +269,6 @@ macro_rules! int_to_from_bytes_impl {
             #[inline]
             fn from_ne_bytes(bytes: &Self::Bytes) -> Self {
                 <$T>::from_ne_bytes(*bytes)
-            }
-        }
-
-        #[cfg(not(has_int_to_from_bytes))]
-        impl ToBytes for $T {
-            type Bytes = [u8; $L];
-
-            #[inline]
-            fn to_be_bytes(&self) -> Self::Bytes {
-                <$T as ToBytes>::to_ne_bytes(&<$T>::to_be(*self))
-            }
-
-            #[inline]
-            fn to_le_bytes(&self) -> Self::Bytes {
-                <$T as ToBytes>::to_ne_bytes(&<$T>::to_le(*self))
-            }
-
-            #[inline]
-            fn to_ne_bytes(&self) -> Self::Bytes {
-                unsafe { transmute(*self) }
-            }
-        }
-
-        #[cfg(not(has_int_to_from_bytes))]
-        impl FromBytes for $T {
-            type Bytes = [u8; $L];
-
-            #[inline]
-            fn from_be_bytes(bytes: &Self::Bytes) -> Self {
-                Self::from_be(<Self as FromBytes>::from_ne_bytes(bytes))
-            }
-
-            #[inline]
-            fn from_le_bytes(bytes: &Self::Bytes) -> Self {
-                Self::from_le(<Self as FromBytes>::from_ne_bytes(bytes))
-            }
-
-            #[inline]
-            fn from_ne_bytes(bytes: &Self::Bytes) -> Self {
-                unsafe { transmute(*bytes) }
             }
         }
     };
