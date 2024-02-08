@@ -150,7 +150,6 @@ pub trait FromBytes: Sized {
 
 macro_rules! float_to_from_bytes_impl {
     ($T:ty, $L:expr) => {
-        #[cfg(has_float_to_from_bytes)]
         impl ToBytes for $T {
             type Bytes = [u8; $L];
 
@@ -170,7 +169,6 @@ macro_rules! float_to_from_bytes_impl {
             }
         }
 
-        #[cfg(has_float_to_from_bytes)]
         impl FromBytes for $T {
             type Bytes = [u8; $L];
 
@@ -187,46 +185,6 @@ macro_rules! float_to_from_bytes_impl {
             #[inline]
             fn from_ne_bytes(bytes: &Self::Bytes) -> Self {
                 <$T>::from_ne_bytes(*bytes)
-            }
-        }
-
-        #[cfg(not(has_float_to_from_bytes))]
-        impl ToBytes for $T {
-            type Bytes = [u8; $L];
-
-            #[inline]
-            fn to_be_bytes(&self) -> Self::Bytes {
-                ToBytes::to_be_bytes(&self.to_bits())
-            }
-
-            #[inline]
-            fn to_le_bytes(&self) -> Self::Bytes {
-                ToBytes::to_le_bytes(&self.to_bits())
-            }
-
-            #[inline]
-            fn to_ne_bytes(&self) -> Self::Bytes {
-                ToBytes::to_ne_bytes(&self.to_bits())
-            }
-        }
-
-        #[cfg(not(has_float_to_from_bytes))]
-        impl FromBytes for $T {
-            type Bytes = [u8; $L];
-
-            #[inline]
-            fn from_be_bytes(bytes: &Self::Bytes) -> Self {
-                Self::from_bits(FromBytes::from_be_bytes(bytes))
-            }
-
-            #[inline]
-            fn from_le_bytes(bytes: &Self::Bytes) -> Self {
-                Self::from_bits(FromBytes::from_le_bytes(bytes))
-            }
-
-            #[inline]
-            fn from_ne_bytes(bytes: &Self::Bytes) -> Self {
-                Self::from_bits(FromBytes::from_ne_bytes(bytes))
             }
         }
     };
