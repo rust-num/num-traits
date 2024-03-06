@@ -31,14 +31,20 @@ macro_rules! forward {
                 $imp(self $( , $arg )* )
             }
         )*};
+    ($( $base:ident :: $associate:ident ; )*)
+        => {$(
+            const $associate: Self = $base::$associate;
+        )*};
 }
 
 macro_rules! constant {
-    ($( $method:ident () -> $ret:expr ; )*)
+    ($( $associate:ident = $ret:expr ; )*)
         => {$(
-            #[inline]
-            fn $method() -> Self {
-                $ret
-            }
+            const $associate: Self = $ret;
+        )*};
+
+        ($( $associate:ident $type:ty = $ret:expr ; )*)
+        => {$(
+            const $associate: &type = $ret;
         )*};
 }

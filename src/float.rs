@@ -11,7 +11,7 @@ use crate::{Num, NumCast, ToPrimitive};
 ///
 /// This trait implements a subset of the `Float` trait.
 pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
-    /// Returns positive infinity.
+    /// Positive infinity (−∞).
     ///
     /// # Examples
     ///
@@ -20,15 +20,15 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     /// use std::{f32, f64};
     ///
     /// fn check<T: FloatCore>(x: T) {
-    ///     assert!(T::infinity() == x);
+    ///     assert!(T::INFINITY == x);
     /// }
     ///
     /// check(f32::INFINITY);
     /// check(f64::INFINITY);
     /// ```
-    fn infinity() -> Self;
+    const INFINITY: Self;
 
-    /// Returns negative infinity.
+    /// Negative infinity (−∞).
     ///
     /// # Examples
     ///
@@ -37,13 +37,13 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     /// use std::{f32, f64};
     ///
     /// fn check<T: FloatCore>(x: T) {
-    ///     assert!(T::neg_infinity() == x);
+    ///     assert!(T::NEG_INFINITY == x);
     /// }
     ///
     /// check(f32::NEG_INFINITY);
     /// check(f64::NEG_INFINITY);
     /// ```
-    fn neg_infinity() -> Self;
+    const NEG_INFINITY: Self;
 
     /// Returns NaN.
     ///
@@ -53,16 +53,16 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     /// use num_traits::float::FloatCore;
     ///
     /// fn check<T: FloatCore>() {
-    ///     let n = T::nan();
+    ///     let n = T::NAN;
     ///     assert!(n != n);
     /// }
     ///
     /// check::<f32>();
     /// check::<f64>();
     /// ```
-    fn nan() -> Self;
+    const NAN: Self;
 
-    /// Returns `-0.0`.
+    /// `-0.0`.
     ///
     /// # Examples
     ///
@@ -71,7 +71,7 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     /// use std::{f32, f64};
     ///
     /// fn check<T: FloatCore>(n: T) {
-    ///     let z = T::neg_zero();
+    ///     let z = T::NEG_ZERO;
     ///     assert!(z.is_zero());
     ///     assert!(T::one() / z == n);
     /// }
@@ -79,9 +79,9 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     /// check(f32::NEG_INFINITY);
     /// check(f64::NEG_INFINITY);
     /// ```
-    fn neg_zero() -> Self;
+    const NEG_ZERO: Self;
 
-    /// Returns the smallest finite value that this type can represent.
+    /// Smallest finite value that this type can represent.
     ///
     /// # Examples
     ///
@@ -90,15 +90,15 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     /// use std::{f32, f64};
     ///
     /// fn check<T: FloatCore>(x: T) {
-    ///     assert!(T::min_value() == x);
+    ///     assert!(T::MIN == x);
     /// }
     ///
     /// check(f32::MIN);
     /// check(f64::MIN);
     /// ```
-    fn min_value() -> Self;
+    const MIN: Self;
 
-    /// Returns the smallest positive, normalized value that this type can represent.
+    /// Smallest positive, normalized value that this type can represent.
     ///
     /// # Examples
     ///
@@ -107,15 +107,15 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     /// use std::{f32, f64};
     ///
     /// fn check<T: FloatCore>(x: T) {
-    ///     assert!(T::min_positive_value() == x);
+    ///     assert!(T::MIN_POSITIVE == x);
     /// }
     ///
     /// check(f32::MIN_POSITIVE);
     /// check(f64::MIN_POSITIVE);
     /// ```
-    fn min_positive_value() -> Self;
+    const MIN_POSITIVE: Self;
 
-    /// Returns epsilon, a small positive value.
+    /// Machine Epsiolon for the underlying type
     ///
     /// # Examples
     ///
@@ -124,15 +124,15 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     /// use std::{f32, f64};
     ///
     /// fn check<T: FloatCore>(x: T) {
-    ///     assert!(T::epsilon() == x);
+    ///     assert!(T::EPSILON == x);
     /// }
     ///
     /// check(f32::EPSILON);
     /// check(f64::EPSILON);
     /// ```
-    fn epsilon() -> Self;
+    const EPSILON: Self;
 
-    /// Returns the largest finite value that this type can represent.
+    /// Largest finite value that this type can represent.
     ///
     /// # Examples
     ///
@@ -141,13 +141,64 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     /// use std::{f32, f64};
     ///
     /// fn check<T: FloatCore>(x: T) {
-    ///     assert!(T::max_value() == x);
+    ///     assert!(T::MAX == x);
     /// }
     ///
     /// check(f32::MAX);
     /// check(f64::MAX);
     /// ```
-    fn max_value() -> Self;
+    const MAX: Self;
+
+    /// Aproximate number of significant digits in base 10.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use num_traits::float::FloatCore;
+    /// use std::{f32, f64};
+    ///
+    /// fn check<T: FloatCore>(x: u32) {
+    ///     assert!(T::DIGITS == x);
+    /// }
+    ///
+    /// check::<f32>(f32::DIGITS);
+    /// check::<f64>(f64::DIGITS);
+    /// ```
+    const DIGITS: u32;
+
+    /// Number of significant digits in base 2.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use num_traits::float::FloatCore;
+    /// use std::{f32, f64};
+    ///
+    /// fn check<T: FloatCore>(x: u32) {
+    ///     assert!(T::MANTISSA_DIGITS == x);
+    /// }
+    ///
+    /// check::<f32>(24u32);
+    /// check::<f64>(53u32); 
+    /// ```
+    const MANTISSA_DIGITS: u32;
+
+    /// Radix or base of the internal representation of the number.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use num_traits::float::FloatCore;
+    /// use std::{f32, f64};
+    ///
+    /// fn check<T: FloatCore>(x: u32) {
+    ///     assert!(T::RADIX == x);
+    /// }
+    ///
+    /// check::<f32>(f32::RADIX);
+    /// check::<f64>(f64::RADIX);
+    /// ```
+    const RADIX: u32;
 
     /// Returns `true` if the number is NaN.
     ///
@@ -193,7 +244,7 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     /// ```
     #[inline]
     fn is_infinite(self) -> bool {
-        self == Self::infinity() || self == Self::neg_infinity()
+        self == Self::INFINITY || self == Self::NEG_INFINITY
     }
 
     /// Returns `true` if the number is neither infinite or NaN.
@@ -464,8 +515,8 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
         }
     }
 
-    /// Computes the absolute value of `self`. Returns `FloatCore::nan()` if the
-    /// number is `FloatCore::nan()`.
+    /// Computes the absolute value of `self`. Returns `FloatCore::NAN` if the
+    /// number is `FloatCore::NAN`.
     ///
     /// # Examples
     ///
@@ -492,14 +543,14 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
         if self.is_sign_negative() {
             return -self;
         }
-        Self::nan()
+        Self::NAN
     }
 
     /// Returns a number that represents the sign of `self`.
     ///
-    /// - `1.0` if the number is positive, `+0.0` or `FloatCore::infinity()`
-    /// - `-1.0` if the number is negative, `-0.0` or `FloatCore::neg_infinity()`
-    /// - `FloatCore::nan()` if the number is `FloatCore::nan()`
+    /// - `1.0` if the number is positive, `+0.0` or `FloatCore::INFINITY`
+    /// - `-1.0` if the number is negative, `-0.0` or `FloatCore::NEG_INFINTIY`
+    /// - `FloatCore::NAN` if the number is `FloatCore::NAN`
     ///
     /// # Examples
     ///
@@ -521,7 +572,7 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     #[inline]
     fn signum(self) -> Self {
         if self.is_nan() {
-            Self::nan()
+            Self::NAN
         } else if self.is_sign_negative() {
             -Self::one()
         } else {
@@ -530,7 +581,7 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     }
 
     /// Returns `true` if `self` is positive, including `+0.0` and
-    /// `FloatCore::infinity()`, and `FloatCore::nan()`.
+    /// `FloatCore::INFINITY`, and `FloatCore::NAN`.
     ///
     /// # Examples
     ///
@@ -557,7 +608,7 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     }
 
     /// Returns `true` if `self` is negative, including `-0.0` and
-    /// `FloatCore::neg_infinity()`, and `-FloatCore::nan()`.
+    /// `FloatCore::NEG_INFINTY`, and `-FloatCore::NAN`.
     ///
     /// # Examples
     ///
@@ -769,16 +820,17 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
 }
 
 impl FloatCore for f32 {
-    constant! {
-        infinity() -> f32::INFINITY;
-        neg_infinity() -> f32::NEG_INFINITY;
-        nan() -> f32::NAN;
-        neg_zero() -> -0.0;
-        min_value() -> f32::MIN;
-        min_positive_value() -> f32::MIN_POSITIVE;
-        epsilon() -> f32::EPSILON;
-        max_value() -> f32::MAX;
-    }
+    const INFINITY: Self = f32::INFINITY;
+    const NEG_INFINITY: Self = f32::NEG_INFINITY;
+    const NAN: Self = f32::NAN;
+    const NEG_ZERO: Self = -0.0;
+    const MIN: Self = f32::MIN;
+    const MIN_POSITIVE: Self = f32::MIN_POSITIVE;
+    const EPSILON: Self = f32::EPSILON;
+    const MAX: Self = f32::MAX;
+    const DIGITS: u32 = f32::DIGITS;
+    const MANTISSA_DIGITS: u32 = f32::MANTISSA_DIGITS;
+    const RADIX: u32 = f32::RADIX;
 
     #[inline]
     fn integer_decode(self) -> (u64, i16, i8) {
@@ -834,16 +886,17 @@ impl FloatCore for f32 {
 }
 
 impl FloatCore for f64 {
-    constant! {
-        infinity() -> f64::INFINITY;
-        neg_infinity() -> f64::NEG_INFINITY;
-        nan() -> f64::NAN;
-        neg_zero() -> -0.0;
-        min_value() -> f64::MIN;
-        min_positive_value() -> f64::MIN_POSITIVE;
-        epsilon() -> f64::EPSILON;
-        max_value() -> f64::MAX;
-    }
+    const INFINITY: Self = f64::INFINITY;
+    const NEG_INFINITY: Self = f64::NEG_INFINITY;
+    const NAN: Self = f64::NAN;
+    const NEG_ZERO: Self = -0.0;
+    const MIN: Self = f64::MIN;
+    const MIN_POSITIVE: Self = f64::MIN_POSITIVE;
+    const EPSILON: Self = f64::EPSILON;
+    const MAX: Self = f64::MAX;
+    const DIGITS: u32 = f64::DIGITS;
+    const MANTISSA_DIGITS: u32 = f64::MANTISSA_DIGITS;
+    const RADIX: u32 = f64::RADIX;
 
     #[inline]
     fn integer_decode(self) -> (u64, i16, i8) {
@@ -906,110 +959,110 @@ impl FloatCore for f64 {
 /// This trait is only available with the `std` feature, or with the `libm` feature otherwise.
 #[cfg(any(feature = "std", feature = "libm"))]
 pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
-    /// Returns the `NaN` value.
+    /// Not a Number `NaN`.
     ///
     /// ```
     /// use num_traits::Float;
     ///
-    /// let nan: f32 = Float::nan();
+    /// let nan: f32 = Float::NAN;
     ///
     /// assert!(nan.is_nan());
     /// ```
-    fn nan() -> Self;
-    /// Returns the infinite value.
+    const NAN: Self;
+    /// Infinity (∞).
     ///
     /// ```
     /// use num_traits::Float;
     /// use std::f32;
     ///
-    /// let infinity: f32 = Float::infinity();
+    /// let infinity: f32 = Float::INFINITY;
     ///
     /// assert!(infinity.is_infinite());
     /// assert!(!infinity.is_finite());
     /// assert!(infinity > f32::MAX);
     /// ```
-    fn infinity() -> Self;
-    /// Returns the negative infinite value.
+    const INFINITY: Self;
+    /// Negative infinity (−∞).
     ///
     /// ```
     /// use num_traits::Float;
     /// use std::f32;
     ///
-    /// let neg_infinity: f32 = Float::neg_infinity();
+    /// let neg_infinity: f32 = Float::NEG_INFINITY;
     ///
     /// assert!(neg_infinity.is_infinite());
     /// assert!(!neg_infinity.is_finite());
     /// assert!(neg_infinity < f32::MIN);
     /// ```
-    fn neg_infinity() -> Self;
-    /// Returns `-0.0`.
+    const NEG_INFINITY: Self;
+    /// `-0.0`.
     ///
     /// ```
     /// use num_traits::{Zero, Float};
     ///
-    /// let inf: f32 = Float::infinity();
+    /// let inf: f32 = Float::INFINITY;
     /// let zero: f32 = Zero::zero();
-    /// let neg_zero: f32 = Float::neg_zero();
+    /// let neg_zero: f32 = Float::NEG_ZERO;
     ///
     /// assert_eq!(zero, neg_zero);
     /// assert_eq!(7.0f32/inf, zero);
     /// assert_eq!(zero * 10.0, zero);
     /// ```
-    fn neg_zero() -> Self;
+    const NEG_ZERO: Self;
 
-    /// Returns the smallest finite value that this type can represent.
+    /// Smallest finite value that this type can represent.
     ///
     /// ```
     /// use num_traits::Float;
     /// use std::f64;
     ///
-    /// let x: f64 = Float::min_value();
+    /// let x: f64 = Float::MIN;
     ///
     /// assert_eq!(x, f64::MIN);
     /// ```
-    fn min_value() -> Self;
+    const MIN: Self;
 
-    /// Returns the smallest positive, normalized value that this type can represent.
+    /// Smallest positive, normalized value that this type can represent.
     ///
     /// ```
     /// use num_traits::Float;
     /// use std::f64;
     ///
-    /// let x: f64 = Float::min_positive_value();
+    /// let x: f64 = Float::MIN_POSITIVE;
     ///
     /// assert_eq!(x, f64::MIN_POSITIVE);
     /// ```
-    fn min_positive_value() -> Self;
+    const MIN_POSITIVE: Self;
 
-    /// Returns epsilon, a small positive value.
+    /// [Machine epsilon] value for this type.
+    ///
+    /// This is the difference between `1.0` and the next larger representable number.
+    ///
+    /// Equal to 2<sup>1&nbsp;&minus;&nbsp;[`MANTISSA_DIGITS`]</sup>.
+    ///
+    /// [Machine epsilon]: https://en.wikipedia.org/wiki/Machine_epsilon
+    /// [`MANTISSA_DIGITS`]: f32::MANTISSA_DIGITS
     ///
     /// ```
     /// use num_traits::Float;
     /// use std::f64;
     ///
-    /// let x: f64 = Float::epsilon();
+    /// let x: f64 = Float::EPSILON;
     ///
     /// assert_eq!(x, f64::EPSILON);
     /// ```
-    ///
-    /// # Panics
-    ///
-    /// The default implementation will panic if `f32::EPSILON` cannot
-    /// be cast to `Self`.
-    fn epsilon() -> Self {
-        Self::from(f32::EPSILON).expect("Unable to cast from f32::EPSILON")
-    }
+    const EPSILON: Self;
 
-    /// Returns the largest finite value that this type can represent.
+    /// Largest finite value that this type can represent.
     ///
     /// ```
     /// use num_traits::Float;
     /// use std::f64;
     ///
-    /// let x: f64 = Float::max_value();
+    /// let x: f64 = Float::MAX;
     /// assert_eq!(x, f64::MAX);
     /// ```
-    fn max_value() -> Self;
+    const MAX: Self;
 
     /// Returns `true` if this value is `NaN` and false otherwise.
     ///
@@ -1033,8 +1086,8 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// use std::f32;
     ///
     /// let f = 7.0f32;
-    /// let inf: f32 = Float::infinity();
-    /// let neg_inf: f32 = Float::neg_infinity();
+    /// let inf: f32 = Float::INFINITY;
+    /// let neg_inf: f32 = Float::NEG_INFINITY;
     /// let nan: f32 = f32::NAN;
     ///
     /// assert!(!f.is_infinite());
@@ -1052,8 +1105,8 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// use std::f32;
     ///
     /// let f = 7.0f32;
-    /// let inf: f32 = Float::infinity();
-    /// let neg_inf: f32 = Float::neg_infinity();
+    /// let inf: f32 = Float::INFINITY;
+    /// let neg_inf: f32 = Float::NEG_INFINITY;
     /// let nan: f32 = f32::NAN;
     ///
     /// assert!(f.is_finite());
@@ -1199,8 +1252,8 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// ```
     fn fract(self) -> Self;
 
-    /// Computes the absolute value of `self`. Returns `Float::nan()` if the
-    /// number is `Float::nan()`.
+    /// Computes the absolute value of `self`. Returns `Float::NAN` if the
+    /// number is `Float::NAN`.
     ///
     /// ```
     /// use num_traits::Float;
@@ -1221,9 +1274,9 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
 
     /// Returns a number that represents the sign of `self`.
     ///
-    /// - `1.0` if the number is positive, `+0.0` or `Float::infinity()`
-    /// - `-1.0` if the number is negative, `-0.0` or `Float::neg_infinity()`
-    /// - `Float::nan()` if the number is `Float::nan()`
+    /// - `1.0` if the number is positive, `+0.0` or `Float::INFINITY`
+    /// - `-1.0` if the number is negative, `-0.0` or `Float::NEG_INFINTIY`
+    /// - `Float::NAN` if the number is `Float::NAN`
     ///
     /// ```
     /// use num_traits::Float;
@@ -1239,7 +1292,7 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     fn signum(self) -> Self;
 
     /// Returns `true` if `self` is positive, including `+0.0`,
-    /// `Float::infinity()`, and `Float::nan()`.
+    /// `Float::INFINITY`, and `Float::NAN`.
     ///
     /// ```
     /// use num_traits::Float;
@@ -1259,7 +1312,7 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     fn is_sign_positive(self) -> bool;
 
     /// Returns `true` if `self` is negative, including `-0.0`,
-    /// `Float::neg_infinity()`, and `-Float::nan()`.
+    /// `Float::NEG_INFINITY`, and `-Float::NAN`.
     ///
     /// ```
     /// use num_traits::Float;
@@ -1859,7 +1912,7 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// assert_eq!((-f).copysign(0.42), 3.5_f32);
     /// assert_eq!((-f).copysign(-0.42), -3.5_f32);
     ///
-    /// assert!(f32::nan().copysign(1.0).is_nan());
+    /// assert!(f32::NAN.copysign(1.0).is_nan());
     /// ```
     fn copysign(self, sign: Self) -> Self {
         if self.is_sign_negative() == sign.is_sign_negative() {
@@ -1875,14 +1928,14 @@ macro_rules! float_impl_std {
     ($T:ident $decode:ident) => {
         impl Float for $T {
             constant! {
-                nan() -> $T::NAN;
-                infinity() -> $T::INFINITY;
-                neg_infinity() -> $T::NEG_INFINITY;
-                neg_zero() -> -0.0;
-                min_value() -> $T::MIN;
-                min_positive_value() -> $T::MIN_POSITIVE;
-                epsilon() -> $T::EPSILON;
-                max_value() -> $T::MAX;
+                NAN = $T::NAN;
+                INFINITY = $T::INFINITY;
+                NEG_INFINITY = $T::NEG_INFINITY;
+                NEG_ZERO = -0.0;
+                MIN = $T::MIN;
+                MIN_POSITIVE = $T::MIN_POSITIVE;
+                EPSILON = $T::EPSILON;
+                MAX = $T::MAX;
             }
 
             #[inline]
@@ -2144,22 +2197,17 @@ macro_rules! float_const_impl {
     ($(#[$doc:meta] $constant:ident,)+) => (
         #[allow(non_snake_case)]
         pub trait FloatConst {
-            $(#[$doc] fn $constant() -> Self;)+
+
+            $(#[$doc] const $constant: Self;)+
+
             #[doc = "Return the full circle constant `τ`."]
-            #[inline]
-            fn TAU() -> Self where Self: Sized + Add<Self, Output = Self> {
-                Self::PI() + Self::PI()
-            }
+            const TAU: Self;
+
             #[doc = "Return `log10(2.0)`."]
-            #[inline]
-            fn LOG10_2() -> Self where Self: Sized + Div<Self, Output = Self> {
-                Self::LN_2() / Self::LN_10()
-            }
+            const LOG10_2: Self;
+
             #[doc = "Return `log2(10.0)`."]
-            #[inline]
-            fn LOG2_10() -> Self where Self: Sized + Div<Self, Output = Self> {
-                Self::LN_10() / Self::LN_2()
-            }
+            const LOG2_10: Self;
         }
         float_const_impl! { @float f32, $($constant,)+ }
         float_const_impl! { @float f64, $($constant,)+ }
@@ -2167,10 +2215,10 @@ macro_rules! float_const_impl {
     (@float $T:ident, $($constant:ident,)+) => (
         impl FloatConst for $T {
             constant! {
-                $( $constant() -> $T::consts::$constant; )+
-                TAU() -> 6.28318530717958647692528676655900577;
-                LOG10_2() -> 0.301029995663981195213738894724493027;
-                LOG2_10() -> 3.32192809488736234787031942948939018;
+                $( $constant = $T::consts::$constant; )+
+                TAU = 6.28318530717958647692528676655900577;
+                LOG10_2 = 0.301029995663981195213738894724493027;
+                LOG2_10 = 3.32192809488736234787031942948939018;
             }
         }
     );
@@ -2354,12 +2402,12 @@ mod tests {
 
         fn check<F: Float + FloatConst>(diff: F) {
             let _2 = F::from(2.0).unwrap();
-            assert!((F::LOG10_2() - F::log10(_2)).abs() < diff);
-            assert!((F::LOG10_2() - F::LN_2() / F::LN_10()).abs() < diff);
+            assert!((F::LOG10_2 - F::log10(_2)).abs() < diff);
+            assert!((F::LOG10_2 - F::LN_2 / F::LN_10).abs() < diff);
 
             let _10 = F::from(10.0).unwrap();
-            assert!((F::LOG2_10() - F::log2(_10)).abs() < diff);
-            assert!((F::LOG2_10() - F::LN_10() / F::LN_2()).abs() < diff);
+            assert!((F::LOG2_10 - F::log2(_10)).abs() < diff);
+            assert!((F::LOG2_10 - F::LN_10 / F::LN_2).abs() < diff);
         }
 
         check::<f32>(1e-6);
@@ -2369,10 +2417,9 @@ mod tests {
     #[test]
     #[cfg(any(feature = "std", feature = "libm"))]
     fn copysign() {
-        use crate::float::Float;
-        test_copysign_generic(2.0_f32, -2.0_f32, f32::nan());
-        test_copysign_generic(2.0_f64, -2.0_f64, f64::nan());
-        test_copysignf(2.0_f32, -2.0_f32, f32::nan());
+        test_copysign_generic(2.0_f32, -2.0_f32, f32::NAN);
+        test_copysign_generic(2.0_f64, -2.0_f64, f64::NAN);
+        test_copysignf(2.0_f32, -2.0_f32, f32::NAN);
     }
 
     #[cfg(any(feature = "std", feature = "libm"))]
@@ -2413,7 +2460,7 @@ mod tests {
 
     #[cfg(any(feature = "std", feature = "libm"))]
     fn test_subnormal<F: crate::float::Float + ::core::fmt::Debug>() {
-        let min_positive = F::min_positive_value();
+        let min_positive = F::MIN_POSITIVE;
         let lower_than_min = min_positive / F::from(2.0f32).unwrap();
         assert!(!min_positive.is_subnormal());
         assert!(lower_than_min.is_subnormal());

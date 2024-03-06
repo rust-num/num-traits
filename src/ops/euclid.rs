@@ -349,13 +349,13 @@ mod tests {
                         let x: $t = 12.1;
                         let y: $t = 3.2;
                         assert!(Euclid::div_euclid(&x, &y) * y + Euclid::rem_euclid(&x, &y) - x
-                        <= 46.4 * <$t as crate::float::FloatCore>::epsilon());
+                        <= 46.4 * <$t as crate::float::FloatCore>::EPSILON);
                         assert!(Euclid::div_euclid(&x, &-y) * -y + Euclid::rem_euclid(&x, &-y) - x
-                        <= 46.4 * <$t as crate::float::FloatCore>::epsilon());
+                        <= 46.4 * <$t as crate::float::FloatCore>::EPSILON);
                         assert!(Euclid::div_euclid(&-x, &y) * y + Euclid::rem_euclid(&-x, &y) + x
-                        <= 46.4 * <$t as crate::float::FloatCore>::epsilon());
+                        <= 46.4 * <$t as crate::float::FloatCore>::EPSILON);
                         assert!(Euclid::div_euclid(&-x, &-y) * -y + Euclid::rem_euclid(&-x, &-y) + x
-                        <= 46.4 * <$t as crate::float::FloatCore>::epsilon());
+                        <= 46.4 * <$t as crate::float::FloatCore>::EPSILON);
                         assert_eq!((Euclid::div_euclid(&x, &y), Euclid::rem_euclid(&x, &y)), Euclid::div_rem_euclid(&x, &y));
                     }
                 )+

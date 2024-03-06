@@ -15,57 +15,61 @@ use crate::{Float, Num, NumCast};
 ///
 /// This trait is only available with the `std` feature, or with the `libm` feature otherwise.
 pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
-    /// Returns the smallest finite value that this type can represent.
+    //TODO:
+    /// Smallest finite value that this type can represent.
     ///
     /// ```
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
-    /// let x: f64 = Real::min_value();
+    /// let x: f64 = Real::MIN;
     ///
     /// assert_eq!(x, f64::MIN);
     /// ```
-    fn min_value() -> Self;
+    const MIN: Self;
 
-    /// Returns the smallest positive, normalized value that this type can represent.
+    /// Smallest positive, normalized value that this type can represent.
     ///
     /// ```
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
-    /// let x: f64 = Real::min_positive_value();
+    /// let x: f64 = Real::MIN_POSITIVE;
     ///
     /// assert_eq!(x, f64::MIN_POSITIVE);
     /// ```
-    fn min_positive_value() -> Self;
+    const MIN_POSITIVE: Self;
 
-    /// Returns epsilon, a small positive value.
+    /// [Machine epsilon] value for this type.
+    ///
+    /// This is the difference between `1.0` and the next larger representable number.
+    ///
+    /// Equal to 2<sup>1&nbsp;&minus;&nbsp;[`MANTISSA_DIGITS`]</sup>.
+    ///
+    /// [Machine epsilon]: https://en.wikipedia.org/wiki/Machine_epsilon
+    /// [`MANTISSA_DIGITS`]: f32::MANTISSA_DIGITS
+    ///
     ///
     /// ```
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
-    /// let x: f64 = Real::epsilon();
+    /// let x: f64 = Real::EPSILON;
     ///
     /// assert_eq!(x, f64::EPSILON);
     /// ```
-    ///
-    /// # Panics
-    ///
-    /// The default implementation will panic if `f32::EPSILON` cannot
-    /// be cast to `Self`.
-    fn epsilon() -> Self;
+    const EPSILON: Self;
 
-    /// Returns the largest finite value that this type can represent.
+    /// Largest finite value that this type can represent.
     ///
     /// ```
     /// use num_traits::real::Real;
     /// use std::f64;
     ///
-    /// let x: f64 = Real::max_value();
+    /// let x: f64 = Real::MAX;
     /// assert_eq!(x, f64::MAX);
     /// ```
-    fn max_value() -> Self;
+    const MAX: Self;
 
     /// Returns the largest integer less than or equal to a number.
     ///
@@ -781,10 +785,10 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
 
 impl<T: Float> Real for T {
     forward! {
-        Float::min_value() -> Self;
-        Float::min_positive_value() -> Self;
-        Float::epsilon() -> Self;
-        Float::max_value() -> Self;
+        Float::MIN;
+        Float::MIN_POSITIVE;
+        Float::EPSILON;
+        Float::MAX;
     }
     forward! {
         Float::floor(self) -> Self;
