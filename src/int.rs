@@ -52,6 +52,17 @@ pub trait PrimInt:
     + CheckedDiv<Output = Self>
     + Saturating
 {
+    /// The size of this integer type in bits.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use num_traits::PrimInt;
+    ///
+    /// assert_eq!(<u64 as PrimInt>::BITS, 64);
+    /// ```
+    const BITS: u32;
+
     /// Returns the number of ones in the binary representation of `self`.
     ///
     /// # Examples
@@ -394,6 +405,8 @@ fn reverse_bits_fallback<P: PrimInt>(i: P) -> P {
 macro_rules! prim_int_impl {
     ($T:ty, $S:ty, $U:ty) => {
         impl PrimInt for $T {
+            const BITS: u32 = <$T>::BITS;
+
             #[inline]
             fn count_ones(self) -> u32 {
                 <$T>::count_ones(self)
@@ -512,6 +525,20 @@ prim_int_impl!(isize, isize, usize);
 #[cfg(test)]
 mod tests {
     use crate::int::PrimInt;
+
+    #[test]
+    pub fn bits() {
+        assert_eq!(<u8 as PrimInt>::BITS, 8);
+        assert_eq!(<i8 as PrimInt>::BITS, 8);
+        assert_eq!(<u16 as PrimInt>::BITS, 16);
+        assert_eq!(<i16 as PrimInt>::BITS, 16);
+        assert_eq!(<u32 as PrimInt>::BITS, 32);
+        assert_eq!(<i32 as PrimInt>::BITS, 32);
+        assert_eq!(<u64 as PrimInt>::BITS, 64);
+        assert_eq!(<i64 as PrimInt>::BITS, 64);
+        assert_eq!(<u128 as PrimInt>::BITS, 128);
+        assert_eq!(<i128 as PrimInt>::BITS, 128);
+    }
 
     #[test]
     pub fn reverse_bits() {
