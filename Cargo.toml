@@ -12,8 +12,8 @@ version = "0.2.18"
 readme = "README.md"
 build = "build.rs"
 exclude = ["/ci/*", "/.github/*"]
-edition = "2018"
-rust-version = "1.31"
+edition = "2021"
+rust-version = "1.60"
 
 [package.metadata.docs.rs]
 features = ["std"]
@@ -24,6 +24,7 @@ libm = { version = "0.2.0", optional = true }
 
 [features]
 default = ["std"]
+libm = ["dep:libm"]
 std = []
 
 # vestigial features, now always in effect

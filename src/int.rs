@@ -404,7 +404,6 @@ macro_rules! prim_int_impl {
                 <$T>::count_zeros(self)
             }
 
-            #[cfg(has_leading_trailing_ones)]
             #[inline]
             fn leading_ones(self) -> u32 {
                 <$T>::leading_ones(self)
@@ -415,7 +414,6 @@ macro_rules! prim_int_impl {
                 <$T>::leading_zeros(self)
             }
 
-            #[cfg(has_leading_trailing_ones)]
             #[inline]
             fn trailing_ones(self) -> u32 {
                 <$T>::trailing_ones(self)
@@ -461,7 +459,6 @@ macro_rules! prim_int_impl {
                 <$T>::swap_bytes(self)
             }
 
-            #[cfg(has_reverse_bits)]
             #[inline]
             fn reverse_bits(self) -> Self {
                 <$T>::reverse_bits(self)

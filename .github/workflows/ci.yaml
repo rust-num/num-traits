@@ -9,13 +9,7 @@ jobs:
     strategy:
       matrix:
         rust: [
-          1.31.0, # MSRV
-          1.35.0, # has_copysign
-          1.37.0, # has_reverse_bits
-          1.38.0, # has_div_euclid
-          1.44.0, # has_to_int_unchecked
-          1.46.0, # has_leading_trailing_ones
-          1.53.0, # has_is_subnormal
+          1.60.0, # MSRV
           1.62.0, # has_total_cmp
           stable,
           beta,
