@@ -1,83 +1,98 @@
-use core::num::Wrapping;
+use core::num::*;
 use core::{f32, f64};
 use core::{i128, i16, i32, i64, i8, isize};
 use core::{u128, u16, u32, u64, u8, usize};
 
-/// Numbers which have upper and lower bounds
-pub trait Bounded {
-    // FIXME (#5527): These should be associated constants
-    /// Returns the smallest finite number this type can represent
-    fn min_value() -> Self;
-    /// Returns the largest finite number this type can represent
-    fn max_value() -> Self;
-}
-
 /// Numbers which have lower bounds
 pub trait LowerBounded {
-    /// Returns the smallest finite number this type can represent
-    fn min_value() -> Self;
-}
-
-// FIXME: With a major version bump, this should be a supertrait instead
-impl<T: Bounded> LowerBounded for T {
-    fn min_value() -> T {
-        Bounded::min_value()
-    }
+    /// The smallest finite number this type can represent.
+    const MIN: Self;
 }
 
 /// Numbers which have upper bounds
 pub trait UpperBounded {
-    /// Returns the largest finite number this type can represent
-    fn max_value() -> Self;
+    /// The largest finite number this type can represent.
+    const MAX: Self;
 }
 
-// FIXME: With a major version bump, this should be a supertrait instead
-impl<T: Bounded> UpperBounded for T {
-    fn max_value() -> T {
-        Bounded::max_value()
-    }
+/// Numbers which have upper and lower bounds
+pub trait Bounded: UpperBounded + LowerBounded + Sized {
+    const MIN: Self = <Self as LowerBounded>::MIN;
+    const MAX: Self = <Self as UpperBounded>::MAX;
 }
 
 macro_rules! bounded_impl {
-    ($t:ty, $min:expr, $max:expr) => {
-        impl Bounded for $t {
-            #[inline]
-            fn min_value() -> $t {
-                $min
-            }
+    ($t:ty) => {
 
-            #[inline]
-            fn max_value() -> $t {
-                $max
-            }
+        impl LowerBounded for $t {
+            const MIN: $t = <$t>::MIN;
+        }
+
+        impl UpperBounded for $t {
+            const MAX: $t = <$t>::MAX;
         }
     };
 }
 
-bounded_impl!(usize, usize::MIN, usize::MAX);
-bounded_impl!(u8, u8::MIN, u8::MAX);
-bounded_impl!(u16, u16::MIN, u16::MAX);
-bounded_impl!(u32, u32::MIN, u32::MAX);
-bounded_impl!(u64, u64::MIN, u64::MAX);
-bounded_impl!(u128, u128::MIN, u128::MAX);
+macro_rules! bounded_impl_nonzero {
+    ($NonZero:ty, $PossiblyZero:ty) => {
 
-bounded_impl!(isize, isize::MIN, isize::MAX);
-bounded_impl!(i8, i8::MIN, i8::MAX);
-bounded_impl!(i16, i16::MIN, i16::MAX);
-bounded_impl!(i32, i32::MIN, i32::MAX);
-bounded_impl!(i64, i64::MIN, i64::MAX);
-bounded_impl!(i128, i128::MIN, i128::MAX);
+        impl LowerBounded for $NonZero {
+            const MIN: $NonZero = unsafe {
+                if <$PossiblyZero>::MIN == 0 as $PossiblyZero {
+                    Self::new_unchecked(1 as $PossiblyZero)
+                } else {
+                    Self::new_unchecked(<$PossiblyZero>::MIN)
+                }
+            };
+        }
 
-impl<T: Bounded> Bounded for Wrapping<T> {
-    fn min_value() -> Self {
-        Wrapping(T::min_value())
-    }
-    fn max_value() -> Self {
-        Wrapping(T::max_value())
-    }
+        impl UpperBounded for $NonZero {
+            const MAX: $NonZero = unsafe { Self::new_unchecked(<$PossiblyZero>::MAX) };
+        }
+    };
 }
 
-bounded_impl!(f32, f32::MIN, f32::MAX);
+bounded_impl!(u8);
+bounded_impl!(u16);
+bounded_impl!(u32);
+bounded_impl!(u64);
+bounded_impl!(u128);
+bounded_impl!(usize);
+
+bounded_impl!(i8);
+bounded_impl!(i16);
+bounded_impl!(i32);
+bounded_impl!(i64);
+bounded_impl!(i128);
+bounded_impl!(isize);
+
+bounded_impl_nonzero!(NonZeroU8, u8);
+bounded_impl_nonzero!(NonZeroU16, u16);
+bounded_impl_nonzero!(NonZeroU32, u32);
+bounded_impl_nonzero!(NonZeroU64, u64);
+bounded_impl_nonzero!(NonZeroU128, u128);
+bounded_impl_nonzero!(NonZeroUsize, usize);
+
+bounded_impl_nonzero!(NonZeroI8, i8);
+bounded_impl_nonzero!(NonZeroI16, i16);
+bounded_impl_nonzero!(NonZeroI32, i32);
+bounded_impl_nonzero!(NonZeroI64, i64);
+bounded_impl_nonzero!(NonZeroI128, i128);
+bounded_impl_nonzero!(NonZeroIsize, isize);
+
+impl<T: LowerBounded> LowerBounded for Wrapping<T> {
+    const MIN: Wrapping<T> = Wrapping(T::MIN);
+}
+
+impl<T: UpperBounded> UpperBounded for Wrapping<T> {
+    const MAX: Wrapping<T> = Wrapping(T::MAX);
+}
+
+impl<T: UpperBounded + LowerBounded> Bounded for T {}
+
+bounded_impl!(f32);
+bounded_impl!(f64);
 
 macro_rules! for_each_tuple_ {
     ( $m:ident !! ) => (
@@ -96,29 +111,27 @@ macro_rules! for_each_tuple {
 
 macro_rules! bounded_tuple {
     ( $($name:ident)* ) => (
-        impl<$($name: Bounded,)*> Bounded for ($($name,)*) {
-            #[inline]
-            fn min_value() -> Self {
-                ($($name::min_value(),)*)
-            }
-            #[inline]
-            fn max_value() -> Self {
-                ($($name::max_value(),)*)
-            }
+        impl<$($name: LowerBounded,)*> LowerBounded for ($($name,)*) {
+            const MIN: Self = ($($name::MIN,)*);
+        }
+        
+        impl<$($name: UpperBounded,)*> UpperBounded for ($($name,)*) {
+            const MAX: Self = ($($name::MAX,)*);
         }
     );
 }
 
 for_each_tuple!(bounded_tuple);
-bounded_impl!(f64, f64::MIN, f64::MAX);
 
 #[test]
 fn wrapping_bounded() {
     macro_rules! test_wrapping_bounded {
         ($($t:ty)+) => {
             $(
-                assert_eq!(<Wrapping<$t> as Bounded>::min_value().0, <$t>::min_value());
-                assert_eq!(<Wrapping<$t> as Bounded>::max_value().0, <$t>::max_value());
+                assert_eq!(<Wrapping<$t> as Bounded>::MIN.0, <$t>::MIN);
+                assert_eq!(<Wrapping<$t> as Bounded>::MAX.0, <$t>::MAX);
+                assert_eq!(<Wrapping<$t> as Bounded>::MIN.0.wrapping_sub(1), <$t>::MAX);
+                assert_eq!(<Wrapping<$t> as Bounded>::MAX.0.wrapping_add(1), <$t>::MIN);
             )+
         };
     }
@@ -131,8 +144,10 @@ fn wrapping_bounded_i128() {
     macro_rules! test_wrapping_bounded {
         ($($t:ty)+) => {
             $(
-                assert_eq!(<Wrapping<$t> as Bounded>::min_value().0, <$t>::min_value());
-                assert_eq!(<Wrapping<$t> as Bounded>::max_value().0, <$t>::max_value());
+                assert_eq!(<Wrapping<$t> as Bounded>::MIN.0, <$t>::MIN);
+                assert_eq!(<Wrapping<$t> as Bounded>::MAX.0, <$t>::MAX);
+                assert_eq!(<Wrapping<$t> as Bounded>::MIN.0.wrapping_sub(1), <$t>::MAX);
+                assert_eq!(<Wrapping<$t> as Bounded>::MAX.0.wrapping_add(1), <$t>::MIN);
             )+
         };
     }
