@@ -14,7 +14,7 @@ use crate::{Float, Num, NumCast};
 /// for a list of data types that could meaningfully implement this trait.
 ///
 /// This trait is only available with the `std` feature, or with the `libm` feature otherwise.
-pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
+pub trait Real: Num + NumCast + PartialOrd + Neg<Output = Self> {
     /// Returns the smallest finite value that this type can represent.
     ///
     /// ```
