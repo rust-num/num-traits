@@ -22,7 +22,7 @@
 #[cfg(feature = "std")]
 extern crate std;
 
-use core::fmt;
+use core::fmt::{self, Debug};
 use core::num::Wrapping;
 use core::ops::{Add, Div, Mul, Rem, Sub};
 use core::ops::{AddAssign, DivAssign, MulAssign, RemAssign, SubAssign};
@@ -64,7 +64,7 @@ pub mod sign;
 
 /// The base trait for numeric types, covering `0` and `1` values,
 /// comparisons, basic numeric operations, and string conversion.
-pub trait Num: PartialEq + Zero + One + NumOps {
+pub trait Num: PartialEq + Zero + One + NumOps + Debug {
     type FromStrRadixErr;
 
     /// Convert from a string and radix (typically `2..=36`).
@@ -203,7 +203,7 @@ impl fmt::Display for ParseFloatError {
             FloatErrorKind::Invalid => "invalid float literal",
         };
 
-        description.fmt(f)
+        fmt::Display::fmt(description, f)
     }
 }
 
