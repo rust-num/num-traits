@@ -1531,6 +1531,8 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
 
     /// Clamps a value between a min and max.
     ///
+    /// **Panics** in debug mode if `!(min <= max)`.
+    ///
     /// ```
     /// use num_traits::Float;
     ///
@@ -1540,7 +1542,9 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     ///
     /// assert_eq!(x.clamp(y, z), 2.0);
     /// ```
-    fn clamp(self, min: Self, max: Self) -> Self;
+    fn clamp(self, min: Self, max: Self) -> Self {
+        crate::clamp(self, min, max)
+    }
 
     /// The positive difference of two numbers.
     ///
