@@ -1,3 +1,13 @@
+# Release 0.2.19 (2024-05-03)
+
+- [Upgrade to 2021 edition, **MSRV 1.60**][310]
+- [The new `Float::clamp` limits values by minimum and maximum][305]
+
+**Contributors**: @cuviper, @michaelciraci
+
+[305]: https://github.com/rust-num/num-traits/pull/305
+[310]: https://github.com/rust-num/num-traits/pull/310
+
 # Release 0.2.18 (2024-02-07)
 
 - [The new `Euclid::div_rem_euclid` and `CheckedEuclid::checked_div_rem_euclid` methods][291]

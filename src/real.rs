@@ -270,7 +270,7 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
 
     /// Take the square root of a number.
     ///
-    /// Returns NaN if `self` is a negative floating-point number.  
+    /// Returns NaN if `self` is a negative floating-point number.
     ///
     /// # Panics
     ///
