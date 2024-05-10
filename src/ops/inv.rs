@@ -17,6 +17,14 @@ pub trait Inv {
     fn inv(self) -> Self::Output;
 }
 
+#[cfg(has_f16)]
+impl Inv for f16 {
+    type Output = f16;
+    #[inline]
+    fn inv(self) -> f16 {
+        1.0 / self
+    }
+}
 impl Inv for f32 {
     type Output = f32;
     #[inline]
@@ -29,6 +37,14 @@ impl Inv for f64 {
     #[inline]
     fn inv(self) -> f64 {
         1.0 / self
+    }
+}
+#[cfg(has_f16)]
+impl<'a> Inv for &'a f16 {
+    type Output = f16;
+    #[inline]
+    fn inv(self) -> f16 {
+        1.0 / *self
     }
 }
 impl<'a> Inv for &'a f32 {

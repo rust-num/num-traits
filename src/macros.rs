@@ -33,6 +33,16 @@ macro_rules! forward {
         )*};
 }
 
+macro_rules! cast_forward_cast {
+    ($( [$cast:ty] $imp:path as $method:ident ( self $( , $arg:ident : $ty:ty )* ) -> $ret:ty ; )*)
+        => {$(
+            #[inline]
+            fn $method(self $( , $arg : $ty )* ) -> $ret {
+                $imp(self as $cast $( , $arg as $cast)* ) as $ret
+            }
+        )*};
+}
+
 macro_rules! constant {
     ($( $method:ident () -> $ret:expr ; )*)
         => {$(

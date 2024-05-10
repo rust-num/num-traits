@@ -17,6 +17,7 @@
 #![doc(html_root_url = "https://docs.rs/num-traits/0.2")]
 #![deny(unconditional_recursion)]
 #![no_std]
+#![cfg_attr(has_f16, feature(f16))] // FIXME: remove it when it's stabilized
 
 // Need to explicitly bring the crate in for inherent float methods
 #[cfg(feature = "std")]
@@ -251,15 +252,15 @@ macro_rules! float_trait_impl {
                 if str_to_ascii_lower_eq_str(src, "inf")
                     || str_to_ascii_lower_eq_str(src, "infinity")
                 {
-                    return Ok(core::$t::INFINITY);
+                    return Ok($t::INFINITY);
                 } else if str_to_ascii_lower_eq_str(src, "-inf")
                     || str_to_ascii_lower_eq_str(src, "-infinity")
                 {
-                    return Ok(core::$t::NEG_INFINITY);
+                    return Ok($t::NEG_INFINITY);
                 } else if str_to_ascii_lower_eq_str(src, "nan") {
-                    return Ok(core::$t::NAN);
+                    return Ok($t::NAN);
                 } else if str_to_ascii_lower_eq_str(src, "-nan") {
-                    return Ok(-core::$t::NAN);
+                    return Ok(-$t::NAN);
                 }
 
                 fn slice_shift_char(src: &str) -> Option<(char, &str)> {
@@ -300,15 +301,15 @@ macro_rules! float_trait_impl {
                             // if we've not seen any non-zero digits.
                             if prev_sig != 0.0 {
                                 if is_positive && sig <= prev_sig
-                                    { return Ok(core::$t::INFINITY); }
+                                    { return Ok($t::INFINITY); }
                                 if !is_positive && sig >= prev_sig
-                                    { return Ok(core::$t::NEG_INFINITY); }
+                                    { return Ok($t::NEG_INFINITY); }
 
                                 // Detect overflow by reversing the shift-and-add process
                                 if is_positive && (prev_sig != (sig - digit as $t) / radix as $t)
-                                    { return Ok(core::$t::INFINITY); }
+                                    { return Ok($t::INFINITY); }
                                 if !is_positive && (prev_sig != (sig + digit as $t) / radix as $t)
-                                    { return Ok(core::$t::NEG_INFINITY); }
+                                    { return Ok($t::NEG_INFINITY); }
                             }
                             prev_sig = sig;
                         },
@@ -344,9 +345,9 @@ macro_rules! float_trait_impl {
                                 };
                                 // Detect overflow by comparing to last value
                                 if is_positive && sig < prev_sig
-                                    { return Ok(core::$t::INFINITY); }
+                                    { return Ok($t::INFINITY); }
                                 if !is_positive && sig > prev_sig
-                                    { return Ok(core::$t::NEG_INFINITY); }
+                                    { return Ok($t::NEG_INFINITY); }
                                 prev_sig = sig;
                             },
                             None => match c {
@@ -400,6 +401,8 @@ macro_rules! float_trait_impl {
         }
     )*)
 }
+#[cfg(has_f16)]
+float_trait_impl!(Num for f16);
 float_trait_impl!(Num for f32 f64);
 
 /// A value bounded by a minimum and a maximum

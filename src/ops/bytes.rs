@@ -252,6 +252,8 @@ int_to_from_bytes_impl!(isize, 8);
 #[cfg(target_pointer_width = "32")]
 int_to_from_bytes_impl!(isize, 4);
 
+#[cfg(has_f16)]
+float_to_from_bytes_impl!(f16, 2);
 float_to_from_bytes_impl!(f32, 4);
 float_to_from_bytes_impl!(f64, 8);
 
@@ -311,6 +313,9 @@ mod tests {
                 }
             )+}
         }
+
+        #[cfg(has_f16)]
+        check_to_from_bytes!(f16);
 
         check_to_from_bytes!(f32 f64);
     }
