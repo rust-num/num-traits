@@ -8,7 +8,7 @@ use crate::Num;
 pub trait Signed: Sized + Num + Neg<Output = Self> {
     /// Computes the absolute value.
     ///
-    /// For `f16`, `f32` and `f64`, `NaN` will be returned if the number is `NaN`.
+    /// For `f16`, `f32`, `f64` and `f128`, `NaN` will be returned if the number is `NaN`.
     ///
     /// For signed integers, `::MIN` will be returned if the number is `::MIN`.
     fn abs(&self) -> Self;
@@ -21,7 +21,7 @@ pub trait Signed: Sized + Num + Neg<Output = Self> {
 
     /// Returns the sign of the number.
     ///
-    /// For `f16`, `f32` and `f64`:
+    /// For `f16`, `f32`, `f64` and `f128`:
     ///
     /// * `1.0` if the number is positive, `+0.0` or `INFINITY`
     /// * `-1.0` if the number is negative, `-0.0` or `NEG_INFINITY`
@@ -154,10 +154,12 @@ macro_rules! signed_float_impl {
 signed_float_impl!(f16);
 signed_float_impl!(f32);
 signed_float_impl!(f64);
+#[cfg(has_f128)]
+signed_float_impl!(f128);
 
 /// Computes the absolute value.
 ///
-/// For `f16`, `f32` and `f64`, `NaN` will be returned if the number is `NaN`
+/// For `f16`, `f32`, `f64` and `f128`, `NaN` will be returned if the number is `NaN`
 ///
 /// For signed integers, `::MIN` will be returned if the number is `::MIN`.
 #[inline(always)]
@@ -176,7 +178,7 @@ pub fn abs_sub<T: Signed>(x: T, y: T) -> T {
 
 /// Returns the sign of the number.
 ///
-/// For `f16`, `f32` and `f64`:
+/// For `f16`, `f32`, `f64` and `f128`:
 ///
 /// * `1.0` if the number is positive, `+0.0` or `INFINITY`
 /// * `-1.0` if the number is negative, `-0.0` or `NEG_INFINITY`

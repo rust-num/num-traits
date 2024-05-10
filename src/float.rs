@@ -2,6 +2,8 @@ use core::cmp::Ordering;
 use core::num::FpCategory;
 use core::ops::{Add, Div, Neg};
 
+#[cfg(has_f128)]
+use core::f128;
 #[cfg(has_f16)]
 use core::f16;
 use core::f32;
@@ -779,6 +781,10 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     /// Returns the mantissa, base 2 exponent, and sign as integers, respectively.
     /// The original number can be recovered by `sign * mantissa * 2 ^ exponent`.
     ///
+    /// Note: For `f128`, this function is lossy. The original `f128` value cannot
+    /// be exactly recovered by `sign * mantissa * 2 ^ exponent` due to the precision
+    /// limitation of 64-bit mantissa.
+    ///
     /// # Examples
     ///
     /// ```
@@ -972,6 +978,56 @@ impl FloatCore for f64 {
     fn fract(self) -> Self {
         self - libm::trunc(self)
     }
+}
+
+#[cfg(has_f128)]
+impl FloatCore for f128 {
+    constant! {
+        infinity() -> f128::INFINITY;
+        neg_infinity() -> f128::NEG_INFINITY;
+        nan() -> f128::NAN;
+        neg_zero() -> -0.0;
+        min_value() -> f128::MIN;
+        min_positive_value() -> f128::MIN_POSITIVE;
+        epsilon() -> f128::EPSILON;
+        max_value() -> f128::MAX;
+    }
+
+    #[inline]
+    fn integer_decode(self) -> (u64, i16, i8) {
+        integer_decode_f128_truncated(self)
+    }
+
+    forward! {
+        Self::is_nan(self) -> bool;
+        Self::is_infinite(self) -> bool;
+        Self::is_finite(self) -> bool;
+        Self::is_normal(self) -> bool;
+        Self::is_subnormal(self) -> bool;
+        Self::classify(self) -> FpCategory;
+        Self::is_sign_positive(self) -> bool;
+        Self::is_sign_negative(self) -> bool;
+        Self::min(self, other: Self) -> Self;
+        Self::max(self, other: Self) -> Self;
+        Self::recip(self) -> Self;
+        Self::to_degrees(self) -> Self;
+        Self::to_radians(self) -> Self;
+    }
+
+    #[cfg(feature = "std")]
+    forward! {
+        Self::floor(self) -> Self;
+        Self::ceil(self) -> Self;
+        Self::round(self) -> Self;
+        Self::trunc(self) -> Self;
+        Self::fract(self) -> Self;
+        Self::abs(self) -> Self;
+        Self::signum(self) -> Self;
+        Self::powi(self, n: i32) -> Self;
+    }
+
+    // TODO:
+    // use floor, ceil, round, trunc, abs and fract provided by libm
 }
 
 // FIXME: these doctests aren't actually helpful, because they're using and
@@ -2144,6 +2200,27 @@ fn integer_decode_f64(f: f64) -> (u64, i16, i8) {
     (mantissa, exponent, sign)
 }
 
+#[cfg(has_f128)]
+fn integer_decode_f128(f: f128) -> (u128, i16, i8) {
+    let bits: u128 = f.to_bits();
+    let sign: i8 = if bits >> 127 == 0 { 1 } else { -1 };
+    let mut exponent: i16 = ((bits >> 112) & 0x7fff) as i16;
+    let mantissa = if exponent == 0 {
+        (bits & 0xffffffffffffffffffffffffffff) << 1
+    } else {
+        (bits & 0xffffffffffffffffffffffffffff) | 0x10000000000000000000000000000
+    };
+    // Exponent bias + mantissa shift
+    exponent -= 16383 + 112;
+    (mantissa, exponent, sign)
+}
+
+#[cfg(has_f128)]
+fn integer_decode_f128_truncated(f: f128) -> (u64, i16, i8) {
+    let (mantissa, exponent, sign) = integer_decode_f128(f);
+    ((mantissa >> (113 - 64)) as u64, exponent + (113 - 64), sign)
+}
+
 #[cfg(has_f16)]
 #[cfg(feature = "std")]
 float_impl_std!(f16 integer_decode_f16);
@@ -2151,6 +2228,9 @@ float_impl_std!(f16 integer_decode_f16);
 float_impl_std!(f32 integer_decode_f32);
 #[cfg(feature = "std")]
 float_impl_std!(f64 integer_decode_f64);
+#[cfg(has_f128)]
+#[cfg(feature = "std")]
+float_impl_std!(f128 integer_decode_f128_truncated);
 
 #[cfg(all(not(feature = "std"), feature = "libm"))]
 impl Float for f32 {
@@ -2269,6 +2349,8 @@ macro_rules! float_const_impl {
         float_const_impl! { @float f16, $($constant,)+ }
         float_const_impl! { @float f32, $($constant,)+ }
         float_const_impl! { @float f64, $($constant,)+ }
+        #[cfg(has_f128)]
+        float_const_impl! { @float f128, $($constant,)+ }
     );
     (@float $T:ident, $($constant:ident,)+) => (
         impl FloatConst for $T {
@@ -2401,6 +2483,8 @@ totalorder_impl!(f64, i64, u64, 64);
 totalorder_impl!(f32, i32, u32, 32);
 #[cfg(has_f16)]
 totalorder_impl!(f16, i16, u16, 16);
+#[cfg(has_f128)]
+totalorder_impl!(f128, i16, u16, 16);
 
 #[cfg(test)]
 mod tests {
@@ -2424,15 +2508,24 @@ mod tests {
             assert!((FloatCore::to_degrees(rad) - deg).abs() < 1e-6);
             assert!((FloatCore::to_radians(deg) - rad).abs() < 1e-6);
 
-            let (deg, rad) = (deg as f32, rad as f32);
-            assert!((FloatCore::to_degrees(rad) - deg).abs() < 1e-5);
-            assert!((FloatCore::to_radians(deg) - rad).abs() < 1e-5);
+            {
+                let (deg, rad) = (deg as f32, rad as f32);
+                assert!((FloatCore::to_degrees(rad) - deg).abs() < 1e-5);
+                assert!((FloatCore::to_radians(deg) - rad).abs() < 1e-5);
+            }
 
             #[cfg(has_f16)]
             {
                 let (deg, rad) = (deg as f16, rad as f16);
                 assert!((FloatCore::to_degrees(rad) - deg).abs() < 1.0);
                 assert!((FloatCore::to_radians(deg) - rad).abs() < 0.01);
+            }
+
+            #[cfg(has_f128)]
+            {
+                let (deg, rad) = (deg as f128, rad as f128);
+                assert!((FloatCore::to_degrees(rad) - deg).abs() < 1e-7);
+                assert!((FloatCore::to_radians(deg) - rad).abs() < 1e-7);
             }
         }
     }
@@ -2446,15 +2539,24 @@ mod tests {
             assert!((Float::to_degrees(rad) - deg).abs() < 1e-6);
             assert!((Float::to_radians(deg) - rad).abs() < 1e-6);
 
-            let (deg, rad) = (deg as f32, rad as f32);
-            assert!((Float::to_degrees(rad) - deg).abs() < 1e-5);
-            assert!((Float::to_radians(deg) - rad).abs() < 1e-5);
+            {
+                let (deg, rad) = (deg as f32, rad as f32);
+                assert!((Float::to_degrees(rad) - deg).abs() < 1e-5);
+                assert!((Float::to_radians(deg) - rad).abs() < 1e-5);
+            }
 
             #[cfg(has_f16)]
             {
                 let (deg, rad) = (deg as f16, rad as f16);
                 assert!((Float::to_degrees(rad) - deg).abs() < 1.0);
                 assert!((Float::to_radians(deg) - rad).abs() < 0.01);
+            }
+
+            #[cfg(has_f128)]
+            {
+                let (deg, rad) = (deg as f128, rad as f128);
+                assert!((Float::to_degrees(rad) - deg).abs() < 1e-7);
+                assert!((Float::to_radians(deg) - rad).abs() < 1e-7);
             }
         }
     }
@@ -2488,6 +2590,8 @@ mod tests {
         check::<f16>(1e-2);
         check::<f32>(1e-6);
         check::<f64>(1e-12);
+        #[cfg(has_f128)]
+        check::<f128>(1e-24);
     }
 
     #[test]
@@ -2498,6 +2602,8 @@ mod tests {
         test_copysign_generic(2.0_f16, -2.0_f16, f16::nan());
         test_copysign_generic(2.0_f32, -2.0_f32, f32::nan());
         test_copysign_generic(2.0_f64, -2.0_f64, f64::nan());
+        #[cfg(has_f128)]
+        test_copysign_generic(2.0_f128, -2.0_f128, f128::nan());
         test_copysignf(2.0_f32, -2.0_f32, f32::nan());
     }
 
@@ -2548,6 +2654,8 @@ mod tests {
     #[test]
     #[cfg(any(feature = "std", feature = "libm"))]
     fn subnormal() {
+        #[cfg(has_f128)]
+        test_subnormal::<f128>();
         test_subnormal::<f64>();
         test_subnormal::<f32>();
         #[cfg(has_f16)]
@@ -2570,11 +2678,15 @@ mod tests {
             assert_eq!(x.total_cmp(&y), Ordering::Greater);
         }
 
+        #[cfg(has_f128)]
+        check_eq(f128::NAN, f128::NAN);
         check_eq(f64::NAN, f64::NAN);
         check_eq(f32::NAN, f32::NAN);
         #[cfg(has_f16)]
         check_eq(f16::NAN, f16::NAN);
 
+        #[cfg(has_f128)]
+        check_lt(-0.0_f128, 0.0_f128);
         check_lt(-0.0_f64, 0.0_f64);
         check_lt(-0.0_f32, 0.0_f32);
         #[cfg(has_f16)]
@@ -2584,6 +2696,14 @@ mod tests {
         // https://github.com/rust-lang/rust/issues/115567
         #[cfg(not(target_arch = "x86"))]
         {
+            let s_nan = f128::from_bits(0x7ffe8000000000000000000000000000);
+            let q_nan = f128::from_bits(0x7fff8000000000000000000000000000);
+            check_lt(s_nan, q_nan);
+
+            let neg_s_nan = f128::from_bits(0xfffe8000000000000000000000000000);
+            let neg_q_nan = f128::from_bits(0xffff8000000000000000000000000000);
+            check_lt(neg_q_nan, neg_s_nan);
+
             let s_nan = f64::from_bits(0x7ff4000000000000);
             let q_nan = f64::from_bits(0x7ff8000000000000);
             check_lt(s_nan, q_nan);
@@ -2607,6 +2727,14 @@ mod tests {
             let neg_s_nan = f16::from_bits(0xfa00);
             let neg_q_nan = f16::from_bits(0xfe00);
             check_lt(neg_q_nan, neg_s_nan);
+        }
+
+        #[cfg(has_f128)]
+        {
+            check_lt(-f128::NAN, f128::NEG_INFINITY);
+            check_gt(1.0_f128, -f128::NAN);
+            check_lt(f128::INFINITY, f128::NAN);
+            check_gt(f128::NAN, 1.0_f128);
         }
 
         check_lt(-f64::NAN, f64::NEG_INFINITY);

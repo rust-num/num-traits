@@ -1,3 +1,5 @@
+#[cfg(has_f128)]
+use core::f128;
 #[cfg(has_f16)]
 use core::f16;
 use core::mem::size_of;
@@ -134,6 +136,15 @@ pub trait ToPrimitive {
             None => self.to_u64().as_ref().and_then(ToPrimitive::to_f64),
         }
     }
+
+    /// Converts the value of `self` to an `f128`. Overflows may map to positive
+    /// or negative inifinity, otherwise `None` is returned if the value cannot
+    /// be represented by an `f128`.
+    #[cfg(has_f128)]
+    #[inline]
+    fn to_f128(&self) -> Option<f128> {
+        self.to_f64().as_ref().and_then(ToPrimitive::to_f128)
+    }
 }
 
 macro_rules! impl_to_primitive_int_to_int {
@@ -200,6 +211,11 @@ macro_rules! impl_to_primitive_int {
             #[inline]
             fn to_f64(&self) -> Option<f64> {
                 Some(*self as f64)
+            }
+            #[cfg(has_f128)]
+            #[inline]
+            fn to_f128(&self) -> Option<f128> {
+                Some(*self as f128)
             }
         }
     };
@@ -275,6 +291,11 @@ macro_rules! impl_to_primitive_uint {
             #[inline]
             fn to_f64(&self) -> Option<f64> {
                 Some(*self as f64)
+            }
+            #[cfg(has_f128)]
+            #[inline]
+            fn to_f128(&self) -> Option<f128> {
+                Some(*self as f128)
             }
         }
     };
@@ -390,6 +411,8 @@ macro_rules! impl_to_primitive_float {
                 fn to_f16 -> f16;
                 fn to_f32 -> f32;
                 fn to_f64 -> f64;
+                #[cfg(has_f128)]
+                fn to_f128 -> f128;
             }
         }
     };
@@ -399,6 +422,8 @@ macro_rules! impl_to_primitive_float {
 impl_to_primitive_float!(f16);
 impl_to_primitive_float!(f32);
 impl_to_primitive_float!(f64);
+#[cfg(has_f128)]
+impl_to_primitive_float!(f128);
 
 /// A generic trait for converting a number to a value.
 ///
@@ -523,6 +548,14 @@ pub trait FromPrimitive: Sized {
             None => n.to_u64().and_then(FromPrimitive::from_u64),
         }
     }
+
+    /// Converts a `f128` to return an optional value of this type. If the
+    /// value cannot be represented by this type, then `None` is returned.
+    #[cfg(has_f128)]
+    #[inline]
+    fn from_f128(n: f128) -> Option<Self> {
+        FromPrimitive::from_f64(n as f64)
+    }
 }
 
 macro_rules! impl_from_primitive {
@@ -592,6 +625,11 @@ macro_rules! impl_from_primitive {
             fn from_f64(n: f64) -> Option<$T> {
                 n.$to_ty()
             }
+            #[cfg(has_f128)]
+            #[inline]
+            fn from_f128(n: f128) -> Option<$T> {
+                n.$to_ty()
+            }
         }
     };
 }
@@ -612,6 +650,8 @@ impl_from_primitive!(u128, to_u128);
 impl_from_primitive!(f16, to_f16);
 impl_from_primitive!(f32, to_f32);
 impl_from_primitive!(f64, to_f64);
+#[cfg(has_f128)]
+impl_from_primitive!(f128, to_f128);
 
 macro_rules! impl_to_primitive_wrapping {
     ($( $(#[$cfg:meta])* fn $method:ident -> $i:ident ; )*) => {$(
@@ -643,6 +683,8 @@ impl<T: ToPrimitive> ToPrimitive for Wrapping<T> {
         fn to_f16 -> f16;
         fn to_f32 -> f32;
         fn to_f64 -> f64;
+        #[cfg(has_f128)]
+        fn to_f128 -> f128;
     }
 }
 
@@ -676,6 +718,8 @@ impl<T: FromPrimitive> FromPrimitive for Wrapping<T> {
         fn from_f16(f16);
         fn from_f32(f32);
         fn from_f64(f64);
+        #[cfg(has_f128)]
+        fn from_f128(f128);
     }
 }
 
@@ -741,6 +785,8 @@ impl_num_cast!(isize, to_isize);
 impl_num_cast!(f16, to_f16);
 impl_num_cast!(f32, to_f32);
 impl_num_cast!(f64, to_f64);
+#[cfg(has_f128)]
+impl_num_cast!(f128, to_f128);
 
 impl<T: NumCast> NumCast for Wrapping<T> {
     fn from<U: ToPrimitive>(n: U) -> Option<Self> {
@@ -799,21 +845,23 @@ macro_rules! impl_as_primitive {
     };
 }
 
-impl_as_primitive!(u8 => { char, #[cfg(has_f16)] f16, f32, f64 });
-impl_as_primitive!(i8 => { #[cfg(has_f16)] f16, f32, f64 });
-impl_as_primitive!(u16 => { #[cfg(has_f16)] f16, f32, f64 });
-impl_as_primitive!(i16 => { #[cfg(has_f16)] f16, f32, f64 });
-impl_as_primitive!(u32 => { #[cfg(has_f16)] f16, f32, f64 });
-impl_as_primitive!(i32 => { #[cfg(has_f16)] f16, f32, f64 });
-impl_as_primitive!(u64 => { #[cfg(has_f16)] f16, f32, f64 });
-impl_as_primitive!(i64 => { #[cfg(has_f16)] f16, f32, f64 });
-impl_as_primitive!(u128 => { #[cfg(has_f16)] f16, f32, f64 });
-impl_as_primitive!(i128 => { #[cfg(has_f16)] f16, f32, f64 });
-impl_as_primitive!(usize => { #[cfg(has_f16)] f16, f32, f64 });
-impl_as_primitive!(isize => { #[cfg(has_f16)] f16, f32, f64 });
+impl_as_primitive!(u8 => { char, #[cfg(has_f16)] f16, f32, f64, #[cfg(has_f128)] f128 });
+impl_as_primitive!(i8 => { #[cfg(has_f16)] f16, f32, f64, #[cfg(has_f128)] f128 });
+impl_as_primitive!(u16 => { #[cfg(has_f16)] f16, f32, f64, #[cfg(has_f128)] f128 });
+impl_as_primitive!(i16 => { #[cfg(has_f16)] f16, f32, f64, #[cfg(has_f128)] f128 });
+impl_as_primitive!(u32 => { #[cfg(has_f16)] f16, f32, f64, #[cfg(has_f128)] f128 });
+impl_as_primitive!(i32 => { #[cfg(has_f16)] f16, f32, f64, #[cfg(has_f128)] f128 });
+impl_as_primitive!(u64 => { #[cfg(has_f16)] f16, f32, f64, #[cfg(has_f128)] f128 });
+impl_as_primitive!(i64 => { #[cfg(has_f16)] f16, f32, f64, #[cfg(has_f128)] f128 });
+impl_as_primitive!(u128 => { #[cfg(has_f16)] f16, f32, f64, #[cfg(has_f128)] f128 });
+impl_as_primitive!(i128 => { #[cfg(has_f16)] f16, f32, f64, #[cfg(has_f128)] f128 });
+impl_as_primitive!(usize => { #[cfg(has_f16)] f16, f32, f64, #[cfg(has_f128)] f128 });
+impl_as_primitive!(isize => { #[cfg(has_f16)] f16, f32, f64, #[cfg(has_f128)] f128 });
 #[cfg(has_f16)]
-impl_as_primitive!(f16 => { f16, f32, f64 });
-impl_as_primitive!(f32 => { #[cfg(has_f16)] f16, f32, f64 });
-impl_as_primitive!(f64 => { #[cfg(has_f16)] f16, f32, f64 });
+impl_as_primitive!(f16 => { f16, f32, f64, #[cfg(has_f128)] f128 });
+impl_as_primitive!(f32 => { #[cfg(has_f16)] f16, f32, f64, #[cfg(has_f128)] f128 });
+impl_as_primitive!(f64 => { #[cfg(has_f16)] f16, f32, f64, #[cfg(has_f128)] f128 });
+#[cfg(has_f128)]
+impl_as_primitive!(f128 => { #[cfg(has_f16)] f16, f32, f64, f128 });
 impl_as_primitive!(char => { char });
 impl_as_primitive!(bool => {});

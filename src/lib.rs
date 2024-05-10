@@ -18,6 +18,7 @@
 #![deny(unconditional_recursion)]
 #![no_std]
 #![cfg_attr(has_f16, feature(f16))] // FIXME: remove it when it's stablized
+#![cfg_attr(has_f128, feature(f128))] // FIXME: remove it when it's stablized
 
 // Need to explicitly bring the crate in for inherent float methods
 #[cfg(feature = "std")]
@@ -556,6 +557,8 @@ macro_rules! float_trait_impl {
 #[cfg(has_f16)]
 float_trait_impl!(Num for f16);
 float_trait_impl!(Num for f32 f64);
+#[cfg(has_f128)]
+float_trait_impl!(no_fast_path Num for f128);
 
 /// A value bounded by a minimum and a maximum
 ///

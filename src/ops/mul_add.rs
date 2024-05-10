@@ -65,6 +65,17 @@ impl MulAdd<f64, f64> for f64 {
     }
 }
 
+#[cfg(has_f128)]
+#[cfg(any(feature = "std", feature = "libm"))]
+impl MulAdd<f128, f128> for f128 {
+    type Output = Self;
+
+    #[inline]
+    fn mul_add(self, a: Self, b: Self) -> Self::Output {
+        <Self as crate::Float>::mul_add(self, a, b)
+    }
+}
+
 macro_rules! mul_add_impl {
     ($trait_name:ident for $($t:ty)*) => {$(
         impl $trait_name for $t {
@@ -100,6 +111,15 @@ impl MulAddAssign<f32, f32> for f32 {
 
 #[cfg(any(feature = "std", feature = "libm"))]
 impl MulAddAssign<f64, f64> for f64 {
+    #[inline]
+    fn mul_add_assign(&mut self, a: Self, b: Self) {
+        *self = <Self as crate::Float>::mul_add(*self, a, b)
+    }
+}
+
+#[cfg(has_f128)]
+#[cfg(any(feature = "std", feature = "libm"))]
+impl MulAddAssign<f128, f128> for f128 {
     #[inline]
     fn mul_add_assign(&mut self, a: Self, b: Self) {
         *self = <Self as crate::Float>::mul_add(*self, a, b)
@@ -168,5 +188,8 @@ mod tests {
         test_mul_add!(f16);
 
         test_mul_add!(f32 f64);
+
+        #[cfg(has_f128)]
+        test_mul_add!(f128);
     }
 }

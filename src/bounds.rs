@@ -1,3 +1,5 @@
+#[cfg(has_f128)]
+use core::f128;
 #[cfg(has_f16)]
 use core::f16;
 use core::num::Wrapping;
@@ -83,6 +85,8 @@ impl<T: Bounded> Bounded for Wrapping<T> {
 bounded_impl!(f16, f16::MIN, f16::MAX);
 bounded_impl!(f32, f32::MIN, f32::MAX);
 bounded_impl!(f64, f64::MIN, f64::MAX);
+#[cfg(has_f128)]
+bounded_impl!(f128, f128::MIN, f128::MAX);
 
 macro_rules! for_each_tuple_ {
     ( $m:ident !! ) => (
