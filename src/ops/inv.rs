@@ -39,6 +39,14 @@ impl Inv for f64 {
         1.0 / self
     }
 }
+#[cfg(has_f128)]
+impl Inv for f128 {
+    type Output = f128;
+    #[inline]
+    fn inv(self) -> f128 {
+        1.0 / self
+    }
+}
 #[cfg(has_f16)]
 impl<'a> Inv for &'a f16 {
     type Output = f16;
@@ -58,6 +66,14 @@ impl<'a> Inv for &'a f64 {
     type Output = f64;
     #[inline]
     fn inv(self) -> f64 {
+        1.0 / *self
+    }
+}
+#[cfg(has_f128)]
+impl<'a> Inv for &'a f128 {
+    type Output = f128;
+    #[inline]
+    fn inv(self) -> f128 {
         1.0 / *self
     }
 }
