@@ -2245,7 +2245,7 @@ float_const_impl! {
 /// Trait for floating point numbers that provide an implementation
 /// of the `totalOrder` predicate as defined in the IEEE 754 (2008 revision)
 /// floating point standard.
-pub trait TotalOrder {
+pub trait TotalOrder: FloatCore {
     /// Return the ordering between `self` and `other`.
     ///
     /// Unlike the standard partial comparison between floating point numbers,
@@ -2297,6 +2297,32 @@ pub trait TotalOrder {
     /// check_lt(-0.0_f64, 0.0_f64);
     /// ```
     fn total_cmp(&self, other: &Self) -> Ordering;
+
+    /// Get the maximum of two numbers, propagating NaN
+    ///
+    /// For this operation, -0.0 is considered to be less than +0.0 as
+    /// specified in IEEE 754-2019.
+    #[must_use]
+    fn maximum(self, other: Self) -> Self {
+        match (self.is_nan(), other.is_nan()) {
+            (true, _) => self,
+            (_, true) => other,
+            _ => core::cmp::max_by(self, other, Self::total_cmp),
+        }
+    }
+
+    /// Get the minimum of two numbers, propagating NaN
+    ///
+    /// For this operation, -0.0 is considered to be less than +0.0 as
+    /// specified in IEEE 754-2019.
+    #[must_use]
+    fn minimum(self, other: Self) -> Self {
+        match (self.is_nan(), other.is_nan()) {
+            (true, _) => self,
+            (_, true) => other,
+            _ => core::cmp::min_by(self, other, Self::total_cmp),
+        }
+    }
 }
 macro_rules! totalorder_impl {
     ($T:ident, $I:ident, $U:ident, $bits:expr) => {
