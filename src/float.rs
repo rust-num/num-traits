@@ -2245,7 +2245,7 @@ float_const_impl! {
 /// Trait for floating point numbers that provide an implementation
 /// of the `totalOrder` predicate as defined in the IEEE 754 (2008 revision)
 /// floating point standard.
-pub trait TotalOrder: FloatCore {
+pub trait TotalOrder {
     /// Return the ordering between `self` and `other`.
     ///
     /// Unlike the standard partial comparison between floating point numbers,
@@ -2303,7 +2303,10 @@ pub trait TotalOrder: FloatCore {
     /// For this operation, -0.0 is considered to be less than +0.0 as
     /// specified in IEEE 754-2019.
     #[must_use]
-    fn maximum(self, other: Self) -> Self {
+    fn maximum(self, other: Self) -> Self
+    where
+        Self: FloatCore,
+    {
         match (self.is_nan(), other.is_nan()) {
             (true, _) => self,
             (_, true) => other,
@@ -2316,7 +2319,10 @@ pub trait TotalOrder: FloatCore {
     /// For this operation, -0.0 is considered to be less than +0.0 as
     /// specified in IEEE 754-2019.
     #[must_use]
-    fn minimum(self, other: Self) -> Self {
+    fn minimum(self, other: Self) -> Self
+    where
+        Self: FloatCore,
+    {
         match (self.is_nan(), other.is_nan()) {
             (true, _) => self,
             (_, true) => other,
