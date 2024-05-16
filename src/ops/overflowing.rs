@@ -1,12 +1,36 @@
-use core::ops::{Add, Mul, Sub};
 use core::{i128, i16, i32, i64, i8, isize};
 use core::{u128, u16, u32, u64, u8, usize};
 
 macro_rules! overflowing_impl {
     ($trait_name:ident, $method:ident, $t:ty) => {
-        impl $trait_name for $t {
+        impl $trait_name<$t> for $t {
+            type Output = $t;
             #[inline]
-            fn $method(&self, v: &Self) -> (Self, bool) {
+            fn $method(self, v: $t) -> ($t, bool) {
+                <$t>::$method(self, v)
+            }
+        }
+
+        impl $trait_name<&$t> for $t {
+            type Output = $t;
+            #[inline]
+            fn $method(self, v: &$t) -> ($t, bool) {
+                <$t>::$method(self, *v)
+            }
+        }
+
+        impl $trait_name<$t> for &$t {
+            type Output = $t;
+            #[inline]
+            fn $method(self, v: $t) -> ($t, bool) {
+                <$t>::$method(*self, v)
+            }
+        }
+
+        impl $trait_name<&$t> for &$t {
+            type Output = $t;
+            #[inline]
+            fn $method(self, v: &$t) -> ($t, bool) {
                 <$t>::$method(*self, *v)
             }
         }
@@ -14,10 +38,11 @@ macro_rules! overflowing_impl {
 }
 
 /// Performs addition with a flag for overflow.
-pub trait OverflowingAdd: Sized + Add<Self, Output = Self> {
+pub trait OverflowingAdd<Rhs = Self>: Sized {
+    type Output;
     /// Returns a tuple of the sum along with a boolean indicating whether an arithmetic overflow would occur.
     /// If an overflow would have occurred then the wrapped value is returned.
-    fn overflowing_add(&self, v: &Self) -> (Self, bool);
+    fn overflowing_add(self, v: Rhs) -> (Self::Output, bool);
 }
 
 overflowing_impl!(OverflowingAdd, overflowing_add, u8);
@@ -35,10 +60,11 @@ overflowing_impl!(OverflowingAdd, overflowing_add, isize);
 overflowing_impl!(OverflowingAdd, overflowing_add, i128);
 
 /// Performs substraction with a flag for overflow.
-pub trait OverflowingSub: Sized + Sub<Self, Output = Self> {
+pub trait OverflowingSub<Rhs = Self>: Sized {
+    type Output;
     /// Returns a tuple of the difference along with a boolean indicating whether an arithmetic overflow would occur.
     /// If an overflow would have occurred then the wrapped value is returned.
-    fn overflowing_sub(&self, v: &Self) -> (Self, bool);
+    fn overflowing_sub(self, v: Rhs) -> (Self::Output, bool);
 }
 
 overflowing_impl!(OverflowingSub, overflowing_sub, u8);
@@ -56,10 +82,11 @@ overflowing_impl!(OverflowingSub, overflowing_sub, isize);
 overflowing_impl!(OverflowingSub, overflowing_sub, i128);
 
 /// Performs multiplication with a flag for overflow.
-pub trait OverflowingMul: Sized + Mul<Self, Output = Self> {
+pub trait OverflowingMul<Rhs = Self>: Sized {
+    type Output;
     /// Returns a tuple of the product along with a boolean indicating whether an arithmetic overflow would occur.
     /// If an overflow would have occurred then the wrapped value is returned.
-    fn overflowing_mul(&self, v: &Self) -> (Self, bool);
+    fn overflowing_mul(self, v: Rhs) -> (Self::Output, bool);
 }
 
 overflowing_impl!(OverflowingMul, overflowing_mul, u8);

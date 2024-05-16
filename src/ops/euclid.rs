@@ -1,6 +1,4 @@
-use core::ops::{Div, Rem};
-
-pub trait Euclid: Sized + Div<Self, Output = Self> + Rem<Self, Output = Self> {
+pub trait Euclid: Sized {
     /// Calculates Euclidean division, the matching method for `rem_euclid`.
     ///
     /// This computes the integer `n` such that

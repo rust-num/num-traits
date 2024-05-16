@@ -9,7 +9,7 @@ pub trait CheckedAdd<Rhs = Self>: Sized {
 
 macro_rules! checked_impl {
     ($trait_name:ident, $method:ident, $t:ty) => {
-        impl $trait_name for $t {
+        impl $trait_name<$t> for $t {
             type Output = $t;
             #[inline]
             fn $method(self, v: $t) -> Option<$t> {
@@ -17,7 +17,23 @@ macro_rules! checked_impl {
             }
         }
 
-        impl $trait_name for &$t {
+        impl $trait_name<&$t> for $t {
+            type Output = $t;
+            #[inline]
+            fn $method(self, v: &$t) -> Option<$t> {
+                <$t>::$method(self, *v)
+            }
+        }
+
+        impl $trait_name<$t> for &$t {
+            type Output = $t;
+            #[inline]
+            fn $method(self, v: $t) -> Option<$t> {
+                <$t>::$method(*self, v)
+            }
+        }
+
+        impl $trait_name<&$t> for &$t {
             type Output = $t;
             #[inline]
             fn $method(self, v: &$t) -> Option<$t> {

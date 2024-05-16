@@ -21,7 +21,7 @@ macro_rules! wrapping_impl {
 }
 
 /// Performs addition that wraps around on overflow.
-pub trait WrappingAdd: Sized + Add<Self, Output = Self> {
+pub trait WrappingAdd: Sized {
     /// Wrapping (modular) addition. Computes `self + other`, wrapping around at the boundary of
     /// the type.
     fn wrapping_add(&self, v: &Self) -> Self;
@@ -42,7 +42,7 @@ wrapping_impl!(WrappingAdd, wrapping_add, isize);
 wrapping_impl!(WrappingAdd, wrapping_add, i128);
 
 /// Performs subtraction that wraps around on overflow.
-pub trait WrappingSub: Sized + Sub<Self, Output = Self> {
+pub trait WrappingSub: Sized {
     /// Wrapping (modular) subtraction. Computes `self - other`, wrapping around at the boundary
     /// of the type.
     fn wrapping_sub(&self, v: &Self) -> Self;
@@ -63,7 +63,7 @@ wrapping_impl!(WrappingSub, wrapping_sub, isize);
 wrapping_impl!(WrappingSub, wrapping_sub, i128);
 
 /// Performs multiplication that wraps around on overflow.
-pub trait WrappingMul: Sized + Mul<Self, Output = Self> {
+pub trait WrappingMul: Sized {
     /// Wrapping (modular) multiplication. Computes `self * other`, wrapping around at the boundary
     /// of the type.
     fn wrapping_mul(&self, v: &Self) -> Self;
@@ -141,7 +141,7 @@ macro_rules! wrapping_shift_impl {
 }
 
 /// Performs a left shift that does not panic.
-pub trait WrappingShl: Sized + Shl<usize, Output = Self> {
+pub trait WrappingShl: Sized {
     /// Panic-free bitwise shift-left; yields `self << mask(rhs)`,
     /// where `mask` removes any high order bits of `rhs` that would
     /// cause the shift to exceed the bitwidth of the type.
@@ -174,7 +174,7 @@ wrapping_shift_impl!(WrappingShl, wrapping_shl, isize);
 wrapping_shift_impl!(WrappingShl, wrapping_shl, i128);
 
 /// Performs a right shift that does not panic.
-pub trait WrappingShr: Sized + Shr<usize, Output = Self> {
+pub trait WrappingShr: Sized {
     /// Panic-free bitwise shift-right; yields `self >> mask(rhs)`,
     /// where `mask` removes any high order bits of `rhs` that would
     /// cause the shift to exceed the bitwidth of the type.
