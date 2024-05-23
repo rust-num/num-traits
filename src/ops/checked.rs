@@ -263,6 +263,6 @@ checked_shift_impl!(CheckedShr, checked_shr, i128);
 /// Generic trait for types implementing basic checked numeric operations.
 ///
 /// This is automatically implemented for types which implement the operators.
-pub trait CheckedNumOps: CheckedAdd + CheckedSub + CheckedMul + CheckedDiv {}
+pub trait CheckedNumOps: CheckedAdd + CheckedSub + CheckedMul + CheckedDiv + CheckedRem {}
 
-impl<T> CheckedNumOps for T where T: CheckedAdd + CheckedSub + CheckedMul + CheckedDiv {}
+impl<T> CheckedNumOps for T where T: CheckedAdd + CheckedSub + CheckedMul + CheckedDiv + CheckedRem {}
