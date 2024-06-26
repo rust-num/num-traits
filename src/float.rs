@@ -1872,10 +1872,10 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// let (mantissa, exponent, sign) = Float::integer_decode(num);
     /// let sign_f = sign as f32;
     /// let mantissa_f = mantissa as f32;
-    /// let exponent_f = num.powf(exponent as f32);
+    /// let exponent_f = exponent as f32;
     ///
     /// // 1 * 8388608 * 2^(-22) == 2
-    /// let abs_difference = (sign_f * mantissa_f * exponent_f - num).abs();
+    /// let abs_difference = (sign_f * mantissa_f * 2_f32.powf(exponent_f) - num).abs();
     ///
     /// assert!(abs_difference < 1e-10);
     /// ```
