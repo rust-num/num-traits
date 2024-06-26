@@ -1866,15 +1866,15 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// ```
     /// use num_traits::Float;
     ///
-    /// let num = 2.0f32;
+    /// let num = 42_f32;
     ///
-    /// // (8388608, -22, 1)
+    /// // (11010048, -18, 1)
     /// let (mantissa, exponent, sign) = Float::integer_decode(num);
     /// let sign_f = sign as f32;
     /// let mantissa_f = mantissa as f32;
     /// let exponent_f = exponent as f32;
     ///
-    /// // 1 * 8388608 * 2^(-22) == 2
+    /// // 1 * 11010048 * 2^(-18) == 42
     /// let abs_difference = (sign_f * mantissa_f * 2_f32.powf(exponent_f) - num).abs();
     ///
     /// assert!(abs_difference < 1e-10);
