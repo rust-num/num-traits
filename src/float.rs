@@ -4,6 +4,7 @@ use core::ops::{Add, Div, Neg};
 
 use core::f32;
 use core::f64;
+use std::println;
 
 use crate::{Num, NumCast, ToPrimitive};
 
@@ -2050,37 +2051,66 @@ macro_rules! float_impl_libm {
     };
 }
 
-fn integer_decode_f32(f: f32) -> (u64, i16, i8) {
-    let bits: u32 = f.to_bits();
-    let sign: i8 = if bits >> 31 == 0 { 1 } else { -1 };
-    let mut exponent: i16 = ((bits >> 23) & 0xff) as i16;
-    let mantissa = if exponent == 0 {
-        // Zeros and subnormals
-        (bits & 0x7fffff) << 1
-    } else {
-        // Normals, infinities, and NaN
-        (bits & 0x7fffff) | 0x800000
+macro_rules! integer_decode {
+    (
+        $func_name:ident,
+        $T:ty,
+        $sign_bit_index:expr,
+        $fraction_bits_start_index:expr,
+        $postshift_mask:expr,
+        $fraction_bits_mask:expr,
+        $exponent_trailing_bit_mask:expr,
+        $exponent_bias:expr
+    ) => {
+        fn $func_name(f: $T) -> (u64, i16, i8) {
+            println!("            sign_bit_index: {}", $sign_bit_index);
+            println!(" fraction_bits_start_index: {}", $fraction_bits_start_index);
+            println!("            postshift_mask: {:064b}", $postshift_mask);
+            println!("        fraction_bits_mask: {:064b}", $fraction_bits_mask);
+            println!("exponent_trailing_bit_mask: {:064b}", $exponent_trailing_bit_mask);
+            println!("             exponent_bias: {}", $exponent_bias);
+
+            let bits = f.to_bits();
+            println!("                      bits: {:064b}", bits);
+
+            let sign: i8 = if bits >> $sign_bit_index == 0 { 1 } else { -1 };
+            let mantissa = if f == 0 as $T {
+                // Zeros and subnormals
+                (bits & $fraction_bits_mask) << 1
+            } else {
+                // Normals, infinities, and NaN
+                (bits & $fraction_bits_mask) | $exponent_trailing_bit_mask
+            };
+
+            let mut exponent: i16 = (bits >> $fraction_bits_start_index & $postshift_mask) as i16;
+            exponent -= $exponent_bias + $fraction_bits_start_index;
+
+            (mantissa as u64, exponent, sign)
+        }
     };
-    // Exponent bias + mantissa shift
-    exponent -= 127 + 23;
-    (mantissa as u64, exponent, sign)
 }
 
-fn integer_decode_f64(f: f64) -> (u64, i16, i8) {
-    let bits: u64 = f.to_bits();
-    let sign: i8 = if bits >> 63 == 0 { 1 } else { -1 };
-    let mut exponent: i16 = ((bits >> 52) & 0x7ff) as i16;
-    let mantissa = if exponent == 0 {
-        // Zeros and subnormals
-        (bits & 0xfffffffffffff) << 1
-    } else {
-        // Normals, infinities, and NaN
-        (bits & 0xfffffffffffff) | 0x10000000000000
-    };
-    // Exponent bias + mantissa shift
-    exponent -= 1023 + 52;
-    (mantissa, exponent, sign)
-}
+integer_decode!(
+    integer_decode_f32,
+    f32,
+    31,
+    23,
+    0xff,
+    0x7fffff,
+    0x800000,
+    127
+);
+
+integer_decode!(
+    integer_decode_f64,
+    f64,
+    63,
+    52,
+    0x7ff,
+    0xfffffffffffff_u64,
+    0x10000000000000_u64,
+    1023
+);
 
 #[cfg(feature = "std")]
 float_impl_std!(f32 integer_decode_f32);
