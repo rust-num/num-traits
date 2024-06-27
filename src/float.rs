@@ -1875,7 +1875,7 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// let exponent_f = exponent as f32;
     ///
     /// // 1 * 11010048 * 2^(-18) == 42
-    /// let abs_difference = (sign_f * mantissa_f * 2_f32.powf(exponent_f) - num).abs();
+    /// let abs_difference = (sign_f * mantissa_f * exponent_f.exp2() - num).abs();
     ///
     /// assert!(abs_difference < 1e-10);
     /// ```
