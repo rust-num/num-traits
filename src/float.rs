@@ -2053,29 +2053,29 @@ macro_rules! float_impl_libm {
 macro_rules! integer_decode {
     (
         $func_name:ident,
-        $T:ty,
-        $sign_bit_index:expr,
-        $fraction_bits_start_index:expr,
-        $postshift_mask:expr,
+        $F:ty,
+        $size:literal,
+        $fraction_size:literal,
+        $exponent_bias:literal,
         $fraction_bits_mask:expr,
-        $exponent_trailing_bit_mask:expr,
-        $exponent_bias:expr
+        $exponent_least_signifigant_bit_mask:expr,
+        $postshift_exponent_bits_mask:expr
     ) => {
-        fn $func_name(f: $T) -> (u64, i16, i8) {
+        fn $func_name(f: $F) -> (u64, i16, i8) {
             let bits = f.to_bits();
 
-            let sign: i8 = if bits >> $sign_bit_index == 0 { 1 } else { -1 };
+            let sign: i8 = if bits >> $size - 1 == 0 { 1 } else { -1 };
 
-            let mantissa = if f == 0 as $T {
+            let mantissa = if f == 0 as $F {
                 // Zeros and subnormals
                 (bits & $fraction_bits_mask) << 1
             } else {
                 // Normals, infinities, and NaN
-                (bits & $fraction_bits_mask) | $exponent_trailing_bit_mask
+                (bits & $fraction_bits_mask) | $exponent_least_signifigant_bit_mask
             };
 
-            let mut exponent: i16 = (bits >> $fraction_bits_start_index & $postshift_mask) as i16;
-            exponent -= $exponent_bias + $fraction_bits_start_index;
+            let mut exponent: i16 = (bits >> $fraction_size & $postshift_exponent_bits_mask) as i16;
+            exponent -= $exponent_bias + $fraction_size;
 
             (mantissa as u64, exponent, sign)
         }
@@ -2085,23 +2085,23 @@ macro_rules! integer_decode {
 integer_decode!(
     integer_decode_f32,
     f32,
-    31,
+    32,
     23,
-    0xff,
-    0x7fffff,
-    0x800000,
-    127
+    127,
+    0b0000_0000_0111_1111_1111_1111_1111_1111,
+    0b0000_0000_1000_0000_0000_0000_0000_0000,
+    0b0000_0000_0000_0000_0000_0000_1111_1111
 );
 
 integer_decode!(
     integer_decode_f64,
     f64,
-    63,
+    64,
     52,
-    0x7ff,
-    0xfffffffffffff_u64,
-    0x10000000000000_u64,
-    1023
+    1023,
+    0b0000_0000_0000_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111,
+    0b0000_0000_0001_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000,
+    0b0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0111_1111_1111
 );
 
 #[cfg(feature = "std")]
