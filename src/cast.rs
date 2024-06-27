@@ -768,3 +768,111 @@ impl_as_primitive!(f32 => { f32, f64 });
 impl_as_primitive!(f64 => { f32, f64 });
 impl_as_primitive!(char => { char });
 impl_as_primitive!(bool => {});
+
+/// Generic trait for types implementing (possibly narrowing or wrapping)
+/// conversions to the primitive integer types.
+///
+/// This is automatically implemented for types that implement `AsPrimitive<T>`
+/// for all primitive integer types `T`.
+pub trait AsPrimInt: 'static + Copy {
+    /// Converts `self` to an `i8` using the `as` operator.
+    fn as_i8(self) -> i8;
+
+    /// Converts `self` to an `i16` using the `as` operator.
+    fn as_i16(self) -> i16;
+
+    /// Converts `self` to an `i32` using the `as` operator.
+    fn as_i32(self) -> i32;
+
+    /// Converts `self` to an `i64` using the `as` operator.
+    fn as_i64(self) -> i64;
+
+    /// Converts `self` to an `i128` using the `as` operator.
+    fn as_i128(self) -> i128;
+
+    /// Converts `self` to an `isize` using the `as` operator.
+    fn as_isize(self) -> isize;
+
+    /// Converts `self` to a `u8` using the `as` operator.
+    fn as_u8(self) -> u8;
+
+    /// Converts `self` to a `u16` using the `as` operator.
+    fn as_u16(self) -> u16;
+
+    /// Converts `self` to a `u32` using the `as` operator.
+    fn as_u32(self) -> u32;
+
+    /// Converts `self` to a `u64` using the `as` operator.
+    fn as_u64(self) -> u64;
+
+    /// Converts `self` to a `u128` using the `as` operator.
+    fn as_u128(self) -> u128;
+
+    /// Converts `self` to a `usize` using the `as` operator.
+    fn as_usize(self) -> usize;
+}
+
+impl<T> AsPrimInt for T
+where
+    T: AsPrimitive<i8>
+        + AsPrimitive<i16>
+        + AsPrimitive<i32>
+        + AsPrimitive<i64>
+        + AsPrimitive<i128>
+        + AsPrimitive<isize>
+        + AsPrimitive<u8>
+        + AsPrimitive<u16>
+        + AsPrimitive<u32>
+        + AsPrimitive<u64>
+        + AsPrimitive<u128>
+        + AsPrimitive<usize>,
+{
+    #[inline]
+    fn as_i8(self) -> i8 {
+        self.as_()
+    }
+    #[inline]
+    fn as_i16(self) -> i16 {
+        self.as_()
+    }
+    #[inline]
+    fn as_i32(self) -> i32 {
+        self.as_()
+    }
+    #[inline]
+    fn as_i64(self) -> i64 {
+        self.as_()
+    }
+    #[inline]
+    fn as_i128(self) -> i128 {
+        self.as_()
+    }
+    #[inline]
+    fn as_isize(self) -> isize {
+        self.as_()
+    }
+    #[inline]
+    fn as_u8(self) -> u8 {
+        self.as_()
+    }
+    #[inline]
+    fn as_u16(self) -> u16 {
+        self.as_()
+    }
+    #[inline]
+    fn as_u32(self) -> u32 {
+        self.as_()
+    }
+    #[inline]
+    fn as_u64(self) -> u64 {
+        self.as_()
+    }
+    #[inline]
+    fn as_u128(self) -> u128 {
+        self.as_()
+    }
+    #[inline]
+    fn as_usize(self) -> usize {
+        self.as_()
+    }
+}
