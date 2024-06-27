@@ -4,7 +4,6 @@ use core::ops::{Add, Div, Neg};
 
 use core::f32;
 use core::f64;
-use std::println;
 
 use crate::{Num, NumCast, ToPrimitive};
 
@@ -2063,17 +2062,10 @@ macro_rules! integer_decode {
         $exponent_bias:expr
     ) => {
         fn $func_name(f: $T) -> (u64, i16, i8) {
-            println!("            sign_bit_index: {}", $sign_bit_index);
-            println!(" fraction_bits_start_index: {}", $fraction_bits_start_index);
-            println!("            postshift_mask: {:064b}", $postshift_mask);
-            println!("        fraction_bits_mask: {:064b}", $fraction_bits_mask);
-            println!("exponent_trailing_bit_mask: {:064b}", $exponent_trailing_bit_mask);
-            println!("             exponent_bias: {}", $exponent_bias);
-
             let bits = f.to_bits();
-            println!("                      bits: {:064b}", bits);
 
             let sign: i8 = if bits >> $sign_bit_index == 0 { 1 } else { -1 };
+
             let mantissa = if f == 0 as $T {
                 // Zeros and subnormals
                 (bits & $fraction_bits_mask) << 1
