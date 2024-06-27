@@ -2397,6 +2397,99 @@ mod tests {
         check::<f64>(1e-12);
     }
 
+    /// Test the behavior of `Float::integer_decode` with the `given` input and `expected` output values.
+    #[cfg(any(feature = "std", feature = "libm"))]
+    fn test_integer_decode<T>(given: T, expected: (u64, i16, i8))
+    where
+        T: crate::float::Float + core::fmt::LowerExp + core::fmt::Debug,
+    {
+        use crate::float::Float;
+
+        let found = Float::integer_decode(given);
+
+        assert!(
+            expected == found,
+            "unexpected output of `Float::integer_decode({0:e})`
+\texpected: ({1:#x} {2} {3})
+\t   found: {4:#x} {5} {6}",
+            given,
+            expected.0,
+            expected.1,
+            expected.2,
+            found.0,
+            found.1,
+            found.2
+        );
+
+        // Destructure the `found` output and cast values as float.
+        let mantissa_f = T::from(found.0).unwrap();
+        let exponent_f = T::from(found.1).unwrap();
+        let sign_f = T::from(found.2).unwrap();
+
+        // Recover the `given` input using equation: sign * mantissa * 2^exponent.
+        let recovered = sign_f * mantissa_f * exponent_f.exp2();
+        let deviation = recovered - given;
+        let tolerance = T::from(1e-6).unwrap();
+
+        assert_eq!(T::one(), tolerance.signum(), "tolerance must be positive");
+        assert!(
+            recovered == given || deviation.abs() < tolerance,
+            "absolute deviation must not exceed tolerance`
+\t    given:  {:+e}
+\trecovered:  {:+e}
+\tdeviation:  {:+e}
+\ttolerance: <{:e}",
+            given,
+            recovered,
+            deviation,
+            tolerance
+        );
+    }
+
+    #[test]
+    #[cfg(any(feature = "std", feature = "libm"))]
+    fn integer_decode_f32() {
+        for sign in [1, -1] {
+            let sign_f = sign as f32;
+            test_integer_decode(sign_f * 0.0__f32, (0x000000, -150, sign));
+            test_integer_decode(sign_f * f32::MIN_POSITIVE, (0x800000, -149, sign));
+            test_integer_decode(sign_f * 0.25_f32, (0x800000, -25, sign));
+            test_integer_decode(sign_f * 0.5__f32, (0x800000, -24, sign));
+            test_integer_decode(sign_f * 1____f32, (0x800000, -23, sign));
+            test_integer_decode(sign_f * 1.5__f32, (0xc00000, -23, sign));
+            test_integer_decode(sign_f * 2____f32, (0x800000, -22, sign));
+            test_integer_decode(sign_f * 2.5__f32, (0xa00000, -22, sign));
+            test_integer_decode(sign_f * 3____f32, (0xc00000, -22, sign));
+            test_integer_decode(sign_f * 4____f32, (0x800000, -21, sign));
+            test_integer_decode(sign_f * 5____f32, (0xa00000, -21, sign));
+            test_integer_decode(sign_f * 42___f32, (0xa80000, -18, sign));
+            test_integer_decode(sign_f * f32::MAX, (0xffffff, 104, sign));
+            test_integer_decode(sign_f * f32::INFINITY, (0x800000, 105, sign));
+        }
+    }
+
+    #[test]
+    #[cfg(any(feature = "std", feature = "libm"))]
+    fn integer_decode_f64() {
+        for sign in [1, -1] {
+            let sign_f = sign as f64;
+            test_integer_decode(sign_f * 0.0__f64, (0x00000000000000, -1075, sign));
+            test_integer_decode(sign_f * f64::MIN_POSITIVE, (0x10000000000000, -1074, sign));
+            test_integer_decode(sign_f * 0.25_f64, (0x10000000000000, -54, sign));
+            test_integer_decode(sign_f * 0.5__f64, (0x10000000000000, -53, sign));
+            test_integer_decode(sign_f * 1____f64, (0x10000000000000, -52, sign));
+            test_integer_decode(sign_f * 1.5__f64, (0x18000000000000, -52, sign));
+            test_integer_decode(sign_f * 2____f64, (0x10000000000000, -51, sign));
+            test_integer_decode(sign_f * 2.5__f64, (0x14000000000000, -51, sign));
+            test_integer_decode(sign_f * 3____f64, (0x18000000000000, -51, sign));
+            test_integer_decode(sign_f * 4____f64, (0x10000000000000, -50, sign));
+            test_integer_decode(sign_f * 5____f64, (0x14000000000000, -50, sign));
+            test_integer_decode(sign_f * 42___f64, (0x15000000000000, -47, sign));
+            test_integer_decode(sign_f * f64::MAX, (0x1fffffffffffff, 971, sign));
+            test_integer_decode(sign_f * f64::INFINITY, (0x10000000000000, 972, sign));
+        }
+    }
+
     #[test]
     #[cfg(any(feature = "std", feature = "libm"))]
     fn copysign() {
