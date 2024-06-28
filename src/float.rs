@@ -2470,8 +2470,6 @@ mod tests {
             test_integer_decode(sign_f * f32::MAX, (0xffffff, 104, sign));
             test_integer_decode(sign_f * f32::INFINITY, (0x800000, 105, sign));
         }
-        // FIXME: Unclear if we should be able to recover NaN inputs
-        // test_integer_decode(f32::NAN, (0xc00000, 105, 1));
     }
 
     #[test]
@@ -2494,8 +2492,6 @@ mod tests {
             test_integer_decode(sign_f * f64::MAX, (0x1fffffffffffff, 971, sign));
             test_integer_decode(sign_f * f64::INFINITY, (0x10000000000000, 972, sign));
         }
-        // FIXME: Unclear if we should be able to recover NaN inputs
-        // test_integer_decode(f64::NAN, (0x18000000000000, 972, 1));
     }
 
     #[test]
