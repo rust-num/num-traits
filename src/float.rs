@@ -730,10 +730,10 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
             exp = exp.wrapping_neg();
             self = self.recip();
         }
-        // It should always be possible to convert a positive `i32` to a `usize`.
+        // It should always be possible to convert a positive `i32` to a `u32`.
         // Note, `i32::MIN` will wrap and still be negative, so we need to convert
-        // to `u32` without sign-extension before growing to `usize`.
-        super::pow(self, (exp as u32).to_usize().unwrap())
+        // to `u32` without sign-extension.
+        super::pow(self, exp as u32)
     }
 
     /// Converts to degrees, assuming the number is in radians.
