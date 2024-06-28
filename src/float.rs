@@ -2456,6 +2456,7 @@ mod tests {
         for sign in [1, -1] {
             let sign_f = sign as f32;
             test_integer_decode(sign_f * 0.0__f32, (0x000000, -150, sign));
+            test_integer_decode(sign_f * 1.0e-40_f32, (0x022d84, -150, sign)); // subnormal (between 0 and MIN_POSITIVE)
             test_integer_decode(sign_f * f32::MIN_POSITIVE, (0x800000, -149, sign));
             test_integer_decode(sign_f * 0.25_f32, (0x800000, -25, sign));
             test_integer_decode(sign_f * 0.5__f32, (0x800000, -24, sign));
@@ -2478,6 +2479,7 @@ mod tests {
         for sign in [1, -1] {
             let sign_f = sign as f64;
             test_integer_decode(sign_f * 0.0__f64, (0x00000000000000, -1075, sign));
+            test_integer_decode(sign_f * 1.0e-308_f64, (0x0e61acf033d1a4, -1075, sign)); // subnormal (between 0 and MIN_POSITIVE)
             test_integer_decode(sign_f * f64::MIN_POSITIVE, (0x10000000000000, -1074, sign));
             test_integer_decode(sign_f * 0.25_f64, (0x10000000000000, -54, sign));
             test_integer_decode(sign_f * 0.5__f64, (0x10000000000000, -53, sign));
