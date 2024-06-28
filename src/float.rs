@@ -2066,7 +2066,9 @@ macro_rules! integer_decode {
 
             let sign: i8 = if bits >> $size - 1 == 0 { 1 } else { -1 };
 
-            let mantissa = if f == 0 as $F {
+            let mut exponent: i16 = (bits >> $fraction_size & $postshift_exponent_bits_mask) as i16;
+
+            let mantissa = if exponent == 0 {
                 // Zeros and subnormals
                 (bits & $fraction_bits_mask) << 1
             } else {
@@ -2074,7 +2076,6 @@ macro_rules! integer_decode {
                 (bits & $fraction_bits_mask) | $exponent_least_signifigant_bit_mask
             };
 
-            let mut exponent: i16 = (bits >> $fraction_size & $postshift_exponent_bits_mask) as i16;
             exponent -= $exponent_bias + $fraction_size;
 
             (mantissa as u64, exponent, sign)
