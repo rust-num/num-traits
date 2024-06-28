@@ -2411,7 +2411,7 @@ mod tests {
             expected == found,
             "unexpected output of `Float::integer_decode({0:e})`
 \texpected: ({1:#x} {2} {3})
-\t   found: {4:#x} {5} {6}",
+\t   found: ({4:#x} {5} {6})",
             given,
             expected.0,
             expected.1,
