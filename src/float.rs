@@ -2055,8 +2055,10 @@ fn integer_decode_f32(f: f32) -> (u64, i16, i8) {
     let sign: i8 = if bits >> 31 == 0 { 1 } else { -1 };
     let mut exponent: i16 = ((bits >> 23) & 0xff) as i16;
     let mantissa = if exponent == 0 {
+        // Zeros and subnormals
         (bits & 0x7fffff) << 1
     } else {
+        // Normals, infinities, and NaN
         (bits & 0x7fffff) | 0x800000
     };
     // Exponent bias + mantissa shift
@@ -2069,8 +2071,10 @@ fn integer_decode_f64(f: f64) -> (u64, i16, i8) {
     let sign: i8 = if bits >> 63 == 0 { 1 } else { -1 };
     let mut exponent: i16 = ((bits >> 52) & 0x7ff) as i16;
     let mantissa = if exponent == 0 {
+        // Zeros and subnormals
         (bits & 0xfffffffffffff) << 1
     } else {
+        // Normals, infinities, and NaN
         (bits & 0xfffffffffffff) | 0x10000000000000
     };
     // Exponent bias + mantissa shift
