@@ -775,7 +775,9 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     fn to_radians(self) -> Self;
 
     /// Returns the mantissa, base 2 exponent, and sign as integers, respectively.
+    ///
     /// The original number can be recovered by `sign * mantissa * 2 ^ exponent`.
+    /// This formula only works for zero, normal, and infinite numbers (per `classify()`)
     ///
     /// # Examples
     ///
@@ -1861,7 +1863,9 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     fn atanh(self) -> Self;
 
     /// Returns the mantissa, base 2 exponent, and sign as integers, respectively.
+    ///
     /// The original number can be recovered by `sign * mantissa * 2 ^ exponent`.
+    /// This formula only works for zero, normal, and infinite numbers (per `classify()`)
     ///
     /// ```
     /// use num_traits::Float;
