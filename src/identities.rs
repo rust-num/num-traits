@@ -171,6 +171,44 @@ pub trait Two: One {
     }
 }
 
+/// Defines half the multiplicative identity element for `Self`.
+///
+/// # Laws
+///
+/// ```text
+/// (2 * a) * 1/2 = a      ∀ a ∈ Self
+/// 1/2 * (2 * a) = a      ∀ a ∈ Self
+/// ```
+pub trait OneHalf: One + Two {
+    /// Returns half of the multiplicative identity element of `Self`, `1/2`.
+    ///
+    /// # Purity
+    ///
+    /// This function should return the same result at all times regardless of
+    /// external mutable state, for example values stored in TLS or in
+    /// `static mut`s.
+    // This cannot be an associated constant, because of bignums.
+    fn one_half() -> Self;
+
+    /// Sets `self` to twice the multiplicative identity element of `Self`, `2`.
+    fn set_one_half(&mut self) {
+        *self = OneHalf::one_half();
+    }
+
+    /// Returns `true` if `self` is equal to twice the multiplicative identity.
+    ///
+    /// For performance reasons, it's best to implement this manually.
+    /// After a semver bump, this method will be required, and the
+    /// `where Self: PartialEq` bound will be removed.
+    #[inline]
+    fn is_one_half(&self) -> bool
+    where
+        Self: PartialEq,
+    {
+        *self == Self::one_half()
+    }
+}
+
 /// Defines an associated constant representing the multiplicative identity
 /// element for `Self`.
 pub trait ConstOne: One {
@@ -183,6 +221,13 @@ pub trait ConstOne: One {
 pub trait ConstTwo: Two {
     /// Twice the multiplicative identity element of `Self`, `2`.
     const TWO: Self;
+}
+
+/// Defines an associated constant representing half the multiplicative identity
+/// element for `Self`.
+pub trait ConstOneHalf: OneHalf {
+    /// Twice the multiplicative identity element of `Self`, `1/2`.
+    const ONE_HALF: Self;
 }
 
 macro_rules! one_two_impl {
@@ -219,6 +264,25 @@ macro_rules! one_two_impl {
     };
 }
 
+macro_rules! one_half_impl {
+    ($t:ty, $v:expr) => {
+        impl OneHalf for $t {
+            #[inline]
+            fn one_half() -> $t {
+                $v
+            }
+            #[inline]
+            fn is_one_half(&self) -> bool {
+                *self == $v
+            }
+        }
+
+        impl ConstOneHalf for $t {
+            const ONE_HALF: Self = $v;
+        }
+    };
+}
+
 one_two_impl!(usize, 1, 2);
 one_two_impl!(u8, 1, 2);
 one_two_impl!(u16, 1, 2);
@@ -235,6 +299,9 @@ one_two_impl!(i128, 1, 2);
 
 one_two_impl!(f32, 1.0, 2.0);
 one_two_impl!(f64, 1.0, 2.0);
+
+one_half_impl!(f32, 0.5);
+one_half_impl!(f64, 0.5);
 
 impl<T: One> One for Wrapping<T>
 where
