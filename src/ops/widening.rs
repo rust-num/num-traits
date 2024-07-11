@@ -62,6 +62,7 @@ pub trait WideningMul<Rhs = Self>: Sized {
     fn widening_mul(self, rhs: Rhs) -> (Self::Output, Self::Output);
 }
 
+// Implement widening multiplication for all primitive types
 widening_impl!(u8, u16, test_u8_wrapping);
 widening_impl!(u16, u32, test_u16_wrapping);
 widening_impl!(u32, u64, test_u32_wrapping);
@@ -75,3 +76,34 @@ widening_impl!(usize, u64, test_usize_wrapping);
 
 #[cfg(target_pointer_width = "64")]
 widening_impl!(usize, u128, test_usize_wrapping);
+
+
+// Implement widening multiplication for u64,
+// required while feature(bigint_helper_methods) is not stable.
+#[allow(clippy::cast_possible_truncation)]
+#[inline]
+const fn carrying_mul(a: u64, rhs: u64, carry: u64) -> (u64, u64) {
+    // SAFETY: overflow will be contained within the wider types
+    let wide = (a as u128).wrapping_mul(rhs as u128).wrapping_add(carry as u128);
+    (wide as u64, (wide >> u64::BITS) as u64)
+}
+
+impl WideningMul<Self> for u128 {
+    type Output = Self;
+
+    #[allow(clippy::cast_possible_truncation, clippy::similar_names, clippy::cast_lossless)]
+    #[inline]
+    fn widening_mul(self, rhs: Self) -> (Self::Output, Self::Output) {
+        let a = (self >> 64) as u64;
+        let b = self as u64;
+        let c = (rhs >> 64) as u64;
+        let d = rhs as u64;
+        let (p1, p2) = WideningMul::widening_mul(b, d);
+        let (p2, p31) = carrying_mul(b, c, p2);
+        let (p2, p32) = carrying_mul(a, d, p2);
+        let (p3, p4_overflow) = p31.overflowing_add(p32);
+        let (p3, p4) = carrying_mul(a, c, p3);
+        let p4 = p4.wrapping_add(p4_overflow as u64);
+        ((p1 as Self) | (p2 as Self) << 64, (p3 as Self) | (p4 as Self) << 64)
+    }
+}
