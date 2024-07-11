@@ -69,7 +69,7 @@ widening_impl!(u32, u64, test_u32_widening_mul);
 widening_impl!(u64, u128, test_u64_widening_mul);
 
 #[cfg(target_pointer_width = "16")]
-widening_impl!(usize, u16, test_usize_widening_mul);
+widening_impl!(usize, u32, test_usize_widening_mul);
 
 #[cfg(target_pointer_width = "32")]
 widening_impl!(usize, u64, test_usize_widening_mul);
