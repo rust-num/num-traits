@@ -63,30 +63,19 @@ pub trait WideningMul<Rhs = Self>: Sized {
 }
 
 // Implement widening multiplication for all primitive types
-widening_impl!(u8, u16, test_u8_wrapping);
-widening_impl!(u16, u32, test_u16_wrapping);
-widening_impl!(u32, u64, test_u32_wrapping);
-widening_impl!(u64, u128, test_u64_wrapping);
+widening_impl!(u8, u16, test_u8_widening_mul);
+widening_impl!(u16, u32, test_u16_widening_mul);
+widening_impl!(u32, u64, test_u32_widening_mul);
+widening_impl!(u64, u128, test_u64_widening_mul);
 
 #[cfg(target_pointer_width = "16")]
-widening_impl!(usize, u16, test_usize_wrapping);
+widening_impl!(usize, u16, test_usize_widening_mul);
 
 #[cfg(target_pointer_width = "32")]
-widening_impl!(usize, u64, test_usize_wrapping);
+widening_impl!(usize, u64, test_usize_widening_mul);
 
 #[cfg(target_pointer_width = "64")]
-widening_impl!(usize, u128, test_usize_wrapping);
-
-
-// Implement widening multiplication for u64,
-// required while feature(bigint_helper_methods) is not stable.
-#[allow(clippy::cast_possible_truncation)]
-#[inline]
-const fn carrying_mul(a: u64, rhs: u64, carry: u64) -> (u64, u64) {
-    // SAFETY: overflow will be contained within the wider types
-    let wide = (a as u128).wrapping_mul(rhs as u128).wrapping_add(carry as u128);
-    (wide as u64, (wide >> u64::BITS) as u64)
-}
+widening_impl!(usize, u128, test_usize_widening_mul);
 
 impl WideningMul<Self> for u128 {
     type Output = Self;
@@ -94,6 +83,14 @@ impl WideningMul<Self> for u128 {
     #[allow(clippy::cast_possible_truncation, clippy::similar_names, clippy::cast_lossless)]
     #[inline]
     fn widening_mul(self, rhs: Self) -> (Self::Output, Self::Output) {
+        #[inline]
+        // Carrying multiplication for u64, computes: lhs * rhs + carry
+        const fn carrying_mul(lhs: u64, rhs: u64, carry: u64) -> (u64, u64) {
+            // SAFETY: overflow will be contained within the wider types
+            let wide = (lhs as u128).wrapping_mul(rhs as u128).wrapping_add(carry as u128);
+            (wide as u64, (wide >> u64::BITS) as u64)
+        }
+
         let a = (self >> 64) as u64;
         let b = self as u64;
         let c = (rhs >> 64) as u64;
@@ -106,4 +103,15 @@ impl WideningMul<Self> for u128 {
         let p4 = p4.wrapping_add(p4_overflow as u64);
         ((p1 as Self) | (p2 as Self) << 64, (p3 as Self) | (p4 as Self) << 64)
     }
+}
+
+#[test]
+fn test_u128_widening_mul() {
+    fn widening_mul<T: WideningMul<Output = T>>(a: T, b: T) -> (T, T) {
+        a.widening_mul(b)
+    }
+    assert_eq!(widening_mul(0u128, 0u128), (0, 0));
+    assert_eq!(widening_mul(u128::MAX, 1), (u128::MAX, 0));
+    assert_eq!(widening_mul(u128::MAX, 2), (u128::MAX - 1, 1));
+    assert_eq!(widening_mul(u128::MAX, u128::MAX), (1, u128::MAX - 1));
 }
