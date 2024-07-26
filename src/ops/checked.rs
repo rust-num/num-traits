@@ -1,7 +1,6 @@
 use core::ops::{Add, Div, Mul, Rem, Shl, Shr, Sub};
 
-/// Performs addition that returns `None` instead of wrapping around on
-/// overflow.
+/// Performs addition, returning `None` if overflow occurred.
 pub trait CheckedAdd: Sized + Add<Self, Output = Self> {
     /// Adds two numbers, checking for overflow. If overflow happens, `None` is
     /// returned.
@@ -33,7 +32,7 @@ checked_impl!(CheckedAdd, checked_add, i64);
 checked_impl!(CheckedAdd, checked_add, isize);
 checked_impl!(CheckedAdd, checked_add, i128);
 
-/// Performs subtraction that returns `None` instead of wrapping around on underflow.
+/// Performs subtraction, returning `None` if underflow occurred.
 pub trait CheckedSub: Sized + Sub<Self, Output = Self> {
     /// Subtracts two numbers, checking for underflow. If underflow happens,
     /// `None` is returned.
@@ -54,8 +53,8 @@ checked_impl!(CheckedSub, checked_sub, i64);
 checked_impl!(CheckedSub, checked_sub, isize);
 checked_impl!(CheckedSub, checked_sub, i128);
 
-/// Performs multiplication that returns `None` instead of wrapping around on underflow or
-/// overflow.
+/// Performs multiplication, returning `None` if underflow or overflow
+/// occurred.
 pub trait CheckedMul: Sized + Mul<Self, Output = Self> {
     /// Multiplies two numbers, checking for underflow or overflow. If underflow
     /// or overflow happens, `None` is returned.
@@ -76,8 +75,8 @@ checked_impl!(CheckedMul, checked_mul, i64);
 checked_impl!(CheckedMul, checked_mul, isize);
 checked_impl!(CheckedMul, checked_mul, i128);
 
-/// Performs division that returns `None` instead of panicking on division by zero and instead of
-/// wrapping around on underflow and overflow.
+/// Performs division, returning `None` on division by zero or if underflow or
+/// overflow occurred.
 pub trait CheckedDiv: Sized + Div<Self, Output = Self> {
     /// Divides two numbers, checking for underflow, overflow and division by
     /// zero. If any of that happens, `None` is returned.
@@ -98,8 +97,8 @@ checked_impl!(CheckedDiv, checked_div, i64);
 checked_impl!(CheckedDiv, checked_div, isize);
 checked_impl!(CheckedDiv, checked_div, i128);
 
-/// Performs an integral remainder that returns `None` instead of panicking on division by zero and
-/// instead of wrapping around on underflow and overflow.
+/// Performs integral remainder, returning `None` on division by zero or if
+/// underflow or overflow occurred.
 pub trait CheckedRem: Sized + Rem<Self, Output = Self> {
     /// Finds the remainder of dividing two numbers, checking for underflow, overflow and division
     /// by zero. If any of that happens, `None` is returned.
@@ -148,7 +147,7 @@ macro_rules! checked_impl_unary {
     };
 }
 
-/// Performs negation that returns `None` if the result can't be represented.
+/// Performs negation, returning `None` if the result can't be represented.
 pub trait CheckedNeg: Sized {
     /// Negates a number, returning `None` for results that can't be represented, like signed `MIN`
     /// values that can't be positive, or non-zero unsigned values that can't be negative.
@@ -183,8 +182,8 @@ checked_impl_unary!(CheckedNeg, checked_neg, i64);
 checked_impl_unary!(CheckedNeg, checked_neg, isize);
 checked_impl_unary!(CheckedNeg, checked_neg, i128);
 
-/// Performs a left shift that returns `None` on shifts larger than
-/// or equal to the type width.
+/// Performs shift left, returning `None` on shifts larger than or equal to
+/// the type width.
 pub trait CheckedShl: Sized + Shl<u32, Output = Self> {
     /// Checked shift left. Computes `self << rhs`, returning `None`
     /// if `rhs` is larger than or equal to the number of bits in `self`.
@@ -227,8 +226,8 @@ checked_shift_impl!(CheckedShl, checked_shl, i64);
 checked_shift_impl!(CheckedShl, checked_shl, isize);
 checked_shift_impl!(CheckedShl, checked_shl, i128);
 
-/// Performs a right shift that returns `None` on shifts larger than
-/// or equal to the type width.
+/// Performs shift right, returning `None` on shifts larger than or equal to
+/// the type width.
 pub trait CheckedShr: Sized + Shr<u32, Output = Self> {
     /// Checked shift right. Computes `self >> rhs`, returning `None`
     /// if `rhs` is larger than or equal to the number of bits in `self`.
