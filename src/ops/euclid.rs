@@ -136,15 +136,16 @@ impl Euclid for f64 {
 }
 
 pub trait CheckedEuclid: Euclid {
-    /// Performs euclid division that returns `None` instead of panicking on division by zero
-    /// and instead of wrapping around on underflow and overflow.
+    /// Performs euclid division, returning `None` on division by zero or if
+    /// overflow occurred.
     fn checked_div_euclid(&self, v: &Self) -> Option<Self>;
 
-    /// Finds the euclid remainder of dividing two numbers, checking for underflow, overflow and
-    /// division by zero. If any of that happens, `None` is returned.
+    /// Finds the euclid remainder of dividing two numbers, returning `None` on
+    /// division by zero or if overflow occurred.
     fn checked_rem_euclid(&self, v: &Self) -> Option<Self>;
 
-    /// Returns both the quotient and remainder from checked Euclidean division.
+    /// Returns both the quotient and remainder from checked Euclidean division,
+    /// returning `None` on division by zero or if overflow occurred.
     ///
     /// By default, it internally calls both `CheckedEuclid::checked_div_euclid` and `CheckedEuclid::checked_rem_euclid`,
     /// but it can be overridden in order to implement some optimization.
