@@ -775,7 +775,9 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     fn to_radians(self) -> Self;
 
     /// Returns the mantissa, base 2 exponent, and sign as integers, respectively.
+    ///
     /// The original number can be recovered by `sign * mantissa * 2 ^ exponent`.
+    /// This formula only works for zero, normal, and infinite numbers (per `classify()`)
     ///
     /// # Examples
     ///
@@ -1861,7 +1863,9 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     fn atanh(self) -> Self;
 
     /// Returns the mantissa, base 2 exponent, and sign as integers, respectively.
+    ///
     /// The original number can be recovered by `sign * mantissa * 2 ^ exponent`.
+    /// This formula only works for zero, normal, and infinite numbers (per `classify()`)
     ///
     /// ```
     /// use num_traits::Float;
@@ -2046,33 +2050,60 @@ macro_rules! float_impl_libm {
     };
 }
 
-fn integer_decode_f32(f: f32) -> (u64, i16, i8) {
-    let bits: u32 = f.to_bits();
-    let sign: i8 = if bits >> 31 == 0 { 1 } else { -1 };
-    let mut exponent: i16 = ((bits >> 23) & 0xff) as i16;
-    let mantissa = if exponent == 0 {
-        (bits & 0x7fffff) << 1
-    } else {
-        (bits & 0x7fffff) | 0x800000
+macro_rules! integer_decode {
+    (
+        $func_name:ident,
+        $F:ty,
+        $size:literal,
+        $fraction_size:literal,
+        $exponent_bias:literal,
+        $fraction_bits_mask:expr,
+        $exponent_least_signifigant_bit_mask:expr,
+        $postshift_exponent_bits_mask:expr
+    ) => {
+        fn $func_name(f: $F) -> (u64, i16, i8) {
+            let bits = f.to_bits();
+
+            let sign: i8 = if bits >> $size - 1 == 0 { 1 } else { -1 };
+
+            let mut exponent: i16 = (bits >> $fraction_size & $postshift_exponent_bits_mask) as i16;
+
+            let mantissa = if exponent == 0 {
+                // Zeros and subnormals
+                (bits & $fraction_bits_mask) << 1
+            } else {
+                // Normals, infinities, and NaN
+                (bits & $fraction_bits_mask) | $exponent_least_signifigant_bit_mask
+            };
+
+            exponent -= $exponent_bias + $fraction_size;
+
+            (mantissa as u64, exponent, sign)
+        }
     };
-    // Exponent bias + mantissa shift
-    exponent -= 127 + 23;
-    (mantissa as u64, exponent, sign)
 }
 
-fn integer_decode_f64(f: f64) -> (u64, i16, i8) {
-    let bits: u64 = f.to_bits();
-    let sign: i8 = if bits >> 63 == 0 { 1 } else { -1 };
-    let mut exponent: i16 = ((bits >> 52) & 0x7ff) as i16;
-    let mantissa = if exponent == 0 {
-        (bits & 0xfffffffffffff) << 1
-    } else {
-        (bits & 0xfffffffffffff) | 0x10000000000000
-    };
-    // Exponent bias + mantissa shift
-    exponent -= 1023 + 52;
-    (mantissa, exponent, sign)
-}
+integer_decode!(
+    integer_decode_f32,
+    f32,
+    32,
+    23,
+    127,
+    0b0000_0000_0111_1111_1111_1111_1111_1111,
+    0b0000_0000_1000_0000_0000_0000_0000_0000,
+    0b0000_0000_0000_0000_0000_0000_1111_1111
+);
+
+integer_decode!(
+    integer_decode_f64,
+    f64,
+    64,
+    52,
+    1023,
+    0b0000_0000_0000_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111_1111,
+    0b0000_0000_0001_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000,
+    0b0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0111_1111_1111
+);
 
 #[cfg(feature = "std")]
 float_impl_std!(f32 integer_decode_f32);
@@ -2395,6 +2426,101 @@ mod tests {
 
         check::<f32>(1e-6);
         check::<f64>(1e-12);
+    }
+
+    /// Test the behavior of `Float::integer_decode` with the `given` input and `expected` output values.
+    #[cfg(any(feature = "std", feature = "libm"))]
+    fn test_integer_decode<T>(given: T, expected: (u64, i16, i8))
+    where
+        T: crate::float::Float + core::fmt::LowerExp + core::fmt::Debug,
+    {
+        use crate::float::Float;
+
+        let found = Float::integer_decode(given);
+
+        assert!(
+            expected == found,
+            "unexpected output of `Float::integer_decode({0:e})`
+\texpected: ({1:#x} {2} {3})
+\t   found: ({4:#x} {5} {6})",
+            given,
+            expected.0,
+            expected.1,
+            expected.2,
+            found.0,
+            found.1,
+            found.2
+        );
+
+        // Destructure the `found` output and cast values as float.
+        let mantissa_f = T::from(found.0).unwrap();
+        let exponent_f = T::from(found.1).unwrap();
+        let sign_f = T::from(found.2).unwrap();
+
+        // Recover the `given` input using equation: sign * mantissa * 2^exponent.
+        let recovered = sign_f * mantissa_f * exponent_f.exp2();
+        let deviation = recovered - given;
+        let tolerance = T::from(1e-6).unwrap();
+
+        assert_eq!(T::one(), tolerance.signum(), "tolerance must be positive");
+        assert!(
+            recovered == given || deviation.abs() < tolerance,
+            "absolute deviation must not exceed tolerance`
+\t    given:  {:+e}
+\trecovered:  {:+e}
+\tdeviation:  {:+e}
+\ttolerance: <{:e}",
+            given,
+            recovered,
+            deviation,
+            tolerance
+        );
+    }
+
+    #[test]
+    #[cfg(any(feature = "std", feature = "libm"))]
+    fn integer_decode_f32() {
+        for sign in [1, -1] {
+            let sign_f = sign as f32;
+            test_integer_decode(sign_f * 0.0__f32, (0x000000, -150, sign));
+            test_integer_decode(sign_f * 1.0e-40_f32, (0x022d84, -150, sign)); // subnormal (between 0 and MIN_POSITIVE)
+            test_integer_decode(sign_f * f32::MIN_POSITIVE, (0x800000, -149, sign));
+            test_integer_decode(sign_f * 0.25_f32, (0x800000, -25, sign));
+            test_integer_decode(sign_f * 0.5__f32, (0x800000, -24, sign));
+            test_integer_decode(sign_f * 1____f32, (0x800000, -23, sign));
+            test_integer_decode(sign_f * 1.5__f32, (0xc00000, -23, sign));
+            test_integer_decode(sign_f * 2____f32, (0x800000, -22, sign));
+            test_integer_decode(sign_f * 2.5__f32, (0xa00000, -22, sign));
+            test_integer_decode(sign_f * 3____f32, (0xc00000, -22, sign));
+            test_integer_decode(sign_f * 4____f32, (0x800000, -21, sign));
+            test_integer_decode(sign_f * 5____f32, (0xa00000, -21, sign));
+            test_integer_decode(sign_f * 42___f32, (0xa80000, -18, sign));
+            test_integer_decode(sign_f * f32::MAX, (0xffffff, 104, sign));
+            test_integer_decode(sign_f * f32::INFINITY, (0x800000, 105, sign));
+        }
+    }
+
+    #[test]
+    #[cfg(any(feature = "std", feature = "libm"))]
+    fn integer_decode_f64() {
+        for sign in [1, -1] {
+            let sign_f = sign as f64;
+            test_integer_decode(sign_f * 0.0__f64, (0x00000000000000, -1075, sign));
+            test_integer_decode(sign_f * 1.0e-308_f64, (0x0e61acf033d1a4, -1075, sign)); // subnormal (between 0 and MIN_POSITIVE)
+            test_integer_decode(sign_f * f64::MIN_POSITIVE, (0x10000000000000, -1074, sign));
+            test_integer_decode(sign_f * 0.25_f64, (0x10000000000000, -54, sign));
+            test_integer_decode(sign_f * 0.5__f64, (0x10000000000000, -53, sign));
+            test_integer_decode(sign_f * 1____f64, (0x10000000000000, -52, sign));
+            test_integer_decode(sign_f * 1.5__f64, (0x18000000000000, -52, sign));
+            test_integer_decode(sign_f * 2____f64, (0x10000000000000, -51, sign));
+            test_integer_decode(sign_f * 2.5__f64, (0x14000000000000, -51, sign));
+            test_integer_decode(sign_f * 3____f64, (0x18000000000000, -51, sign));
+            test_integer_decode(sign_f * 4____f64, (0x10000000000000, -50, sign));
+            test_integer_decode(sign_f * 5____f64, (0x14000000000000, -50, sign));
+            test_integer_decode(sign_f * 42___f64, (0x15000000000000, -47, sign));
+            test_integer_decode(sign_f * f64::MAX, (0x1fffffffffffff, 971, sign));
+            test_integer_decode(sign_f * f64::INFINITY, (0x10000000000000, 972, sign));
+        }
     }
 
     #[test]
