@@ -1,5 +1,9 @@
 use core::mem::size_of;
 use core::num::Wrapping;
+use core::num::{
+    NonZeroI128, NonZeroI16, NonZeroI32, NonZeroI64, NonZeroI8, NonZeroIsize, NonZeroU128,
+    NonZeroU16, NonZeroU32, NonZeroU64, NonZeroU8, NonZeroUsize,
+};
 use core::{f32, f64};
 use core::{i128, i16, i32, i64, i8, isize};
 use core::{u128, u16, u32, u64, u8, usize};
@@ -265,6 +269,61 @@ impl_to_primitive_uint!(u16);
 impl_to_primitive_uint!(u32);
 impl_to_primitive_uint!(u64);
 impl_to_primitive_uint!(u128);
+
+macro_rules! impl_to_primitive_nonzero_to_method {
+    ($SrcT:ident : $( $(#[$cfg:meta])* fn $method:ident -> $DstT:ident ; )*) => {$(
+        #[inline]
+        $(#[$cfg])*
+        fn $method(&self) -> Option<$DstT> {
+            self.get().$method()
+        }
+    )*}
+}
+
+macro_rules! impl_to_primitive_nonzero {
+    ($T:ident) => {
+        impl ToPrimitive for $T {
+            impl_to_primitive_nonzero_to_method! { $T:
+                fn to_isize -> isize;
+                fn to_i8 -> i8;
+                fn to_i16 -> i16;
+                fn to_i32 -> i32;
+                fn to_i64 -> i64;
+                fn to_i128 -> i128;
+
+                fn to_usize -> usize;
+                fn to_u8 -> u8;
+                fn to_u16 -> u16;
+                fn to_u32 -> u32;
+                fn to_u64 -> u64;
+                fn to_u128 -> u128;
+            }
+
+            #[inline]
+            fn to_f32(&self) -> Option<f32> {
+                Some(self.get() as f32)
+            }
+            #[inline]
+            fn to_f64(&self) -> Option<f64> {
+                Some(self.get() as f64)
+            }
+        }
+    };
+}
+
+impl_to_primitive_nonzero!(NonZeroUsize);
+impl_to_primitive_nonzero!(NonZeroU8);
+impl_to_primitive_nonzero!(NonZeroU16);
+impl_to_primitive_nonzero!(NonZeroU32);
+impl_to_primitive_nonzero!(NonZeroU64);
+impl_to_primitive_nonzero!(NonZeroU128);
+
+impl_to_primitive_nonzero!(NonZeroIsize);
+impl_to_primitive_nonzero!(NonZeroI8);
+impl_to_primitive_nonzero!(NonZeroI16);
+impl_to_primitive_nonzero!(NonZeroI32);
+impl_to_primitive_nonzero!(NonZeroI64);
+impl_to_primitive_nonzero!(NonZeroI128);
 
 macro_rules! impl_to_primitive_float_to_float {
     ($SrcT:ident : $( fn $method:ident -> $DstT:ident ; )*) => {$(
