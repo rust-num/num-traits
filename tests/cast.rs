@@ -5,6 +5,10 @@
 use num_traits::cast::*;
 use num_traits::Bounded;
 
+use core::num::{
+    NonZeroI128, NonZeroI16, NonZeroI32, NonZeroI64, NonZeroI8, NonZeroIsize, NonZeroU128,
+    NonZeroU16, NonZeroU32, NonZeroU64, NonZeroU8, NonZeroUsize,
+};
 use core::{f32, f64};
 use core::{i128, i16, i32, i64, i8, isize};
 use core::{u128, u16, u32, u64, u8, usize};
@@ -101,17 +105,50 @@ fn cast_to_int_checks_overflow() {
     assert_eq!(None, cast::<f64, i32>(big_f));
     assert_eq!(None, cast::<f64, i64>(big_f));
 
+    assert_eq!(None, cast::<f64, NonZeroIsize>(big_f));
+    assert_eq!(None, cast::<f64, NonZeroI8>(big_f));
+    assert_eq!(None, cast::<f64, NonZeroI16>(big_f));
+    assert_eq!(None, cast::<f64, NonZeroI32>(big_f));
+    assert_eq!(None, cast::<f64, NonZeroI64>(big_f));
+
     assert_eq!(Some(normal_f as isize), cast::<f64, isize>(normal_f));
     assert_eq!(Some(normal_f as i8), cast::<f64, i8>(normal_f));
     assert_eq!(Some(normal_f as i16), cast::<f64, i16>(normal_f));
     assert_eq!(Some(normal_f as i32), cast::<f64, i32>(normal_f));
     assert_eq!(Some(normal_f as i64), cast::<f64, i64>(normal_f));
 
+    assert_eq!(
+        NonZeroIsize::new(normal_f as isize),
+        cast::<f64, NonZeroIsize>(normal_f)
+    );
+    assert_eq!(
+        NonZeroI8::new(normal_f as i8),
+        cast::<f64, NonZeroI8>(normal_f)
+    );
+    assert_eq!(
+        NonZeroI16::new(normal_f as i16),
+        cast::<f64, NonZeroI16>(normal_f)
+    );
+    assert_eq!(
+        NonZeroI32::new(normal_f as i32),
+        cast::<f64, NonZeroI32>(normal_f)
+    );
+    assert_eq!(
+        NonZeroI64::new(normal_f as i64),
+        cast::<f64, NonZeroI64>(normal_f)
+    );
+
     assert_eq!(None, cast::<f64, isize>(small_f));
     assert_eq!(None, cast::<f64, i8>(small_f));
     assert_eq!(None, cast::<f64, i16>(small_f));
     assert_eq!(None, cast::<f64, i32>(small_f));
     assert_eq!(None, cast::<f64, i64>(small_f));
+
+    assert_eq!(None, cast::<f64, NonZeroIsize>(small_f));
+    assert_eq!(None, cast::<f64, NonZeroI8>(small_f));
+    assert_eq!(None, cast::<f64, NonZeroI16>(small_f));
+    assert_eq!(None, cast::<f64, NonZeroI32>(small_f));
+    assert_eq!(None, cast::<f64, NonZeroI64>(small_f));
 }
 
 #[test]
@@ -125,17 +162,50 @@ fn cast_to_unsigned_int_checks_overflow() {
     assert_eq!(None, cast::<f64, u32>(big_f));
     assert_eq!(None, cast::<f64, u64>(big_f));
 
+    assert_eq!(None, cast::<f64, NonZeroUsize>(big_f));
+    assert_eq!(None, cast::<f64, NonZeroU8>(big_f));
+    assert_eq!(None, cast::<f64, NonZeroU16>(big_f));
+    assert_eq!(None, cast::<f64, NonZeroU32>(big_f));
+    assert_eq!(None, cast::<f64, NonZeroU64>(big_f));
+
     assert_eq!(Some(normal_f as usize), cast::<f64, usize>(normal_f));
     assert_eq!(Some(normal_f as u8), cast::<f64, u8>(normal_f));
     assert_eq!(Some(normal_f as u16), cast::<f64, u16>(normal_f));
     assert_eq!(Some(normal_f as u32), cast::<f64, u32>(normal_f));
     assert_eq!(Some(normal_f as u64), cast::<f64, u64>(normal_f));
 
+    assert_eq!(
+        NonZeroUsize::new(normal_f as usize),
+        cast::<f64, NonZeroUsize>(normal_f)
+    );
+    assert_eq!(
+        NonZeroU8::new(normal_f as u8),
+        cast::<f64, NonZeroU8>(normal_f)
+    );
+    assert_eq!(
+        NonZeroU16::new(normal_f as u16),
+        cast::<f64, NonZeroU16>(normal_f)
+    );
+    assert_eq!(
+        NonZeroU32::new(normal_f as u32),
+        cast::<f64, NonZeroU32>(normal_f)
+    );
+    assert_eq!(
+        NonZeroU64::new(normal_f as u64),
+        cast::<f64, NonZeroU64>(normal_f)
+    );
+
     assert_eq!(None, cast::<f64, usize>(small_f));
     assert_eq!(None, cast::<f64, u8>(small_f));
     assert_eq!(None, cast::<f64, u16>(small_f));
     assert_eq!(None, cast::<f64, u32>(small_f));
     assert_eq!(None, cast::<f64, u64>(small_f));
+
+    assert_eq!(None, cast::<f64, NonZeroUsize>(small_f));
+    assert_eq!(None, cast::<f64, NonZeroU8>(small_f));
+    assert_eq!(None, cast::<f64, NonZeroU16>(small_f));
+    assert_eq!(None, cast::<f64, NonZeroU32>(small_f));
+    assert_eq!(None, cast::<f64, NonZeroU64>(small_f));
 }
 
 #[test]
@@ -146,11 +216,26 @@ fn cast_to_i128_checks_overflow() {
     assert_eq!(None, cast::<f64, i128>(big_f));
     assert_eq!(None, cast::<f64, u128>(big_f));
 
+    assert_eq!(None, cast::<f64, NonZeroI128>(big_f));
+    assert_eq!(None, cast::<f64, NonZeroU128>(big_f));
+
     assert_eq!(Some(normal_f as i128), cast::<f64, i128>(normal_f));
     assert_eq!(Some(normal_f as u128), cast::<f64, u128>(normal_f));
 
+    assert_eq!(
+        NonZeroI128::new(normal_f as i128),
+        cast::<f64, NonZeroI128>(normal_f)
+    );
+    assert_eq!(
+        NonZeroU128::new(normal_f as u128),
+        cast::<f64, NonZeroU128>(normal_f)
+    );
+
     assert_eq!(None, cast::<f64, i128>(small_f));
     assert_eq!(None, cast::<f64, u128>(small_f));
+
+    assert_eq!(None, cast::<f64, NonZeroI128>(small_f));
+    assert_eq!(None, cast::<f64, NonZeroU128>(small_f));
 }
 
 #[cfg(feature = "std")]
@@ -303,6 +388,152 @@ fn cast_int_to_128_edge_cases() {
             )+
             int_test_edge!(i128 -> { $( $t )+ } with i128 u128);
             int_test_edge!(u128 -> { $( $t )+ } with i128 u128);
+        }
+    }
+
+    test_edge!(isize i8 i16 i32 i64 i128);
+    test_edge!(usize u8 u16 u32 u64 u128);
+}
+
+macro_rules! nonzero_to_int_test_edge {
+    ($f:ident -> { $($t:ident)+ } with $BigS:ident $BigU:ident ) => { $({
+        #[allow(arithmetic_overflow)] // https://github.com/rust-lang/rust/issues/109731
+        fn test_edge() {
+            dbg!("testing cast edge cases for {} -> {}", stringify!($f), stringify!($t));
+
+
+            let from_min = <$f as Bounded>::min_value();
+            match (from_min.get() as $BigS).cmp(&($t::MIN as $BigS)) {
+                Greater => {
+                    assert_eq!(Some(from_min.get() as $t), cast::<$f, $t>(from_min));
+                }
+                Equal => {
+                    assert_eq!(Some($t::MIN), cast::<$f, $t>(from_min));
+                }
+                Less => {
+                    if $t::MIN != 0 {
+                        let min = $f::new($t::MIN.as_()).unwrap();
+                        assert_eq!(Some($t::MIN), cast::<$f, $t>(min));
+                        assert_eq!(None, cast::<$f, $t>($f::new(min.get() - 1).unwrap()));
+                    }
+                }
+            }
+
+            let from_max = <$f as Bounded>::max_value();
+            match (from_max.get() as $BigU).cmp(&($t::MAX as $BigU)) {
+                Greater => {
+                    let max = $f::new($t::MAX.as_()).unwrap();
+                    assert_eq!(Some($t::MAX), cast::<$f, $t>(max));
+                    assert_eq!(None, cast::<$f, $t>($f::new(max.get() + 1).unwrap()));
+                }
+                Equal => {
+                    assert_eq!(Some($t::MAX), cast::<$f, $t>(from_max));
+                }
+                Less => {
+                    assert_eq!(Some(from_max.get() as $t), cast::<$f, $t>(from_max));
+                }
+            }
+        }
+        test_edge();
+    })+}
+}
+
+#[test]
+fn cast_nonzero_to_int_edge_cases() {
+    use core::cmp::Ordering::*;
+
+    macro_rules! test_edge {
+        ($( $from:ident )+) => { $({
+            nonzero_to_int_test_edge!($from -> { isize i8 i16 i32 i64 } with i64 u64);
+            nonzero_to_int_test_edge!($from -> { usize u8 u16 u32 u64 } with i64 u64);
+        })+}
+    }
+
+    test_edge!(NonZeroIsize NonZeroI8 NonZeroI16 NonZeroI32 NonZeroI64);
+    test_edge!(NonZeroUsize NonZeroU8 NonZeroU16 NonZeroU32 NonZeroU64);
+}
+
+#[test]
+fn cast_nonzero_to_128_edge_cases() {
+    use core::cmp::Ordering::*;
+
+    macro_rules! test_edge {
+        ($( $t:ident )+) => {
+            $(
+                nonzero_to_int_test_edge!($t -> { i128 u128 } with i128 u128);
+            )+
+        }
+    }
+
+    test_edge!(NonZeroIsize NonZeroI8 NonZeroI16 NonZeroI32 NonZeroI64 NonZeroI128);
+    test_edge!(NonZeroUsize NonZeroU8 NonZeroU16 NonZeroU32 NonZeroU64 NonZeroU128);
+}
+
+macro_rules! int_to_nonzero_test_edge {
+    ($f:ident -> { $($t:ident)+ } with $BigS:ident $BigU:ident ) => { $({
+        #[allow(arithmetic_overflow)] // https://github.com/rust-lang/rust/issues/109731
+        fn test_edge() {
+            dbg!("testing cast edge cases for {} -> {}", stringify!($f), stringify!($t));
+
+            let target_min = <$t as Bounded>::min_value();
+            match ($f::MIN as $BigS).cmp(&(target_min.get() as $BigS)) {
+                Greater => {
+                    assert_eq!($t::new($f::MIN.as_()), cast::<$f, $t>($f::MIN));
+                }
+                Equal => {
+                    assert_eq!(Some(target_min), cast::<$f, $t>($f::MIN));
+                }
+                Less => {
+                    let min = target_min.get() as $f;
+                    assert_eq!(Some(target_min), cast::<$f, $t>(min));
+                    assert_eq!(None, cast::<$f, $t>(min - 1));
+                }
+            }
+
+            let target_max = <$t as Bounded>::max_value();
+            match ($f::MAX as $BigU).cmp(&($t::max_value().get() as $BigU)) {
+                Greater => {
+                    let max = target_max.get() as $f;
+                    assert_eq!(Some(target_max), cast::<$f, $t>(max));
+                    assert_eq!(None, cast::<$f, $t>(max + 1));
+                }
+                Equal => {
+                    assert_eq!(Some(target_max), cast::<$f, $t>($f::MAX));
+                }
+                Less => {
+                    assert_eq!($t::new($f::MAX.as_()), cast::<$f, $t>($f::MAX));
+                }
+            }
+        }
+        test_edge();
+    })+}
+}
+
+#[test]
+fn cast_int_to_nonzero_edge_cases() {
+    use core::cmp::Ordering::*;
+
+    macro_rules! test_edge {
+        ($( $from:ident )+) => { $({
+            int_to_nonzero_test_edge!($from -> { NonZeroIsize NonZeroI8 NonZeroI16 NonZeroI32 NonZeroI64 } with i64 u64);
+            int_to_nonzero_test_edge!($from -> { NonZeroUsize NonZeroU8 NonZeroU16 NonZeroU32 NonZeroU64 } with i64 u64);
+        })+}
+    }
+
+    test_edge!(isize i8 i16 i32 i64);
+    test_edge!(usize u8 u16 u32 u64);
+}
+
+#[test]
+fn cast_128_to_nonzero_edge_cases() {
+    use core::cmp::Ordering::*;
+
+    macro_rules! test_edge {
+        ($( $t:ident )+) => {
+            $(
+                int_to_nonzero_test_edge!($t -> { NonZeroIsize NonZeroI8 NonZeroI16 NonZeroI32 NonZeroI64 NonZeroI128 } with i128 u128);
+                int_to_nonzero_test_edge!($t -> { NonZeroUsize NonZeroU8 NonZeroU16 NonZeroU32 NonZeroU64 NonZeroU128 } with i128 u128);
+            )+
         }
     }
 

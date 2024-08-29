@@ -754,6 +754,34 @@ impl_num_cast!(isize, to_isize);
 impl_num_cast!(f32, to_f32);
 impl_num_cast!(f64, to_f64);
 
+macro_rules! impl_num_cast_nonzero {
+    ($T:ty, $conv:ident) => {
+        impl NumCast for $T {
+            #[inline]
+            #[allow(deprecated)]
+            fn from<N: ToPrimitive>(n: N) -> Option<$T> {
+                // `$conv` could be generated using `concat_idents!`, but that
+                // macro seems to be broken at the moment
+                n.$conv().and_then(Self::new)
+            }
+        }
+    };
+}
+
+impl_num_cast_nonzero!(NonZeroUsize, to_usize);
+impl_num_cast_nonzero!(NonZeroU8, to_u8);
+impl_num_cast_nonzero!(NonZeroU16, to_u16);
+impl_num_cast_nonzero!(NonZeroU32, to_u32);
+impl_num_cast_nonzero!(NonZeroU64, to_u64);
+impl_num_cast_nonzero!(NonZeroU128, to_u128);
+
+impl_num_cast_nonzero!(NonZeroIsize, to_isize);
+impl_num_cast_nonzero!(NonZeroI8, to_i8);
+impl_num_cast_nonzero!(NonZeroI16, to_i16);
+impl_num_cast_nonzero!(NonZeroI32, to_i32);
+impl_num_cast_nonzero!(NonZeroI64, to_i64);
+impl_num_cast_nonzero!(NonZeroI128, to_i128);
+
 impl<T: NumCast> NumCast for Wrapping<T> {
     fn from<U: ToPrimitive>(n: U) -> Option<Self> {
         T::from(n).map(Wrapping)
