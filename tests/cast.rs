@@ -118,23 +118,23 @@ fn cast_to_int_checks_overflow() {
     assert_eq!(Some(normal_f as i64), cast::<f64, i64>(normal_f));
 
     assert_eq!(
-        NonZeroIsize::new(normal_f as isize),
+        NonZeroIsize::from_isize(normal_f as isize),
         cast::<f64, NonZeroIsize>(normal_f)
     );
     assert_eq!(
-        NonZeroI8::new(normal_f as i8),
+        NonZeroI8::from_i8(normal_f as i8),
         cast::<f64, NonZeroI8>(normal_f)
     );
     assert_eq!(
-        NonZeroI16::new(normal_f as i16),
+        NonZeroI16::from_i16(normal_f as i16),
         cast::<f64, NonZeroI16>(normal_f)
     );
     assert_eq!(
-        NonZeroI32::new(normal_f as i32),
+        NonZeroI32::from_i32(normal_f as i32),
         cast::<f64, NonZeroI32>(normal_f)
     );
     assert_eq!(
-        NonZeroI64::new(normal_f as i64),
+        NonZeroI64::from_i64(normal_f as i64),
         cast::<f64, NonZeroI64>(normal_f)
     );
 
@@ -175,23 +175,23 @@ fn cast_to_unsigned_int_checks_overflow() {
     assert_eq!(Some(normal_f as u64), cast::<f64, u64>(normal_f));
 
     assert_eq!(
-        NonZeroUsize::new(normal_f as usize),
+        NonZeroUsize::from_usize(normal_f as usize),
         cast::<f64, NonZeroUsize>(normal_f)
     );
     assert_eq!(
-        NonZeroU8::new(normal_f as u8),
+        NonZeroU8::from_u8(normal_f as u8),
         cast::<f64, NonZeroU8>(normal_f)
     );
     assert_eq!(
-        NonZeroU16::new(normal_f as u16),
+        NonZeroU16::from_u16(normal_f as u16),
         cast::<f64, NonZeroU16>(normal_f)
     );
     assert_eq!(
-        NonZeroU32::new(normal_f as u32),
+        NonZeroU32::from_u32(normal_f as u32),
         cast::<f64, NonZeroU32>(normal_f)
     );
     assert_eq!(
-        NonZeroU64::new(normal_f as u64),
+        NonZeroU64::from_u64(normal_f as u64),
         cast::<f64, NonZeroU64>(normal_f)
     );
 
@@ -223,11 +223,11 @@ fn cast_to_i128_checks_overflow() {
     assert_eq!(Some(normal_f as u128), cast::<f64, u128>(normal_f));
 
     assert_eq!(
-        NonZeroI128::new(normal_f as i128),
+        NonZeroI128::from_i128(normal_f as i128),
         cast::<f64, NonZeroI128>(normal_f)
     );
     assert_eq!(
-        NonZeroU128::new(normal_f as u128),
+        NonZeroU128::from_u128(normal_f as u128),
         cast::<f64, NonZeroU128>(normal_f)
     );
 
@@ -577,6 +577,9 @@ fn newtype_from_primitive() {
     }
     check!(i8 i16 i32 i64 isize);
     check!(u8 u16 u32 u64 usize);
+
+    check!(NonZeroI8 NonZeroI16 NonZeroI32 NonZeroI64 NonZeroIsize);
+    check!(NonZeroU8 NonZeroU16 NonZeroU32 NonZeroU64 NonZeroUsize);
 }
 
 #[test]
@@ -615,4 +618,7 @@ fn newtype_to_primitive() {
     }
     check!(i8 i16 i32 i64 isize);
     check!(u8 u16 u32 u64 usize);
+
+    check!(NonZeroI8 NonZeroI16 NonZeroI32 NonZeroI64 NonZeroIsize);
+    check!(NonZeroU8 NonZeroU16 NonZeroU32 NonZeroU64 NonZeroUsize);
 }
