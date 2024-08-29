@@ -1,4 +1,8 @@
 use core::num::Wrapping;
+use core::num::{
+    NonZeroI128, NonZeroI16, NonZeroI32, NonZeroI64, NonZeroI8, NonZeroIsize, NonZeroU128,
+    NonZeroU16, NonZeroU32, NonZeroU64, NonZeroU8, NonZeroUsize,
+};
 use core::{f32, f64};
 use core::{i128, i16, i32, i64, i8, isize};
 use core::{u128, u16, u32, u64, u8, usize};
@@ -67,6 +71,49 @@ bounded_impl!(i16, i16::MIN, i16::MAX);
 bounded_impl!(i32, i32::MIN, i32::MAX);
 bounded_impl!(i64, i64::MIN, i64::MAX);
 bounded_impl!(i128, i128::MIN, i128::MAX);
+
+macro_rules! bounded_impl_nonzero_const {
+    ($t:ty, $v:expr, $i:ident) => {
+        const $i: $t = {
+            let arr = [$v];
+            let idx = if $v != 0 { 0 } else { 1 };
+
+            unsafe { <$t>::new_unchecked(arr[idx]) }
+        };
+    };
+}
+
+macro_rules! bounded_impl_nonzero {
+    ($t:ty, $min:expr, $max:expr) => {
+        impl Bounded for $t {
+            #[inline]
+            fn min_value() -> $t {
+                bounded_impl_nonzero_const!($t, $min, MIN);
+                MIN
+            }
+
+            #[inline]
+            fn max_value() -> $t {
+                bounded_impl_nonzero_const!($t, $max, MAX);
+                MAX
+            }
+        }
+    };
+}
+
+bounded_impl_nonzero!(NonZeroUsize, 1, usize::MAX);
+bounded_impl_nonzero!(NonZeroU8, 1, u8::MAX);
+bounded_impl_nonzero!(NonZeroU16, 1, u16::MAX);
+bounded_impl_nonzero!(NonZeroU32, 1, u32::MAX);
+bounded_impl_nonzero!(NonZeroU64, 1, u64::MAX);
+bounded_impl_nonzero!(NonZeroU128, 1, u128::MAX);
+
+bounded_impl_nonzero!(NonZeroIsize, isize::MIN, isize::MAX);
+bounded_impl_nonzero!(NonZeroI8, i8::MIN, i8::MAX);
+bounded_impl_nonzero!(NonZeroI16, i16::MIN, i16::MAX);
+bounded_impl_nonzero!(NonZeroI32, i32::MIN, i32::MAX);
+bounded_impl_nonzero!(NonZeroI64, i64::MIN, i64::MAX);
+bounded_impl_nonzero!(NonZeroI128, i128::MIN, i128::MAX);
 
 impl<T: Bounded> Bounded for Wrapping<T> {
     fn min_value() -> Self {
@@ -145,4 +192,38 @@ fn wrapping_is_bounded() {
     fn require_bounded<T: Bounded>(_: &T) {}
     require_bounded(&Wrapping(42_u32));
     require_bounded(&Wrapping(-42));
+}
+
+#[test]
+fn bounded_unsigned_nonzero() {
+    macro_rules! test_bounded_impl_unsigned_nonzero {
+        ($t:ty, $base_ty:ty) => {
+            assert_eq!(<$t as Bounded>::min_value().get(), 1);
+            assert_eq!(<$t as Bounded>::max_value().get(), <$base_ty>::MAX);
+        };
+    }
+
+    test_bounded_impl_unsigned_nonzero!(NonZeroUsize, usize);
+    test_bounded_impl_unsigned_nonzero!(NonZeroU8, u8);
+    test_bounded_impl_unsigned_nonzero!(NonZeroU16, u16);
+    test_bounded_impl_unsigned_nonzero!(NonZeroU32, u32);
+    test_bounded_impl_unsigned_nonzero!(NonZeroU64, u64);
+    test_bounded_impl_unsigned_nonzero!(NonZeroU128, u128);
+}
+
+#[test]
+fn bounded_signed_nonzero() {
+    macro_rules! test_bounded_impl_signed_nonzero {
+        ($t:ty, $base_ty:ty) => {
+            assert_eq!(<$t as Bounded>::min_value().get(), <$base_ty>::MIN);
+            assert_eq!(<$t as Bounded>::max_value().get(), <$base_ty>::MAX);
+        };
+    }
+
+    test_bounded_impl_signed_nonzero!(NonZeroIsize, isize);
+    test_bounded_impl_signed_nonzero!(NonZeroI8, i8);
+    test_bounded_impl_signed_nonzero!(NonZeroI16, i16);
+    test_bounded_impl_signed_nonzero!(NonZeroI32, i32);
+    test_bounded_impl_signed_nonzero!(NonZeroI64, i64);
+    test_bounded_impl_signed_nonzero!(NonZeroI128, i128);
 }
