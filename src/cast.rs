@@ -292,15 +292,9 @@ macro_rules! impl_to_primitive_nonzero {
                 fn to_u32 -> u32;
                 fn to_u64 -> u64;
                 fn to_u128 -> u128;
-            }
 
-            #[inline]
-            fn to_f32(&self) -> Option<f32> {
-                Some(self.get() as f32)
-            }
-            #[inline]
-            fn to_f64(&self) -> Option<f64> {
-                Some(self.get() as f64)
+                fn to_f32 -> f32;
+                fn to_f64 -> f64;
             }
         }
     };
