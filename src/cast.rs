@@ -539,7 +539,6 @@ pub trait FromPrimitive: Sized {
 
 macro_rules! impl_from_primitive {
     ($T:ty, $to_ty:ident) => {
-        #[allow(deprecated)]
         impl FromPrimitive for $T {
             #[inline]
             fn from_isize(n: isize) -> Option<$T> {
@@ -620,7 +619,6 @@ impl_from_primitive!(f64, to_f64);
 
 macro_rules! impl_from_primitive_nonzero {
     ($T:ty, $to_ty:ident) => {
-        #[allow(deprecated)]
         impl FromPrimitive for $T {
             #[inline]
             fn from_isize(n: isize) -> Option<$T> {
@@ -793,7 +791,6 @@ macro_rules! impl_num_cast {
     ($T:ty, $conv:ident) => {
         impl NumCast for $T {
             #[inline]
-            #[allow(deprecated)]
             fn from<N: ToPrimitive>(n: N) -> Option<$T> {
                 // `$conv` could be generated using `concat_idents!`, but that
                 // macro seems to be broken at the moment
@@ -822,7 +819,6 @@ macro_rules! impl_num_cast_nonzero {
     ($T:ty, $conv:ident) => {
         impl NumCast for $T {
             #[inline]
-            #[allow(deprecated)]
             fn from<N: ToPrimitive>(n: N) -> Option<$T> {
                 // `$conv` could be generated using `concat_idents!`, but that
                 // macro seems to be broken at the moment
