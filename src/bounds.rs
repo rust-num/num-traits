@@ -74,11 +74,9 @@ bounded_impl!(i128, i128::MIN, i128::MAX);
 
 macro_rules! bounded_impl_nonzero_const {
     ($t:ty, $v:expr, $i:ident) => {
-        const $i: $t = {
-            let arr = [$v];
-            let idx = if $v != 0 { 0 } else { 1 };
-
-            unsafe { <$t>::new_unchecked(arr[idx]) }
+        const $i: $t = match <$t>::new($v) {
+            Some(nz) => nz,
+            None => panic!("bad nonzero bound!"),
         };
     };
 }
@@ -88,12 +86,14 @@ macro_rules! bounded_impl_nonzero {
         impl Bounded for $t {
             #[inline]
             fn min_value() -> $t {
+                // when MSRV is 1.70 we can use $t::MIN
                 bounded_impl_nonzero_const!($t, $min, MIN);
                 MIN
             }
 
             #[inline]
             fn max_value() -> $t {
+                // when MSRV is 1.70 we can use $t::MAX
                 bounded_impl_nonzero_const!($t, $max, MAX);
                 MAX
             }
