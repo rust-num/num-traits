@@ -130,9 +130,8 @@ pub trait ToPrimitive {
 }
 
 macro_rules! impl_to_primitive_int_to_int {
-    ($SrcT:ident : $( $(#[$cfg:meta])* fn $method:ident -> $DstT:ident ; )*) => {$(
+    ($SrcT:ident : $( fn $method:ident -> $DstT:ident ; )*) => {$(
         #[inline]
-        $(#[$cfg])*
         fn $method(&self) -> Option<$DstT> {
             let min = $DstT::MIN as $SrcT;
             let max = $DstT::MAX as $SrcT;
@@ -146,9 +145,8 @@ macro_rules! impl_to_primitive_int_to_int {
 }
 
 macro_rules! impl_to_primitive_int_to_uint {
-    ($SrcT:ident : $( $(#[$cfg:meta])* fn $method:ident -> $DstT:ident ; )*) => {$(
+    ($SrcT:ident : $( fn $method:ident -> $DstT:ident ; )*) => {$(
         #[inline]
-        $(#[$cfg])*
         fn $method(&self) -> Option<$DstT> {
             let max = $DstT::MAX as $SrcT;
             if 0 <= *self && (size_of::<$SrcT>() <= size_of::<$DstT>() || *self <= max) {
@@ -201,9 +199,8 @@ impl_to_primitive_int!(i64);
 impl_to_primitive_int!(i128);
 
 macro_rules! impl_to_primitive_uint_to_int {
-    ($SrcT:ident : $( $(#[$cfg:meta])* fn $method:ident -> $DstT:ident ; )*) => {$(
+    ($SrcT:ident : $( fn $method:ident -> $DstT:ident ; )*) => {$(
         #[inline]
-        $(#[$cfg])*
         fn $method(&self) -> Option<$DstT> {
             let max = $DstT::MAX as $SrcT;
             if size_of::<$SrcT>() < size_of::<$DstT>() || *self <= max {
@@ -216,9 +213,8 @@ macro_rules! impl_to_primitive_uint_to_int {
 }
 
 macro_rules! impl_to_primitive_uint_to_uint {
-    ($SrcT:ident : $( $(#[$cfg:meta])* fn $method:ident -> $DstT:ident ; )*) => {$(
+    ($SrcT:ident : $( fn $method:ident -> $DstT:ident ; )*) => {$(
         #[inline]
-        $(#[$cfg])*
         fn $method(&self) -> Option<$DstT> {
             let max = $DstT::MAX as $SrcT;
             if size_of::<$SrcT>() <= size_of::<$DstT>() || *self <= max {
@@ -271,9 +267,8 @@ impl_to_primitive_uint!(u64);
 impl_to_primitive_uint!(u128);
 
 macro_rules! impl_to_primitive_nonzero_to_method {
-    ($SrcT:ident : $( $(#[$cfg:meta])* fn $method:ident -> $DstT:ident ; )*) => {$(
+    ($SrcT:ident : $( fn $method:ident -> $DstT:ident ; )*) => {$(
         #[inline]
-        $(#[$cfg])*
         fn $method(&self) -> Option<$DstT> {
             self.get().$method()
         }
@@ -345,9 +340,8 @@ macro_rules! float_to_int_unchecked {
 }
 
 macro_rules! impl_to_primitive_float_to_signed_int {
-    ($f:ident : $( $(#[$cfg:meta])* fn $method:ident -> $i:ident ; )*) => {$(
+    ($f:ident : $( fn $method:ident -> $i:ident ; )*) => {$(
         #[inline]
-        $(#[$cfg])*
         fn $method(&self) -> Option<$i> {
             // Float as int truncates toward zero, so we want to allow values
             // in the exclusive range `(MIN-1, MAX+1)`.
@@ -375,9 +369,8 @@ macro_rules! impl_to_primitive_float_to_signed_int {
 }
 
 macro_rules! impl_to_primitive_float_to_unsigned_int {
-    ($f:ident : $( $(#[$cfg:meta])* fn $method:ident -> $u:ident ; )*) => {$(
+    ($f:ident : $( fn $method:ident -> $u:ident ; )*) => {$(
         #[inline]
-        $(#[$cfg])*
         fn $method(&self) -> Option<$u> {
             // Float as int truncates toward zero, so we want to allow values
             // in the exclusive range `(-1, MAX+1)`.
@@ -711,9 +704,8 @@ impl_from_primitive_nonzero!(NonZeroU64, to_u64);
 impl_from_primitive_nonzero!(NonZeroU128, to_u128);
 
 macro_rules! impl_to_primitive_wrapping {
-    ($( $(#[$cfg:meta])* fn $method:ident -> $i:ident ; )*) => {$(
+    ($( fn $method:ident -> $i:ident ; )*) => {$(
         #[inline]
-        $(#[$cfg])*
         fn $method(&self) -> Option<$i> {
             (self.0).$method()
         }
@@ -742,9 +734,8 @@ impl<T: ToPrimitive> ToPrimitive for Wrapping<T> {
 }
 
 macro_rules! impl_from_primitive_wrapping {
-    ($( $(#[$cfg:meta])* fn $method:ident ( $i:ident ); )*) => {$(
+    ($( fn $method:ident ( $i:ident ); )*) => {$(
         #[inline]
-        $(#[$cfg])*
         fn $method(n: $i) -> Option<Self> {
             T::$method(n).map(Wrapping)
         }
@@ -902,8 +893,7 @@ where
 }
 
 macro_rules! impl_as_primitive {
-    (@ $T: ty => $(#[$cfg:meta])* impl $U: ty ) => {
-        $(#[$cfg])*
+    (@ $T: ty =>  impl $U: ty ) => {
         impl AsPrimitive<$U> for $T {
             #[inline] fn as_(self) -> $U { self as $U }
         }
