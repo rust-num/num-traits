@@ -184,6 +184,16 @@ where
     }
 }
 
+impl<T: Num> Num for core::num::Saturating<T>
+where
+    core::num::Saturating<T>: NumOps,
+{
+    type FromStrRadixErr = T::FromStrRadixErr;
+    fn from_str_radix(str: &str, radix: u32) -> Result<Self, Self::FromStrRadixErr> {
+        T::from_str_radix(str, radix).map(core::num::Saturating)
+    }
+}
+
 #[derive(Debug)]
 pub enum FloatErrorKind {
     Empty,
@@ -568,6 +578,29 @@ fn wrapping_from_str_radix() {
     }
 
     test_wrapping_from_str_radix!(usize u8 u16 u32 u64 isize i8 i16 i32 i64);
+}
+
+#[test]
+fn saturating_is_num() {
+    fn require_num<T: Num>(_: &T) {}
+    require_num(&core::num::Saturating(42_u32));
+    require_num(&core::num::Saturating(-42));
+}
+
+#[test]
+fn saturating_from_str_radix() {
+    macro_rules! test_saturating_from_str_radix {
+        ($($t:ty)+) => {
+            $(
+                for &(s, r) in &[("42", 10), ("42", 2), ("-13.0", 10), ("foo", 10)] {
+                    let w = core::num::Saturating::<$t>::from_str_radix(s, r).map(|w| w.0);
+                    assert_eq!(w, <$t as Num>::from_str_radix(s, r));
+                }
+            )+
+        };
+    }
+
+    test_saturating_from_str_radix!(usize u8 u16 u32 u64 isize i8 i16 i32 i64);
 }
 
 #[test]
