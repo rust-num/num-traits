@@ -1,4 +1,4 @@
-use core::num::Wrapping;
+use core::num::{Saturating, Wrapping};
 use core::ops::{Add, Mul};
 
 /// Defines an additive identity element for `Self`.
@@ -93,6 +93,30 @@ where
     Wrapping<T>: Add<Output = Wrapping<T>>,
 {
     const ZERO: Self = Wrapping(T::ZERO);
+}
+
+impl<T: Zero> Zero for Saturating<T>
+where
+    Saturating<T>: Add<Output = Saturating<T>>,
+{
+    fn is_zero(&self) -> bool {
+        self.0.is_zero()
+    }
+
+    fn set_zero(&mut self) {
+        self.0.set_zero();
+    }
+
+    fn zero() -> Self {
+        Saturating(T::zero())
+    }
+}
+
+impl<T: ConstZero> ConstZero for Saturating<T>
+where
+    Saturating<T>: Add<Output = Saturating<T>>,
+{
+    const ZERO: Self = Saturating(T::ZERO);
 }
 
 /// Defines a multiplicative identity element for `Self`.
@@ -196,6 +220,26 @@ where
     const ONE: Self = Wrapping(T::ONE);
 }
 
+impl<T: One> One for Saturating<T>
+where
+    Saturating<T>: Mul<Output = Saturating<T>>,
+{
+    fn set_one(&mut self) {
+        self.0.set_one();
+    }
+
+    fn one() -> Self {
+        Saturating(T::one())
+    }
+}
+
+impl<T: ConstOne> ConstOne for Saturating<T>
+where
+    Saturating<T>: Mul<Output = Saturating<T>>,
+{
+    const ONE: Self = Saturating(T::ONE);
+}
+
 // Some helper functions provided for backwards compatibility.
 
 /// Returns the additive identity, `0`.
@@ -235,4 +279,31 @@ fn wrapping_is_zero() {
 fn wrapping_is_one() {
     fn require_one<T: One>(_: &T) {}
     require_one(&Wrapping(42));
+}
+
+#[test]
+fn saturating_identities() {
+    macro_rules! test_saturating_identities {
+        ($($t:ty)+) => {
+            $(
+                assert_eq!(zero::<$t>(), zero::<Saturating<$t>>().0);
+                assert_eq!(one::<$t>(), one::<Saturating<$t>>().0);
+                assert_eq!((0 as $t).is_zero(), Saturating(0 as $t).is_zero());
+                assert_eq!((1 as $t).is_zero(), Saturating(1 as $t).is_zero());
+            )+
+        };
+    }
+
+    test_saturating_identities!(isize i8 i16 i32 i64 usize u8 u16 u32 u64);
+}
+
+#[test]
+fn saturating_is_zero() {
+    fn require_zero<T: Zero>(_: &T) {}
+    require_zero(&Saturating(42));
+}
+#[test]
+fn saturating_is_one() {
+    fn require_one<T: One>(_: &T) {}
+    require_one(&Saturating(42));
 }
