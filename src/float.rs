@@ -816,14 +816,17 @@ impl FloatCore for f32 {
     fn integer_decode(self) -> (u64, i16, i8) {
         integer_decode_f32(self)
     }
+
     #[inline]
     fn integer_encode(mantissa: u64, exp: i16, sign: i8) -> f32 {
         integer_encode_f32(mantissa, exp, sign)
     }
+
     #[inline]
     fn nan_from_payload(payload: u64) -> f32 {
         nan_from_payload_f32(payload)
     }
+
     forward! {
         Self::is_nan(self) -> bool;
         Self::is_infinite(self) -> bool;
@@ -885,14 +888,17 @@ impl FloatCore for f64 {
     fn integer_decode(self) -> (u64, i16, i8) {
         integer_decode_f64(self)
     }
+
     #[inline]
     fn integer_encode(mantissa: u64, exp: i16, sign: i8) -> f64 {
         integer_encode_f64(mantissa, exp, sign)
     }
+
     #[inline]
     fn nan_from_payload(payload: u64) -> f64 {
         nan_from_payload_f64(payload)
     }
+
     forward! {
         Self::is_nan(self) -> bool;
         Self::is_infinite(self) -> bool;
@@ -2075,6 +2081,7 @@ fn integer_decode_f32(f: f32) -> (u64, i16, i8) {
     exponent -= 127 + 23;
     (mantissa as u64, exponent, sign)
 }
+
 fn integer_encode_f32(mantissa: u64, exp: i16, sign: i8) -> f32 {
     let sign_mask: u32 = if sign < 0 { 0x8000_0000 } else { 0 };
     if exp <= (-127 + 23) {
@@ -2102,6 +2109,7 @@ fn integer_decode_f64(f: f64) -> (u64, i16, i8) {
     exponent -= 1023 + 52;
     (mantissa, exponent, sign)
 }
+
 fn integer_encode_f64(mantissa: u64, exp: i16, sign: i8) -> f64 {
     let sign_mask: u64 = if sign < 0 { 0x8000_0000_0000_0000 } else { 0 };
     if exp <= (-1023 + 52) {
