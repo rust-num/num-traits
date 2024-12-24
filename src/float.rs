@@ -1952,7 +1952,7 @@ macro_rules! float_impl_std {
             fn integer_decode(self) -> (u64, i16, i8) {
                 $decode(self)
             }
-       
+
             forward! {
                 Self::is_nan(self) -> bool;
                 Self::is_infinite(self) -> bool;
