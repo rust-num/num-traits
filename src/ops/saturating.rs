@@ -42,8 +42,27 @@ macro_rules! saturating_impl {
     };
 }
 
+macro_rules! nonzero_saturating_impl {
+    ($trait_name:ident, $method:ident, $t:ty) => {
+        impl $trait_name for core::num::NonZero<$t> {
+            #[inline]
+            fn $method(&self, v: &Self) -> Self {
+                core::num::NonZero::new(<$t>::$method((*self).get(), (*v).get()))
+                    .expect("non zero saturating operation is non zero")
+            }
+        }
+    };
+}
+
 /// Performs addition that saturates at the numeric bounds instead of overflowing.
+// FIXME: With a major version bump, this should not require `Add` supertrait
 pub trait SaturatingAdd: Sized + Add<Self, Output = Self> {
+    /// Saturating addition. Computes `self + other`, saturating at the relevant high or low boundary of
+    /// the type.
+    fn saturating_add(&self, v: &Self) -> Self;
+}
+
+pub trait BaseSaturatingAdd: Sized {
     /// Saturating addition. Computes `self + other`, saturating at the relevant high or low boundary of
     /// the type.
     fn saturating_add(&self, v: &Self) -> Self;
@@ -55,6 +74,13 @@ saturating_impl!(SaturatingAdd, saturating_add, u32);
 saturating_impl!(SaturatingAdd, saturating_add, u64);
 saturating_impl!(SaturatingAdd, saturating_add, usize);
 saturating_impl!(SaturatingAdd, saturating_add, u128);
+
+nonzero_saturating_impl!(BaseSaturatingAdd, saturating_add, u8);
+nonzero_saturating_impl!(BaseSaturatingAdd, saturating_add, u16);
+nonzero_saturating_impl!(BaseSaturatingAdd, saturating_add, u32);
+nonzero_saturating_impl!(BaseSaturatingAdd, saturating_add, u64);
+nonzero_saturating_impl!(BaseSaturatingAdd, saturating_add, usize);
+nonzero_saturating_impl!(BaseSaturatingAdd, saturating_add, u128);
 
 saturating_impl!(SaturatingAdd, saturating_add, i8);
 saturating_impl!(SaturatingAdd, saturating_add, i16);
@@ -85,7 +111,14 @@ saturating_impl!(SaturatingSub, saturating_sub, isize);
 saturating_impl!(SaturatingSub, saturating_sub, i128);
 
 /// Performs multiplication that saturates at the numeric bounds instead of overflowing.
+//FIXME: With a major version bump, this should not require `Mul` supertrait
 pub trait SaturatingMul: Sized + Mul<Self, Output = Self> {
+    /// Saturating multiplication. Computes `self * other`, saturating at the relevant high or low boundary of
+    /// the type.
+    fn saturating_mul(&self, v: &Self) -> Self;
+}
+
+pub trait BaseSaturatingMul: Sized {
     /// Saturating multiplication. Computes `self * other`, saturating at the relevant high or low boundary of
     /// the type.
     fn saturating_mul(&self, v: &Self) -> Self;
@@ -97,6 +130,13 @@ saturating_impl!(SaturatingMul, saturating_mul, u32);
 saturating_impl!(SaturatingMul, saturating_mul, u64);
 saturating_impl!(SaturatingMul, saturating_mul, usize);
 saturating_impl!(SaturatingMul, saturating_mul, u128);
+
+nonzero_saturating_impl!(BaseSaturatingMul, saturating_mul, u8);
+nonzero_saturating_impl!(BaseSaturatingMul, saturating_mul, u16);
+nonzero_saturating_impl!(BaseSaturatingMul, saturating_mul, u32);
+nonzero_saturating_impl!(BaseSaturatingMul, saturating_mul, u64);
+nonzero_saturating_impl!(BaseSaturatingMul, saturating_mul, usize);
+nonzero_saturating_impl!(BaseSaturatingMul, saturating_mul, u128);
 
 saturating_impl!(SaturatingMul, saturating_mul, i8);
 saturating_impl!(SaturatingMul, saturating_mul, i16);

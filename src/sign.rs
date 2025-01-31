@@ -5,6 +5,7 @@ use crate::float::FloatCore;
 use crate::Num;
 
 /// Useful functions for signed numbers (i.e. numbers that can be negative).
+// FIXME: With a major version bump, do not require `Zero` supertrait.
 pub trait Signed: Sized + Num + Neg<Output = Self> {
     /// Computes the absolute value.
     ///
@@ -32,6 +33,31 @@ pub trait Signed: Sized + Num + Neg<Output = Self> {
     /// * `0` if the number is zero
     /// * `1` if the number is positive
     /// * `-1` if the number is negative
+    fn signum(&self) -> Self;
+
+    /// Returns true if the number is positive and false if the number is zero or negative.
+    fn is_positive(&self) -> bool;
+
+    /// Returns true if the number is negative and false if the number is zero or positive.
+    fn is_negative(&self) -> bool;
+}
+
+pub trait BaseSigned {
+    /// Returns the sign of the number.
+    ///
+    /// For `f32` and `f64`:
+    ///
+    /// * `1.0` if the number is positive, `+0.0` or `INFINITY`
+    /// * `-1.0` if the number is negative, `-0.0` or `NEG_INFINITY`
+    /// * `NaN` if the number is `NaN`
+    ///
+    /// For signed integers:
+    ///
+    /// * `0` if the number is zero
+    /// * `1` if the number is positive
+    /// * `-1` if the number is negative
+    ///
+    /// For non zero numbers never returns zero.
     fn signum(&self) -> Self;
 
     /// Returns true if the number is positive and false if the number is zero or negative.
@@ -72,7 +98,28 @@ macro_rules! signed_impl {
     )*)
 }
 
+macro_rules! nonzero_signed_impl{
+    ($($t:ty)*) => ($(
+        impl BaseSigned for core::num::NonZero<$t> {
+            #[inline]
+            fn signum(&self) -> core::num::NonZero<$t> {
+                match (*self).get() {
+                    n if n > 0 => core::num::NonZero::new(1).unwrap(),
+                    _ => core::num::NonZero::new(-1).unwrap(),
+                }
+            }
+
+            #[inline]
+            fn is_positive(&self) -> bool { (*self).get().is_positive() }
+
+            #[inline]
+            fn is_negative(&self) -> bool { (*self).get().is_negative() }
+        }
+    )*)
+}
+
 signed_impl!(isize i8 i16 i32 i64 i128);
+nonzero_signed_impl!(isize i8 i16 i32 i64 i128);
 
 impl<T: Signed> Signed for Wrapping<T>
 where
