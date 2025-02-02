@@ -8,7 +8,7 @@ categories = ["algorithms", "science", "no-std"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/rust-num/num-traits"
 name = "num-traits"
-version = "0.2.19"
+version = "1.2.19"
 readme = "README.md"
 build = "build.rs"
 exclude = ["/ci/*", "/.github/*"]
@@ -21,14 +21,18 @@ rustdoc-args = ["--generate-link-to-definition"]
 
 [dependencies]
 libm = { version = "0.2.0", optional = true }
+rustversion.version = "1"
 
 [features]
-default = ["std"]
+default = ["std", "unstable_1"]
 libm = ["dep:libm"]
 std = []
 
 # vestigial features, now always in effect
 i128 = []
 
+unstable_1 = []
+
 [build-dependencies]
 autocfg = "1"
+semver = "1"

@@ -1,4 +1,4 @@
-use core::ops::{BitAnd, BitOr, BitXor, Not, Shl, Shr};
+use core::ops::{BitAnd, BitOr, BitXor, Mul, Not, Shl, Shr};
 
 use crate::bounds::Bounded;
 use crate::ops::checked::*;
@@ -49,6 +49,7 @@ pub trait PrimInt:
     + CheckedAdd<Output = Self>
     + CheckedSub<Output = Self>
     + CheckedMul<Output = Self>
+    + Mul<Output = Self>
     + CheckedDiv<Output = Self>
     + Saturating
 {

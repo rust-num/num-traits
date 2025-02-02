@@ -67,8 +67,22 @@ macro_rules! mul_add_impl {
     )*}
 }
 
+macro_rules! nonzero_mul_add_impl {
+    ($trait_name:ident for $($t:ty)*) => {$(
+        impl $trait_name for core::num::NonZero<$t> {
+            type Output = Self;
+
+            #[inline]
+            fn mul_add(self, a: Self, b: Self) -> Self::Output {
+                core::num::NonZero::new((self.get() * a.get()) + b.get()).expect("non zero mul add is non zero")
+            }
+        }
+    )*}
+}
+
 mul_add_impl!(MulAdd for isize i8 i16 i32 i64 i128);
 mul_add_impl!(MulAdd for usize u8 u16 u32 u64 u128);
+nonzero_mul_add_impl!(MulAdd for usize u8 u16 u32 u64 u128);
 
 #[cfg(any(feature = "std", feature = "libm"))]
 impl MulAddAssign<f32, f32> for f32 {
@@ -97,8 +111,20 @@ macro_rules! mul_add_assign_impl {
     )*}
 }
 
+macro_rules! nonzero_mul_add_assign_impl {
+    ($trait_name:ident for $($t:ty)*) => {$(
+        impl $trait_name for core::num::NonZero<$t> {
+            #[inline]
+            fn mul_add_assign(&mut self, a: Self, b: Self) {
+                *self = core::num::NonZero::new((self.get() * a.get()) + b.get()).expect("non zero mul add assign is non zero")
+            }
+        }
+    )*}
+}
+
 mul_add_assign_impl!(MulAddAssign for isize i8 i16 i32 i64 i128);
 mul_add_assign_impl!(MulAddAssign for usize u8 u16 u32 u64 u128);
+nonzero_mul_add_assign_impl!(MulAddAssign for usize u8 u16 u32 u64 u128);
 
 #[cfg(test)]
 mod tests {
