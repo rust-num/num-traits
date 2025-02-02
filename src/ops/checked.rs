@@ -2,21 +2,28 @@ use core::ops::{Add, Div, Mul, Rem, Shl, Shr, Sub};
 
 /// Performs addition, returning `None` if overflow occurred.
 // FIXME: With a major version bump, this should not require `Add` supertrait
+#[cfg(not(feature = "unstable_1"))]
 pub trait CheckedAdd: Sized + Add<Self, Output = Self> {
     /// Adds two numbers, checking for overflow. If overflow happens, `None` is
     /// returned.
     fn checked_add(&self, v: &Self) -> Option<Self>;
 }
 
-pub trait BaseCheckedAdd: Sized {
+/// Performs addition, returning `None` if overflow occurred.
+#[cfg(feature = "unstable_1")]
+pub trait CheckedAdd: Sized {
+    type Output;
     /// Adds two numbers, checking for overflow. If overflow happens, `None` is
     /// returned.
-    fn checked_add(&self, v: &Self) -> Option<Self>;
+    fn checked_add(&self, v: &Self) -> Option<Self::Output>;
 }
+
 
 macro_rules! checked_impl {
     ($trait_name:ident, $method:ident, $t:ty) => {
         impl $trait_name for $t {
+            #[cfg(feature = "unstable_1")]
+            type Output = $t;
             #[inline]
             fn $method(&self, v: &$t) -> Option<$t> {
                 <$t>::$method(*self, *v)
@@ -45,12 +52,16 @@ checked_impl!(CheckedAdd, checked_add, u64);
 checked_impl!(CheckedAdd, checked_add, usize);
 checked_impl!(CheckedAdd, checked_add, u128);
 
-nonzero_checked_impl!(BaseCheckedAdd, checked_add, u8);
-nonzero_checked_impl!(BaseCheckedAdd, checked_add, u16);
-nonzero_checked_impl!(BaseCheckedAdd, checked_add, u32);
-nonzero_checked_impl!(BaseCheckedAdd, checked_add, u64);
-nonzero_checked_impl!(BaseCheckedAdd, checked_add, usize);
-nonzero_checked_impl!(BaseCheckedAdd, checked_add, u128);
+mod non_zero {
+    use super::*;
+    nonzero_checked_impl!(CheckedAdd, checked_add, u8);
+    nonzero_checked_impl!(CheckedAdd, checked_add, u16);
+    nonzero_checked_impl!(CheckedAdd, checked_add, u32);
+    nonzero_checked_impl!(CheckedAdd, checked_add, u64);
+    nonzero_checked_impl!(CheckedAdd, checked_add, usize);
+    nonzero_checked_impl!(CheckedAdd, checked_add, u128);
+}
+
 
 checked_impl!(CheckedAdd, checked_add, i8);
 checked_impl!(CheckedAdd, checked_add, i16);
@@ -73,6 +84,10 @@ checked_impl!(CheckedSub, checked_sub, u64);
 checked_impl!(CheckedSub, checked_sub, usize);
 checked_impl!(CheckedSub, checked_sub, u128);
 
+mod nonzero {
+    
+}
+
 checked_impl!(CheckedSub, checked_sub, i8);
 checked_impl!(CheckedSub, checked_sub, i16);
 checked_impl!(CheckedSub, checked_sub, i32);
@@ -82,17 +97,23 @@ checked_impl!(CheckedSub, checked_sub, i128);
 
 /// Performs multiplication, returning `None` if overflow occurred.
 //FIXME: With a major version bump, this should not require `Mul` supertrait
+#[cfg(not(feature = "unstable_1"))]
 pub trait CheckedMul: Sized + Mul<Self, Output = Self> {
     /// Multiplies two numbers, checking for overflow. If overflow happens,
     /// `None` is returned.
     fn checked_mul(&self, v: &Self) -> Option<Self>;
 }
 
-pub trait BaseCheckedMul: Sized {
+/// Performs multiplication, returning `None` if overflow occurred.
+//FIXME: With a major version bump, this should not require `Mul` supertrait
+#[cfg(any(feature = "unstable_1"))]
+pub trait CheckedMul: Sized {
+    type Output;
     /// Multiplies two numbers, checking for overflow. If overflow happens,
     /// `None` is returned.
-    fn checked_mul(&self, v: &Self) -> Option<Self>;
+    fn checked_mul(&self, v: &Self) -> Option<Self::Output>;
 }
+
 
 checked_impl!(CheckedMul, checked_mul, u8);
 checked_impl!(CheckedMul, checked_mul, u16);
@@ -101,12 +122,15 @@ checked_impl!(CheckedMul, checked_mul, u64);
 checked_impl!(CheckedMul, checked_mul, usize);
 checked_impl!(CheckedMul, checked_mul, u128);
 
-nonzero_checked_impl!(BaseCheckedMul, checked_mul, u8);
-nonzero_checked_impl!(BaseCheckedMul, checked_mul, u16);
-nonzero_checked_impl!(BaseCheckedMul, checked_mul, u32);
-nonzero_checked_impl!(BaseCheckedMul, checked_mul, u64);
-nonzero_checked_impl!(BaseCheckedMul, checked_mul, usize);
-nonzero_checked_impl!(BaseCheckedMul, checked_mul, u128);
+mod nonzero {
+    use super::*;
+    nonzero_checked_impl!(CheckedMul, checked_mul, u8);
+    nonzero_checked_impl!(CheckedMul, checked_mul, u16);
+    nonzero_checked_impl!(CheckedMul, checked_mul, u32);
+    nonzero_checked_impl!(CheckedMul, checked_mul, u64);
+    nonzero_checked_impl!(CheckedMul, checked_mul, usize);
+    nonzero_checked_impl!(CheckedMul, checked_mul, u128);
+}
 
 checked_impl!(CheckedMul, checked_mul, i8);
 checked_impl!(CheckedMul, checked_mul, i16);
