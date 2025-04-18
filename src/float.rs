@@ -401,6 +401,29 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
         }
     }
 
+    /// Rounds to the nearest integer, with ties biasing towards an even result.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use num_traits::float::FloatCore;
+    ///
+    /// fn check<T: FloatCore>(x: T, rounded: T) {
+    ///     assert!(x.round_ties_even() == rounded);
+    /// }
+    ///
+    /// check(1.0f32, 1.0);
+    /// check(1.25f32, 1.0);
+    /// check(1.75f32, 2.0);
+    /// check(1.5f32, 2.0);
+    /// check(2.5f32, 2.0);
+    /// check(3.5f32, 4.0);
+    /// check(-3.5f32, -4.0);
+    /// ```
+    fn round_ties_even(self) -> Self {
+        round_ties_even_impl!(self)
+    }
+
     /// Return the integer part of a number.
     ///
     /// # Examples
@@ -844,6 +867,11 @@ impl FloatCore for f32 {
         Self::powi(self, n: i32) -> Self;
     }
 
+    #[cfg(all(feature = "std", has_round_ties_even))]
+    forward! {
+        Self::round_ties_even(self) -> Self;
+    }
+
     #[cfg(all(not(feature = "std"), feature = "libm"))]
     forward! {
         libm::floorf as floor(self) -> Self;
@@ -904,6 +932,11 @@ impl FloatCore for f64 {
         Self::abs(self) -> Self;
         Self::signum(self) -> Self;
         Self::powi(self, n: i32) -> Self;
+    }
+
+    #[cfg(all(feature = "std", has_round_ties_even))]
+    forward! {
+        Self::round_ties_even(self) -> Self;
     }
 
     #[cfg(all(not(feature = "std"), feature = "libm"))]
@@ -1194,6 +1227,29 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// assert_eq!(g.round(), -3.0);
     /// ```
     fn round(self) -> Self;
+
+    /// Rounds to the nearest integer, with ties biasing towards an even result.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use num_traits::Float;
+    ///
+    /// fn check<T: Float>(x: T, rounded: T) {
+    ///     assert!(x.round_ties_even() == rounded);
+    /// }
+    ///
+    /// check(1.0f32, 1.0);
+    /// check(1.25f32, 1.0);
+    /// check(1.75f32, 2.0);
+    /// check(1.5f32, 2.0);
+    /// check(2.5f32, 2.0);
+    /// check(3.5f32, 4.0);
+    /// check(-3.5f32, -4.0);
+    /// ```
+    fn round_ties_even(self) -> Self {
+        round_ties_even_impl!(self)
+    }
 
     /// Return the integer part of a number.
     ///
@@ -1989,6 +2045,11 @@ macro_rules! float_impl_std {
                 Self::atanh(self) -> Self;
                 Self::copysign(self, sign: Self) -> Self;
             }
+
+            #[cfg(has_round_ties_even)]
+            forward! {
+                Self::round_ties_even(self) -> Self;
+            }
         }
     };
 }
@@ -2509,5 +2570,171 @@ mod tests {
         check_gt(1.0_f32, -f32::NAN);
         check_lt(f32::INFINITY, f32::NAN);
         check_gt(f32::NAN, 1.0_f32);
+    }
+
+    /// Compares the fallback implementation of [`round_ties_even`] to the one provided by `f32`.`
+    ///
+    /// [`round_ties_even`]: crate::float::FloatCore::round_ties_even
+    #[cfg(has_round_ties_even)]
+    #[test]
+    fn round_ties_even() {
+        mod wrapped_f32 {
+            use crate::{float::FloatCore, Num, NumCast, One, ToPrimitive, Zero};
+            use core::ops::{Add, Div, Mul, Neg, Rem, Sub};
+
+            #[derive(Clone, Copy, PartialEq, PartialOrd, Debug)]
+            pub struct WrappedF32(pub f32);
+
+            impl ToPrimitive for WrappedF32 {
+                fn to_i64(&self) -> Option<i64> {
+                    f32::to_i64(&self.0)
+                }
+
+                fn to_u64(&self) -> Option<u64> {
+                    f32::to_u64(&self.0)
+                }
+            }
+
+            impl NumCast for WrappedF32 {
+                fn from<T: crate::ToPrimitive>(n: T) -> Option<Self> {
+                    Some(Self(<f32 as NumCast>::from(n)?))
+                }
+            }
+
+            impl Neg for WrappedF32 {
+                type Output = Self;
+
+                fn neg(self) -> Self::Output {
+                    Self(self.0.neg())
+                }
+            }
+
+            impl Mul for WrappedF32 {
+                type Output = Self;
+
+                fn mul(self, rhs: Self) -> Self::Output {
+                    Self(f32::mul(self.0, rhs.0))
+                }
+            }
+
+            impl Add for WrappedF32 {
+                type Output = Self;
+
+                fn add(self, rhs: Self) -> Self::Output {
+                    Self(f32::add(self.0, rhs.0))
+                }
+            }
+
+            impl Rem for WrappedF32 {
+                type Output = Self;
+
+                fn rem(self, rhs: Self) -> Self::Output {
+                    Self(f32::rem(self.0, rhs.0))
+                }
+            }
+
+            impl Div for WrappedF32 {
+                type Output = Self;
+
+                fn div(self, rhs: Self) -> Self::Output {
+                    Self(f32::div(self.0, rhs.0))
+                }
+            }
+
+            impl Sub for WrappedF32 {
+                type Output = Self;
+
+                fn sub(self, rhs: Self) -> Self::Output {
+                    Self(f32::sub(self.0, rhs.0))
+                }
+            }
+
+            impl One for WrappedF32 {
+                fn one() -> Self {
+                    Self(f32::one())
+                }
+            }
+
+            impl Zero for WrappedF32 {
+                fn zero() -> Self {
+                    Self(f32::zero())
+                }
+
+                fn is_zero(&self) -> bool {
+                    self.0.is_zero()
+                }
+            }
+
+            impl Num for WrappedF32 {
+                type FromStrRadixErr = <f32 as Num>::FromStrRadixErr;
+
+                fn from_str_radix(str: &str, radix: u32) -> Result<Self, Self::FromStrRadixErr> {
+                    Ok(Self(f32::from_str_radix(str, radix)?))
+                }
+            }
+
+            impl FloatCore for WrappedF32 {
+                fn infinity() -> Self {
+                    Self(f32::infinity())
+                }
+
+                fn neg_infinity() -> Self {
+                    Self(f32::neg_infinity())
+                }
+
+                fn nan() -> Self {
+                    Self(f32::nan())
+                }
+
+                fn neg_zero() -> Self {
+                    Self(f32::neg_zero())
+                }
+
+                fn min_value() -> Self {
+                    Self(f32::min_value())
+                }
+
+                fn min_positive_value() -> Self {
+                    Self(f32::min_positive_value())
+                }
+
+                fn epsilon() -> Self {
+                    Self(f32::epsilon())
+                }
+
+                fn max_value() -> Self {
+                    Self(f32::max_value())
+                }
+
+                fn classify(self) -> core::num::FpCategory {
+                    f32::classify(self.0)
+                }
+
+                fn to_degrees(self) -> Self {
+                    Self(f32::to_degrees(self.0))
+                }
+
+                fn to_radians(self) -> Self {
+                    Self(f32::to_radians(self.0))
+                }
+
+                fn integer_decode(self) -> (u64, i16, i8) {
+                    f32::integer_decode(self.0)
+                }
+            }
+        }
+
+        use crate::float::FloatCore;
+        use wrapped_f32::WrappedF32;
+
+        for x in [
+            -5.0, -4.5, -4.0, -3.5, -3.0, -2.5, -2.0, -1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5, 2.0,
+            2.5, 3.0, 3.5, 4.0, 4.5, 5.0,
+        ] {
+            for dx in -250_000..=250_000 {
+                let y = x + (dx as f32 / 1_000_000.0);
+                assert_eq!(WrappedF32(y).round_ties_even().0, y.round_ties_even());
+            }
+        }
     }
 }

@@ -42,3 +42,31 @@ macro_rules! constant {
             }
         )*};
 }
+
+/// Pulling out the inner implementation of a default `round_ties_even` to allow
+/// reuse across the various relevant traits.
+macro_rules! round_ties_even_impl {
+    ($self:ident) => {{
+        let half = (Self::one() + Self::one()).recip();
+
+        if $self.fract().abs() != half {
+            $self.round()
+        } else {
+            let i = $self.abs().trunc();
+
+            let value = if (i * half).fract() == half {
+                // -1.5, 1.5, 3.5, ...
+                $self.abs() + half
+            } else {
+                // -0.5, 0.5, 2.5, ...
+                $self.abs() - half
+            };
+
+            if $self.signum() != value.signum() {
+                -value
+            } else {
+                value
+            }
+        }
+    }};
+}
