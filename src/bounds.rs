@@ -262,3 +262,17 @@ fn func_call_const_bounded() {
     require_const_bounded(&42usize);
     require_const_bounded(&3.1415f32);
 }
+
+#[test]
+fn parity_between_bounded_and_const_bounded() {
+    macro_rules! test_parity_between_bounded_and_const_bounded {
+        ($($t:ty)+) => {
+            $(
+                assert_eq!(<$t as ConstLowerBounded>::MIN, <$t as LowerBounded>::min_value());
+                assert_eq!(<$t as ConstUpperBounded>::MAX, <$t as UpperBounded>::max_value());
+            )+
+        };
+    }
+
+    test_parity_between_bounded_and_const_bounded!(usize u8 u16 u32 u64 u128 isize i8 i16 i32 i64 i128 f32 f64);
+}
