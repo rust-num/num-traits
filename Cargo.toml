@@ -32,3 +32,4 @@ i128 = []
 
 [build-dependencies]
 autocfg = "1"
+tempfile = "3"
