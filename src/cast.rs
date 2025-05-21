@@ -16,39 +16,39 @@ use core::{u128, u16, u32, u64, u8, usize};
 /// even a large `f64` saturating to `f32` infinity.
 pub trait ToPrimitive {
     /// Converts the value of `self` to an `isize`. If the value cannot be
-    /// represented by an `isize`, then `None` is returned.
+    /// represented by an `isize`, `None` is returned.
     #[inline]
     fn to_isize(&self) -> Option<isize> {
         self.to_i64().as_ref().and_then(ToPrimitive::to_isize)
     }
 
     /// Converts the value of `self` to an `i8`. If the value cannot be
-    /// represented by an `i8`, then `None` is returned.
+    /// represented by an `i8`, `None` is returned.
     #[inline]
     fn to_i8(&self) -> Option<i8> {
         self.to_i64().as_ref().and_then(ToPrimitive::to_i8)
     }
 
     /// Converts the value of `self` to an `i16`. If the value cannot be
-    /// represented by an `i16`, then `None` is returned.
+    /// represented by an `i16`, `None` is returned.
     #[inline]
     fn to_i16(&self) -> Option<i16> {
         self.to_i64().as_ref().and_then(ToPrimitive::to_i16)
     }
 
     /// Converts the value of `self` to an `i32`. If the value cannot be
-    /// represented by an `i32`, then `None` is returned.
+    /// represented by an `i32`, `None` is returned.
     #[inline]
     fn to_i32(&self) -> Option<i32> {
         self.to_i64().as_ref().and_then(ToPrimitive::to_i32)
     }
 
     /// Converts the value of `self` to an `i64`. If the value cannot be
-    /// represented by an `i64`, then `None` is returned.
+    /// represented by an `i64`, `None` is returned.
     fn to_i64(&self) -> Option<i64>;
 
     /// Converts the value of `self` to an `i128`. If the value cannot be
-    /// represented by an `i128` (`i64` under the default implementation), then
+    /// represented by an `i128` (`i64` under the default implementation),
     /// `None` is returned.
     ///
     /// The default implementation converts through `to_i64()`. Types implementing
@@ -59,39 +59,39 @@ pub trait ToPrimitive {
     }
 
     /// Converts the value of `self` to a `usize`. If the value cannot be
-    /// represented by a `usize`, then `None` is returned.
+    /// represented by a `usize`, `None` is returned.
     #[inline]
     fn to_usize(&self) -> Option<usize> {
         self.to_u64().as_ref().and_then(ToPrimitive::to_usize)
     }
 
     /// Converts the value of `self` to a `u8`. If the value cannot be
-    /// represented by a `u8`, then `None` is returned.
+    /// represented by a `u8`, `None` is returned.
     #[inline]
     fn to_u8(&self) -> Option<u8> {
         self.to_u64().as_ref().and_then(ToPrimitive::to_u8)
     }
 
     /// Converts the value of `self` to a `u16`. If the value cannot be
-    /// represented by a `u16`, then `None` is returned.
+    /// represented by a `u16`, `None` is returned.
     #[inline]
     fn to_u16(&self) -> Option<u16> {
         self.to_u64().as_ref().and_then(ToPrimitive::to_u16)
     }
 
     /// Converts the value of `self` to a `u32`. If the value cannot be
-    /// represented by a `u32`, then `None` is returned.
+    /// represented by a `u32`, `None` is returned.
     #[inline]
     fn to_u32(&self) -> Option<u32> {
         self.to_u64().as_ref().and_then(ToPrimitive::to_u32)
     }
 
     /// Converts the value of `self` to a `u64`. If the value cannot be
-    /// represented by a `u64`, then `None` is returned.
+    /// represented by a `u64`, `None` is returned.
     fn to_u64(&self) -> Option<u64>;
 
     /// Converts the value of `self` to a `u128`. If the value cannot be
-    /// represented by a `u128` (`u64` under the default implementation), then
+    /// represented by a `u128` (`u64` under the default implementation),
     /// `None` is returned.
     ///
     /// The default implementation converts through `to_u64()`. Types implementing
@@ -386,39 +386,45 @@ impl_to_primitive_float!(f64);
 /// even a large `f64` saturating to `f32` infinity.
 pub trait FromPrimitive: Sized {
     /// Converts an `isize` to return an optional value of this type. If the
-    /// value cannot be represented by this type, then `None` is returned.
+    /// value cannot be represented by this type, `None` is returned.
+    /// See `Self` type or trait implementation for details.
     #[inline]
     fn from_isize(n: isize) -> Option<Self> {
         n.to_i64().and_then(FromPrimitive::from_i64)
     }
 
     /// Converts an `i8` to return an optional value of this type. If the
-    /// value cannot be represented by this type, then `None` is returned.
+    /// value cannot be represented by this type, `None` is returned.
+    /// See `Self` type or trait implementation for details.
     #[inline]
     fn from_i8(n: i8) -> Option<Self> {
         FromPrimitive::from_i64(From::from(n))
     }
 
     /// Converts an `i16` to return an optional value of this type. If the
-    /// value cannot be represented by this type, then `None` is returned.
+    /// value cannot be represented by this type, `None` is returned.
+    /// See `Self` type or trait implementation for details.
     #[inline]
     fn from_i16(n: i16) -> Option<Self> {
         FromPrimitive::from_i64(From::from(n))
     }
 
     /// Converts an `i32` to return an optional value of this type. If the
-    /// value cannot be represented by this type, then `None` is returned.
+    /// value cannot be represented by this type, `None` is returned.
+    /// See `Self` type or trait implementation for details.
     #[inline]
     fn from_i32(n: i32) -> Option<Self> {
         FromPrimitive::from_i64(From::from(n))
     }
 
     /// Converts an `i64` to return an optional value of this type. If the
-    /// value cannot be represented by this type, then `None` is returned.
+    /// value cannot be represented by this type, `None` is returned.
+    /// See `Self` type or trait implementation for details.
     fn from_i64(n: i64) -> Option<Self>;
 
     /// Converts an `i128` to return an optional value of this type. If the
-    /// value cannot be represented by this type, then `None` is returned.
+    /// value cannot be represented by this type, `None` is returned.
+    /// See `Self` type or trait implementation for details.
     ///
     /// The default implementation converts through `from_i64()`. Types implementing
     /// this trait should override this method if they can represent a greater range.
@@ -428,39 +434,45 @@ pub trait FromPrimitive: Sized {
     }
 
     /// Converts a `usize` to return an optional value of this type. If the
-    /// value cannot be represented by this type, then `None` is returned.
+    /// value cannot be represented by this type, `None` is returned.
+    /// See `Self` type or trait implementation for details.
     #[inline]
     fn from_usize(n: usize) -> Option<Self> {
         n.to_u64().and_then(FromPrimitive::from_u64)
     }
 
     /// Converts an `u8` to return an optional value of this type. If the
-    /// value cannot be represented by this type, then `None` is returned.
+    /// value cannot be represented by this type, `None` is returned.
+    /// See `Self` type or trait implementation for details.
     #[inline]
     fn from_u8(n: u8) -> Option<Self> {
         FromPrimitive::from_u64(From::from(n))
     }
 
     /// Converts an `u16` to return an optional value of this type. If the
-    /// value cannot be represented by this type, then `None` is returned.
+    /// value cannot be represented by this type, `None` is returned.
+    /// See `Self` type or trait implementation for details.
     #[inline]
     fn from_u16(n: u16) -> Option<Self> {
         FromPrimitive::from_u64(From::from(n))
     }
 
     /// Converts an `u32` to return an optional value of this type. If the
-    /// value cannot be represented by this type, then `None` is returned.
+    /// value cannot be represented by this type, `None` is returned.
+    /// See `Self` type or trait implementation for details.
     #[inline]
     fn from_u32(n: u32) -> Option<Self> {
         FromPrimitive::from_u64(From::from(n))
     }
 
     /// Converts an `u64` to return an optional value of this type. If the
-    /// value cannot be represented by this type, then `None` is returned.
+    /// value cannot be represented by this type, `None` is returned.
+    /// See `Self` type or trait implementation for details.
     fn from_u64(n: u64) -> Option<Self>;
 
     /// Converts an `u128` to return an optional value of this type. If the
-    /// value cannot be represented by this type, then `None` is returned.
+    /// value cannot be represented by this type, `None` is returned.
+    /// See `Self` type or trait implementation for details.
     ///
     /// The default implementation converts through `from_u64()`. Types implementing
     /// this trait should override this method if they can represent a greater range.
@@ -470,14 +482,16 @@ pub trait FromPrimitive: Sized {
     }
 
     /// Converts a `f32` to return an optional value of this type. If the
-    /// value cannot be represented by this type, then `None` is returned.
+    /// value cannot be represented by this type, `None` is returned.
+    /// See `Self` type or trait implementation for details.
     #[inline]
     fn from_f32(n: f32) -> Option<Self> {
         FromPrimitive::from_f64(From::from(n))
     }
 
     /// Converts a `f64` to return an optional value of this type. If the
-    /// value cannot be represented by this type, then `None` is returned.
+    /// value cannot be represented by this type, `None` is returned.
+    /// See `Self` type or trait implementation for details.
     ///
     /// The default implementation tries to convert through `from_i64()`, and
     /// failing that through `from_u64()`. Types implementing this trait should
@@ -653,7 +667,7 @@ pub fn cast<T: NumCast, U: NumCast>(n: T) -> Option<U> {
 pub trait NumCast: Sized + ToPrimitive {
     /// Creates a number from another value that can be converted into
     /// a primitive via the `ToPrimitive` trait. If the source value cannot be
-    /// represented by the target type, then `None` is returned.
+    /// represented by the target type, `None` is returned.
     ///
     /// A value can be represented by the target type when it lies within
     /// the range of scalars supported by the target type.
