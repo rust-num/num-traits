@@ -16,9 +16,9 @@ use crate::{Num, NumCast};
 /// and behave like builtin integers. Furthermore, the types are expected to expose the integer
 /// value in binary representation and support bitwise operators. The standard bitwise operations
 /// (e.g., bitwise-and, bitwise-or, right-shift, left-shift) are inherited and the trait extends
-/// these with introspective queries (e.g., `PrimInt::count_ones()`, `PrimInt::leading_zeros()`),
-/// bitwise combinators (e.g., `PrimInt::rotate_left()`), and endianness converters (e.g.,
-/// `PrimInt::to_be()`).
+/// these with introspective queries (e.g., [`PrimInt::count_ones()`], [`PrimInt::leading_zeros()`]),
+/// bitwise combinators (e.g., [`PrimInt::rotate_left()`]), and endianness converters (e.g.,
+/// [`PrimInt::to_be()`]).
 ///
 /// All `PrimInt` types are expected to be fixed-width binary integers. The width can be queried
 /// via `T::zero().count_zeros()`. The trait currently lacks a way to query the width at
@@ -171,7 +171,7 @@ pub trait PrimInt:
     /// Shifts the bits to the left by a specified amount, `n`, filling
     /// zeros in the least significant bits.
     ///
-    /// This is bitwise equivalent to signed `Shl`.
+    /// This is bitwise equivalent to signed [`Shl`].
     ///
     /// # Examples
     ///
@@ -188,7 +188,7 @@ pub trait PrimInt:
     /// Shifts the bits to the right by a specified amount, `n`, copying
     /// the "sign bit" in the most significant bits even for unsigned types.
     ///
-    /// This is bitwise equivalent to signed `Shr`.
+    /// This is bitwise equivalent to signed [`Shr`].
     ///
     /// # Examples
     ///
@@ -205,7 +205,7 @@ pub trait PrimInt:
     /// Shifts the bits to the left by a specified amount, `n`, filling
     /// zeros in the least significant bits.
     ///
-    /// This is bitwise equivalent to unsigned `Shl`.
+    /// This is bitwise equivalent to unsigned [`Shl`].
     ///
     /// # Examples
     ///
@@ -222,7 +222,7 @@ pub trait PrimInt:
     /// Shifts the bits to the right by a specified amount, `n`, filling
     /// zeros in the most significant bits.
     ///
-    /// This is bitwise equivalent to unsigned `Shr`.
+    /// This is bitwise equivalent to unsigned [`Shr`].
     ///
     /// # Examples
     ///
