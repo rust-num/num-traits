@@ -328,10 +328,10 @@ fn newtype_from_primitive() {
 
     macro_rules! assert_eq_from {
         ($( $from:ident )+) => {$(
-            assert_eq!(T::$from(Bounded::min_value()).map(New),
-                       New::<T>::$from(Bounded::min_value()));
-            assert_eq!(T::$from(Bounded::max_value()).map(New),
-                       New::<T>::$from(Bounded::max_value()));
+            assert_eq!(T::$from(Bounded::MIN).map(New),
+                       New::<T>::$from(Bounded::MIN));
+            assert_eq!(T::$from(Bounded::MAX).map(New),
+                       New::<T>::$from(Bounded::MAX));
         )+}
     }
 
@@ -366,10 +366,10 @@ fn newtype_to_primitive() {
 
     macro_rules! assert_eq_to {
         ($( $to:ident )+) => {$(
-            assert_eq!(T::$to(&Bounded::min_value()),
-                       New::<T>::$to(&New(Bounded::min_value())));
-            assert_eq!(T::$to(&Bounded::max_value()),
-                       New::<T>::$to(&New(Bounded::max_value())));
+            assert_eq!(T::$to(&Bounded::MIN),
+                       New::<T>::$to(&New(Bounded::MIN)));
+            assert_eq!(T::$to(&Bounded::MAX),
+                       New::<T>::$to(&New(Bounded::MAX)));
         )+}
     }
 
