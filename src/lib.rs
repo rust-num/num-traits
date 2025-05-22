@@ -10,6 +10,8 @@
 
 //! Numeric traits for generic mathematics
 //!
+//! See the [`num-integer`](https://docs.rs/num-integer/) crate for the `Integer` trait.
+//!
 //! ## Compatibility
 //!
 //! The `num-traits` crate is tested for rustc 1.60 and greater.
