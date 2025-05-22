@@ -7,6 +7,8 @@
 
 Numeric traits for generic mathematics in Rust.
 
+See the [`num-integer`](https://docs.rs/num-integer/) crate for the `Integer` trait.
+
 ## Usage
 
 Add this to your `Cargo.toml`:
