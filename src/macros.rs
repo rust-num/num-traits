@@ -3,6 +3,13 @@
 
 /// Forward a method to an inherent method or a base trait method.
 macro_rules! forward {
+    ($( unsafe $imp:path as $method:ident ( self $( , $arg:ident : $ty:ty )* ) -> $ret:ty ; )*)
+        => {$(
+            #[inline]
+            fn $method(self $( , $arg : $ty )* ) -> $ret {
+                unsafe { $imp(self $( , $arg )* ) }
+            }
+        )*};
     ($( Self :: $method:ident ( self $( , $arg:ident : $ty:ty )* ) -> $ret:ty ; )*)
         => {$(
             #[inline]
@@ -29,6 +36,16 @@ macro_rules! forward {
             #[inline]
             fn $method(self $( , $arg : $ty )* ) -> $ret {
                 $imp(self $( , $arg )* )
+            }
+        )*};
+}
+
+macro_rules! cast_forward_cast {
+    ($( [$cast:ty] $imp:path as $method:ident ( self $( , $arg:ident : $ty:ty )* ) -> $ret:ty ; )*)
+        => {$(
+            #[inline]
+            fn $method(self $( , $arg : $ty )* ) -> $ret {
+                $imp(self as $cast $( , $arg as $cast)* ) as $ret
             }
         )*};
 }
