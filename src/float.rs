@@ -852,8 +852,20 @@ impl FloatCore for f16 {
         Self::powi(self, n: i32) -> Self;
     }
 
-    // TODO:
-    // use floor, ceil, round, trunc, abs and fract provided by libm
+    #[cfg(all(not(feature = "std"), feature = "libm"))]
+    forward! {
+        libm::floorf16 as floor(self) -> Self;
+        libm::ceilf16 as ceil(self) -> Self;
+        libm::roundf16 as round(self) -> Self;
+        libm::truncf16 as trunc(self) -> Self;
+        libm::fabsf16 as abs(self) -> Self;
+    }
+
+    #[cfg(all(not(feature = "std"), feature = "libm"))]
+    #[inline]
+    fn fract(self) -> Self {
+        self - libm::truncf16(self)
+    }
 }
 
 impl FloatCore for f32 {
@@ -1026,8 +1038,24 @@ impl FloatCore for f128 {
         Self::powi(self, n: i32) -> Self;
     }
 
-    // TODO:
-    // use floor, ceil, round, trunc, abs and fract provided by libm
+    #[cfg(all(not(feature = "std"), feature = "libm"))]
+    forward! {
+        libm::floorf128 as floor(self) -> Self;
+        libm::ceilf128 as ceil(self) -> Self;
+        libm::roundf128 as round(self) -> Self;
+        libm::truncf128 as trunc(self) -> Self;
+    }
+
+    #[cfg(all(not(feature = "std"), feature = "libm"))]
+    forward! {
+        f128::abs as abs(self) -> Self;
+    }
+
+    #[cfg(all(not(feature = "std"), feature = "libm"))]
+    #[inline]
+    fn fract(self) -> Self {
+        self - libm::truncf128(self)
+    }
 }
 
 // FIXME: these doctests aren't actually helpful, because they're using and
@@ -2233,6 +2261,63 @@ float_impl_std!(f64 integer_decode_f64);
 float_impl_std!(f128 integer_decode_f128_truncated);
 
 #[cfg(all(not(feature = "std"), feature = "libm"))]
+impl Float for f16 {
+    float_impl_libm!(f16 integer_decode_f16);
+
+    #[inline]
+    #[allow(deprecated)]
+    fn abs_sub(self, other: Self) -> Self {
+        libm::fdimf16(self, other)
+    }
+
+    forward! {
+        libm::floorf16 as floor(self) -> Self;
+        libm::ceilf16 as ceil(self) -> Self;
+        libm::roundf16 as round(self) -> Self;
+        libm::truncf16 as trunc(self) -> Self;
+    }
+
+    cast_forward_cast! {
+        [f32] libm::fmaf as mul_add(self, a: Self, b: Self) -> Self;
+        [f32] libm::powf as powf(self, n: Self) -> Self;
+        [f32] libm::sqrtf as sqrt(self) -> Self;
+        [f32] libm::expf as exp(self) -> Self;
+        [f32] libm::exp2f as exp2(self) -> Self;
+        [f32] libm::logf as ln(self) -> Self;
+        [f32] libm::log2f as log2(self) -> Self;
+        [f32] libm::log10f as log10(self) -> Self;
+        [f32] libm::cbrtf as cbrt(self) -> Self;
+        [f32] libm::hypotf as hypot(self, other: Self) -> Self;
+        [f32] libm::sinf as sin(self) -> Self;
+        [f32] libm::cosf as cos(self) -> Self;
+        [f32] libm::tanf as tan(self) -> Self;
+        [f32] libm::asinf as asin(self) -> Self;
+        [f32] libm::acosf as acos(self) -> Self;
+        [f32] libm::atanf as atan(self) -> Self;
+        [f32] libm::atan2f as atan2(self, other: Self) -> Self;
+        [f32] libm::expm1f as exp_m1(self) -> Self;
+        [f32] libm::log1pf as ln_1p(self) -> Self;
+        [f32] libm::sinhf as sinh(self) -> Self;
+        [f32] libm::coshf as cosh(self) -> Self;
+        [f32] libm::tanhf as tanh(self) -> Self;
+        [f32] libm::asinhf as asinh(self) -> Self;
+        [f32] libm::acoshf as acosh(self) -> Self;
+        [f32] libm::atanhf as atanh(self) -> Self;
+    }
+
+    forward! {
+        f16::abs as abs(self) -> Self;
+        f16::copysign as copysign(self, other: Self) -> Self;
+    }
+
+    #[inline]
+    fn sin_cos(self) -> (Self, Self) {
+        let (x, y) = libm::sincosf(self as f32);
+        (x as Self, y as Self)
+    }
+}
+
+#[cfg(all(not(feature = "std"), feature = "libm"))]
 impl Float for f32 {
     float_impl_libm!(f32 integer_decode_f32);
 
@@ -2321,6 +2406,63 @@ impl Float for f64 {
         libm::acosh as acosh(self) -> Self;
         libm::atanh as atanh(self) -> Self;
         libm::copysign as copysign(self, sign: Self) -> Self;
+    }
+}
+
+#[cfg(all(not(feature = "std"), feature = "libm"))]
+impl Float for f128 {
+    float_impl_libm!(f128 integer_decode_f128_truncated);
+
+    #[inline]
+    #[allow(deprecated)]
+    fn abs_sub(self, other: Self) -> Self {
+        libm::fdimf128(self, other)
+    }
+
+    forward! {
+        libm::floorf128 as floor(self) -> Self;
+        libm::ceilf128 as ceil(self) -> Self;
+        libm::roundf128 as round(self) -> Self;
+        libm::truncf128 as trunc(self) -> Self;
+    }
+
+    cast_forward_cast! {
+        [f64] libm::pow as powf(self, n: Self) -> Self;
+        [f64] libm::exp as exp(self) -> Self;
+        [f64] libm::exp2 as exp2(self) -> Self;
+        [f64] libm::log as ln(self) -> Self;
+        [f64] libm::log2 as log2(self) -> Self;
+        [f64] libm::log10 as log10(self) -> Self;
+        [f64] libm::cbrt as cbrt(self) -> Self;
+        [f64] libm::hypot as hypot(self, other: Self) -> Self;
+        [f64] libm::sin as sin(self) -> Self;
+        [f64] libm::cos as cos(self) -> Self;
+        [f64] libm::tan as tan(self) -> Self;
+        [f64] libm::asin as asin(self) -> Self;
+        [f64] libm::acos as acos(self) -> Self;
+        [f64] libm::atan as atan(self) -> Self;
+        [f64] libm::atan2 as atan2(self, other: Self) -> Self;
+        [f64] libm::expm1 as exp_m1(self) -> Self;
+        [f64] libm::log1p as ln_1p(self) -> Self;
+        [f64] libm::sinh as sinh(self) -> Self;
+        [f64] libm::cosh as cosh(self) -> Self;
+        [f64] libm::tanh as tanh(self) -> Self;
+        [f64] libm::asinh as asinh(self) -> Self;
+        [f64] libm::acosh as acosh(self) -> Self;
+        [f64] libm::atanh as atanh(self) -> Self;
+    }
+
+    forward! {
+        libm::fmaf128 as mul_add(self, a: Self, b: Self) -> Self;
+        libm::sqrtf128 as sqrt(self) -> Self;
+        f128::abs as abs(self) -> Self;
+        f128::copysign as copysign(self, other: Self) -> Self;
+    }
+
+    #[inline]
+    fn sin_cos(self) -> (Self, Self) {
+        let (x, y) = libm::sincos(self as f64);
+        (x as Self, y as Self)
     }
 }
 
