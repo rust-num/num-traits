@@ -1,5 +1,9 @@
 use core::mem::size_of;
 use core::num::Wrapping;
+use core::num::{
+    NonZeroI128, NonZeroI16, NonZeroI32, NonZeroI64, NonZeroI8, NonZeroIsize, NonZeroU128,
+    NonZeroU16, NonZeroU32, NonZeroU64, NonZeroU8, NonZeroUsize,
+};
 use core::{f32, f64};
 use core::{i128, i16, i32, i64, i8, isize};
 use core::{u128, u16, u32, u64, u8, usize};
@@ -126,9 +130,8 @@ pub trait ToPrimitive {
 }
 
 macro_rules! impl_to_primitive_int_to_int {
-    ($SrcT:ident : $( $(#[$cfg:meta])* fn $method:ident -> $DstT:ident ; )*) => {$(
+    ($SrcT:ident : $( fn $method:ident -> $DstT:ident ; )*) => {$(
         #[inline]
-        $(#[$cfg])*
         fn $method(&self) -> Option<$DstT> {
             let min = $DstT::MIN as $SrcT;
             let max = $DstT::MAX as $SrcT;
@@ -142,9 +145,8 @@ macro_rules! impl_to_primitive_int_to_int {
 }
 
 macro_rules! impl_to_primitive_int_to_uint {
-    ($SrcT:ident : $( $(#[$cfg:meta])* fn $method:ident -> $DstT:ident ; )*) => {$(
+    ($SrcT:ident : $( fn $method:ident -> $DstT:ident ; )*) => {$(
         #[inline]
-        $(#[$cfg])*
         fn $method(&self) -> Option<$DstT> {
             let max = $DstT::MAX as $SrcT;
             if 0 <= *self && (size_of::<$SrcT>() <= size_of::<$DstT>() || *self <= max) {
@@ -197,9 +199,8 @@ impl_to_primitive_int!(i64);
 impl_to_primitive_int!(i128);
 
 macro_rules! impl_to_primitive_uint_to_int {
-    ($SrcT:ident : $( $(#[$cfg:meta])* fn $method:ident -> $DstT:ident ; )*) => {$(
+    ($SrcT:ident : $( fn $method:ident -> $DstT:ident ; )*) => {$(
         #[inline]
-        $(#[$cfg])*
         fn $method(&self) -> Option<$DstT> {
             let max = $DstT::MAX as $SrcT;
             if size_of::<$SrcT>() < size_of::<$DstT>() || *self <= max {
@@ -212,9 +213,8 @@ macro_rules! impl_to_primitive_uint_to_int {
 }
 
 macro_rules! impl_to_primitive_uint_to_uint {
-    ($SrcT:ident : $( $(#[$cfg:meta])* fn $method:ident -> $DstT:ident ; )*) => {$(
+    ($SrcT:ident : $( fn $method:ident -> $DstT:ident ; )*) => {$(
         #[inline]
-        $(#[$cfg])*
         fn $method(&self) -> Option<$DstT> {
             let max = $DstT::MAX as $SrcT;
             if size_of::<$SrcT>() <= size_of::<$DstT>() || *self <= max {
@@ -266,6 +266,54 @@ impl_to_primitive_uint!(u32);
 impl_to_primitive_uint!(u64);
 impl_to_primitive_uint!(u128);
 
+macro_rules! impl_to_primitive_nonzero_to_method {
+    ($SrcT:ident : $( fn $method:ident -> $DstT:ident ; )*) => {$(
+        #[inline]
+        fn $method(&self) -> Option<$DstT> {
+            self.get().$method()
+        }
+    )*}
+}
+
+macro_rules! impl_to_primitive_nonzero {
+    ($T:ident) => {
+        impl ToPrimitive for $T {
+            impl_to_primitive_nonzero_to_method! { $T:
+                fn to_isize -> isize;
+                fn to_i8 -> i8;
+                fn to_i16 -> i16;
+                fn to_i32 -> i32;
+                fn to_i64 -> i64;
+                fn to_i128 -> i128;
+
+                fn to_usize -> usize;
+                fn to_u8 -> u8;
+                fn to_u16 -> u16;
+                fn to_u32 -> u32;
+                fn to_u64 -> u64;
+                fn to_u128 -> u128;
+
+                fn to_f32 -> f32;
+                fn to_f64 -> f64;
+            }
+        }
+    };
+}
+
+impl_to_primitive_nonzero!(NonZeroUsize);
+impl_to_primitive_nonzero!(NonZeroU8);
+impl_to_primitive_nonzero!(NonZeroU16);
+impl_to_primitive_nonzero!(NonZeroU32);
+impl_to_primitive_nonzero!(NonZeroU64);
+impl_to_primitive_nonzero!(NonZeroU128);
+
+impl_to_primitive_nonzero!(NonZeroIsize);
+impl_to_primitive_nonzero!(NonZeroI8);
+impl_to_primitive_nonzero!(NonZeroI16);
+impl_to_primitive_nonzero!(NonZeroI32);
+impl_to_primitive_nonzero!(NonZeroI64);
+impl_to_primitive_nonzero!(NonZeroI128);
+
 macro_rules! impl_to_primitive_float_to_float {
     ($SrcT:ident : $( fn $method:ident -> $DstT:ident ; )*) => {$(
         #[inline]
@@ -286,9 +334,8 @@ macro_rules! float_to_int_unchecked {
 }
 
 macro_rules! impl_to_primitive_float_to_signed_int {
-    ($f:ident : $( $(#[$cfg:meta])* fn $method:ident -> $i:ident ; )*) => {$(
+    ($f:ident : $( fn $method:ident -> $i:ident ; )*) => {$(
         #[inline]
-        $(#[$cfg])*
         fn $method(&self) -> Option<$i> {
             // Float as int truncates toward zero, so we want to allow values
             // in the exclusive range `(MIN-1, MAX+1)`.
@@ -316,9 +363,8 @@ macro_rules! impl_to_primitive_float_to_signed_int {
 }
 
 macro_rules! impl_to_primitive_float_to_unsigned_int {
-    ($f:ident : $( $(#[$cfg:meta])* fn $method:ident -> $u:ident ; )*) => {$(
+    ($f:ident : $( fn $method:ident -> $u:ident ; )*) => {$(
         #[inline]
-        $(#[$cfg])*
         fn $method(&self) -> Option<$u> {
             // Float as int truncates toward zero, so we want to allow values
             // in the exclusive range `(-1, MAX+1)`.
@@ -493,7 +539,6 @@ pub trait FromPrimitive: Sized {
 
 macro_rules! impl_from_primitive {
     ($T:ty, $to_ty:ident) => {
-        #[allow(deprecated)]
         impl FromPrimitive for $T {
             #[inline]
             fn from_isize(n: isize) -> Option<$T> {
@@ -572,10 +617,87 @@ impl_from_primitive!(u128, to_u128);
 impl_from_primitive!(f32, to_f32);
 impl_from_primitive!(f64, to_f64);
 
+macro_rules! impl_from_primitive_nonzero {
+    ($T:ty, $to_ty:ident) => {
+        impl FromPrimitive for $T {
+            #[inline]
+            fn from_isize(n: isize) -> Option<$T> {
+                n.$to_ty().and_then(Self::new)
+            }
+            #[inline]
+            fn from_i8(n: i8) -> Option<$T> {
+                n.$to_ty().and_then(Self::new)
+            }
+            #[inline]
+            fn from_i16(n: i16) -> Option<$T> {
+                n.$to_ty().and_then(Self::new)
+            }
+            #[inline]
+            fn from_i32(n: i32) -> Option<$T> {
+                n.$to_ty().and_then(Self::new)
+            }
+            #[inline]
+            fn from_i64(n: i64) -> Option<$T> {
+                n.$to_ty().and_then(Self::new)
+            }
+            #[inline]
+            fn from_i128(n: i128) -> Option<$T> {
+                n.$to_ty().and_then(Self::new)
+            }
+
+            #[inline]
+            fn from_usize(n: usize) -> Option<$T> {
+                n.$to_ty().and_then(Self::new)
+            }
+            #[inline]
+            fn from_u8(n: u8) -> Option<$T> {
+                n.$to_ty().and_then(Self::new)
+            }
+            #[inline]
+            fn from_u16(n: u16) -> Option<$T> {
+                n.$to_ty().and_then(Self::new)
+            }
+            #[inline]
+            fn from_u32(n: u32) -> Option<$T> {
+                n.$to_ty().and_then(Self::new)
+            }
+            #[inline]
+            fn from_u64(n: u64) -> Option<$T> {
+                n.$to_ty().and_then(Self::new)
+            }
+            #[inline]
+            fn from_u128(n: u128) -> Option<$T> {
+                n.$to_ty().and_then(Self::new)
+            }
+
+            #[inline]
+            fn from_f32(n: f32) -> Option<$T> {
+                n.$to_ty().and_then(Self::new)
+            }
+            #[inline]
+            fn from_f64(n: f64) -> Option<$T> {
+                n.$to_ty().and_then(Self::new)
+            }
+        }
+    };
+}
+
+impl_from_primitive_nonzero!(NonZeroIsize, to_isize);
+impl_from_primitive_nonzero!(NonZeroI8, to_i8);
+impl_from_primitive_nonzero!(NonZeroI16, to_i16);
+impl_from_primitive_nonzero!(NonZeroI32, to_i32);
+impl_from_primitive_nonzero!(NonZeroI64, to_i64);
+impl_from_primitive_nonzero!(NonZeroI128, to_i128);
+impl_from_primitive_nonzero!(NonZeroUsize, to_usize);
+impl_from_primitive_nonzero!(NonZeroU8, to_u8);
+impl_from_primitive_nonzero!(NonZeroU16, to_u16);
+impl_from_primitive_nonzero!(NonZeroU32, to_u32);
+impl_from_primitive_nonzero!(NonZeroU64, to_u64);
+impl_from_primitive_nonzero!(NonZeroU128, to_u128);
+
 macro_rules! impl_to_primitive_wrapping {
-    ($( $(#[$cfg:meta])* fn $method:ident -> $i:ident ; )*) => {$(
+    ($( fn $method:ident -> $i:ident ; )*) => {$(
         #[inline]
-        $(#[$cfg])*
         fn $method(&self) -> Option<$i> {
             (self.0).$method()
         }
@@ -604,9 +726,8 @@ impl<T: ToPrimitive> ToPrimitive for Wrapping<T> {
 }
 
 macro_rules! impl_from_primitive_wrapping {
-    ($( $(#[$cfg:meta])* fn $method:ident ( $i:ident ); )*) => {$(
+    ($( fn $method:ident ( $i:ident ); )*) => {$(
         #[inline]
-        $(#[$cfg])*
         fn $method(n: $i) -> Option<Self> {
             T::$method(n).map(Wrapping)
         }
@@ -670,10 +791,7 @@ macro_rules! impl_num_cast {
     ($T:ty, $conv:ident) => {
         impl NumCast for $T {
             #[inline]
-            #[allow(deprecated)]
             fn from<N: ToPrimitive>(n: N) -> Option<$T> {
-                // `$conv` could be generated using `concat_idents!`, but that
-                // macro seems to be broken at the moment
                 n.$conv()
             }
         }
@@ -694,6 +812,31 @@ impl_num_cast!(i128, to_i128);
 impl_num_cast!(isize, to_isize);
 impl_num_cast!(f32, to_f32);
 impl_num_cast!(f64, to_f64);
+
+macro_rules! impl_num_cast_nonzero {
+    ($T:ty, $conv:ident) => {
+        impl NumCast for $T {
+            #[inline]
+            fn from<N: ToPrimitive>(n: N) -> Option<$T> {
+                n.$conv().and_then(Self::new)
+            }
+        }
+    };
+}
+
+impl_num_cast_nonzero!(NonZeroUsize, to_usize);
+impl_num_cast_nonzero!(NonZeroU8, to_u8);
+impl_num_cast_nonzero!(NonZeroU16, to_u16);
+impl_num_cast_nonzero!(NonZeroU32, to_u32);
+impl_num_cast_nonzero!(NonZeroU64, to_u64);
+impl_num_cast_nonzero!(NonZeroU128, to_u128);
+
+impl_num_cast_nonzero!(NonZeroIsize, to_isize);
+impl_num_cast_nonzero!(NonZeroI8, to_i8);
+impl_num_cast_nonzero!(NonZeroI16, to_i16);
+impl_num_cast_nonzero!(NonZeroI32, to_i32);
+impl_num_cast_nonzero!(NonZeroI64, to_i64);
+impl_num_cast_nonzero!(NonZeroI128, to_i128);
 
 impl<T: NumCast> NumCast for Wrapping<T> {
     fn from<U: ToPrimitive>(n: U) -> Option<Self> {
@@ -736,8 +879,7 @@ where
 }
 
 macro_rules! impl_as_primitive {
-    (@ $T: ty => $(#[$cfg:meta])* impl $U: ty ) => {
-        $(#[$cfg])*
+    (@ $T: ty =>  impl $U: ty ) => {
         impl AsPrimitive<$U> for $T {
             #[inline] fn as_(self) -> $U { self as $U }
         }
