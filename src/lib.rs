@@ -184,6 +184,7 @@ where
     }
 }
 
+#[cfg(has_num_saturating)]
 impl<T: Num> Num for core::num::Saturating<T>
 where
     core::num::Saturating<T>: NumOps,
@@ -581,6 +582,7 @@ fn wrapping_from_str_radix() {
 }
 
 #[test]
+#[cfg(has_num_saturating)]
 fn saturating_is_num() {
     fn require_num<T: Num>(_: &T) {}
     require_num(&core::num::Saturating(42_u32));
@@ -588,6 +590,7 @@ fn saturating_is_num() {
 }
 
 #[test]
+#[cfg(has_num_saturating)]
 fn saturating_from_str_radix() {
     macro_rules! test_saturating_from_str_radix {
         ($($t:ty)+) => {

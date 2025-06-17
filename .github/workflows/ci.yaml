@@ -11,6 +11,7 @@ jobs:
         rust: [
           1.60.0, # MSRV
           1.62.0, # has_total_cmp
+          1.74.0, # has_num_saturating
           stable,
           beta,
           nightly,
