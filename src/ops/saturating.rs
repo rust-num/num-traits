@@ -42,6 +42,17 @@ macro_rules! saturating_impl {
     };
 }
 
+macro_rules! float_saturating_impl {
+    ($trait_name:ident, $method_name:ident, $t:ty, $method:ident) => {
+        impl $trait_name for $t {
+            #[inline]
+            fn $method_name(&self, v: &Self) -> Self {
+                self.$method(v)
+            }
+        }
+    };
+}
+
 /// Performs addition that saturates at the numeric bounds instead of overflowing.
 pub trait SaturatingAdd: Sized + Add<Self, Output = Self> {
     /// Saturating addition. Computes `self + other`, saturating at the relevant high or low boundary of
@@ -62,6 +73,9 @@ saturating_impl!(SaturatingAdd, saturating_add, i32);
 saturating_impl!(SaturatingAdd, saturating_add, i64);
 saturating_impl!(SaturatingAdd, saturating_add, isize);
 saturating_impl!(SaturatingAdd, saturating_add, i128);
+
+float_saturating_impl!(SaturatingAdd, saturating_add, f32, add);
+float_saturating_impl!(SaturatingAdd, saturating_add, f64, add);
 
 /// Performs subtraction that saturates at the numeric bounds instead of overflowing.
 pub trait SaturatingSub: Sized + Sub<Self, Output = Self> {
@@ -84,6 +98,9 @@ saturating_impl!(SaturatingSub, saturating_sub, i64);
 saturating_impl!(SaturatingSub, saturating_sub, isize);
 saturating_impl!(SaturatingSub, saturating_sub, i128);
 
+float_saturating_impl!(SaturatingSub, saturating_sub, f32, sub);
+float_saturating_impl!(SaturatingSub, saturating_sub, f64, sub);
+
 /// Performs multiplication that saturates at the numeric bounds instead of overflowing.
 pub trait SaturatingMul: Sized + Mul<Self, Output = Self> {
     /// Saturating multiplication. Computes `self * other`, saturating at the relevant high or low boundary of
@@ -105,6 +122,9 @@ saturating_impl!(SaturatingMul, saturating_mul, i64);
 saturating_impl!(SaturatingMul, saturating_mul, isize);
 saturating_impl!(SaturatingMul, saturating_mul, i128);
 
+float_saturating_impl!(SaturatingMul, saturating_mul, f32, mul);
+float_saturating_impl!(SaturatingMul, saturating_mul, f64, mul);
+
 // TODO: add SaturatingNeg for signed integer primitives once the saturating_neg() API is stable.
 
 #[test]
@@ -118,13 +138,21 @@ fn test_saturating_traits() {
     fn saturating_mul<T: SaturatingMul>(a: T, b: T) -> T {
         a.saturating_mul(&b)
     }
+
+    const INF: f32 = f32::INFINITY;
     assert_eq!(saturating_add(255, 1), 255u8);
     assert_eq!(saturating_add(127, 1), 127i8);
     assert_eq!(saturating_add(-128, -1), -128i8);
+    assert_eq!(saturating_add(100.0, INF), INF);
+
     assert_eq!(saturating_sub(0, 1), 0u8);
     assert_eq!(saturating_sub(-128, 1), -128i8);
     assert_eq!(saturating_sub(127, -1), 127i8);
+    assert_eq!(saturating_sub(100.0, INF), -INF);
+
     assert_eq!(saturating_mul(255, 2), 255u8);
     assert_eq!(saturating_mul(127, 2), 127i8);
     assert_eq!(saturating_mul(-128, 2), -128i8);
+    assert_eq!(saturating_mul(100.0, INF), INF);
+    assert_eq!(saturating_mul(-100.0, INF), -INF);
 }
