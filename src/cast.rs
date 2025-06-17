@@ -792,8 +792,6 @@ macro_rules! impl_num_cast {
         impl NumCast for $T {
             #[inline]
             fn from<N: ToPrimitive>(n: N) -> Option<$T> {
-                // `$conv` could be generated using `concat_idents!`, but that
-                // macro seems to be broken at the moment
                 n.$conv()
             }
         }
@@ -820,8 +818,6 @@ macro_rules! impl_num_cast_nonzero {
         impl NumCast for $T {
             #[inline]
             fn from<N: ToPrimitive>(n: N) -> Option<$T> {
-                // `$conv` could be generated using `concat_idents!`, but that
-                // macro seems to be broken at the moment
                 n.$conv().and_then(Self::new)
             }
         }
