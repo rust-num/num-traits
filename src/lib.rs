@@ -17,6 +17,8 @@
 #![doc(html_root_url = "https://docs.rs/num-traits/0.2")]
 #![deny(unconditional_recursion)]
 #![no_std]
+#![cfg_attr(has_f16, feature(f16))] // FIXME: remove it when it's stablized
+#![cfg_attr(has_f128, feature(f128))] // FIXME: remove it when it's stablized
 
 // Need to explicitly bring the crate in for inherent float methods
 #[cfg(feature = "std")]
@@ -230,7 +232,8 @@ fn str_to_ascii_lower_eq_str(a: &str, b: &str) -> bool {
 // with this implementation ourselves until we want to make a breaking change.
 // (would have to drop it from `Num` though)
 macro_rules! float_trait_impl {
-    ($name:ident for $($t:ident)*) => ($(
+    // FIXME: remove it if `f128: FromStr` is implemented
+    (no_fast_path $name:ident for $($t:ident)*) => ($(
         impl $name for $t {
             type FromStrRadixErr = ParseFloatError;
 
@@ -240,26 +243,19 @@ macro_rules! float_trait_impl {
                 use self::FloatErrorKind::*;
                 use self::ParseFloatError as PFE;
 
-                // Special case radix 10 to use more accurate standard library implementation
-                if radix == 10 {
-                    return src.parse().map_err(|_| PFE {
-                        kind: if src.is_empty() { Empty } else { Invalid },
-                    });
-                }
-
                 // Special values
                 if str_to_ascii_lower_eq_str(src, "inf")
                     || str_to_ascii_lower_eq_str(src, "infinity")
                 {
-                    return Ok(core::$t::INFINITY);
+                    return Ok($t::INFINITY);
                 } else if str_to_ascii_lower_eq_str(src, "-inf")
                     || str_to_ascii_lower_eq_str(src, "-infinity")
                 {
-                    return Ok(core::$t::NEG_INFINITY);
+                    return Ok($t::NEG_INFINITY);
                 } else if str_to_ascii_lower_eq_str(src, "nan") {
-                    return Ok(core::$t::NAN);
+                    return Ok($t::NAN);
                 } else if str_to_ascii_lower_eq_str(src, "-nan") {
-                    return Ok(-core::$t::NAN);
+                    return Ok(-$t::NAN);
                 }
 
                 fn slice_shift_char(src: &str) -> Option<(char, &str)> {
@@ -300,15 +296,15 @@ macro_rules! float_trait_impl {
                             // if we've not seen any non-zero digits.
                             if prev_sig != 0.0 {
                                 if is_positive && sig <= prev_sig
-                                    { return Ok(core::$t::INFINITY); }
+                                    { return Ok($t::INFINITY); }
                                 if !is_positive && sig >= prev_sig
-                                    { return Ok(core::$t::NEG_INFINITY); }
+                                    { return Ok($t::NEG_INFINITY); }
 
                                 // Detect overflow by reversing the shift-and-add process
                                 if is_positive && (prev_sig != (sig - digit as $t) / radix as $t)
-                                    { return Ok(core::$t::INFINITY); }
+                                    { return Ok($t::INFINITY); }
                                 if !is_positive && (prev_sig != (sig + digit as $t) / radix as $t)
-                                    { return Ok(core::$t::NEG_INFINITY); }
+                                    { return Ok($t::NEG_INFINITY); }
                             }
                             prev_sig = sig;
                         },
@@ -344,9 +340,178 @@ macro_rules! float_trait_impl {
                                 };
                                 // Detect overflow by comparing to last value
                                 if is_positive && sig < prev_sig
-                                    { return Ok(core::$t::INFINITY); }
+                                    { return Ok($t::INFINITY); }
                                 if !is_positive && sig > prev_sig
-                                    { return Ok(core::$t::NEG_INFINITY); }
+                                    { return Ok($t::NEG_INFINITY); }
+                                prev_sig = sig;
+                            },
+                            None => match c {
+                                'e' | 'E' | 'p' | 'P' => {
+                                    exp_info = Some((c, i + 1));
+                                    break; // start of exponent
+                                },
+                                _ => {
+                                    return Err(PFE { kind: Invalid });
+                                },
+                            },
+                        }
+                    }
+                }
+
+                // Parse and calculate the exponent
+                let exp = match exp_info {
+                    Some((c, offset)) => {
+                        let base = match c {
+                            'E' | 'e' if radix == 10 => 10.0,
+                            'P' | 'p' if radix == 16 => 2.0,
+                            _ => return Err(PFE { kind: Invalid }),
+                        };
+
+                        // Parse the exponent as decimal integer
+                        let src = &src[offset..];
+                        let (is_positive, exp) = match slice_shift_char(src) {
+                            Some(('-', src)) => (false, src.parse::<usize>()),
+                            Some(('+', src)) => (true,  src.parse::<usize>()),
+                            Some((_, _))     => (true,  src.parse::<usize>()),
+                            None             => return Err(PFE { kind: Invalid }),
+                        };
+
+                        #[cfg(feature = "std")]
+                        fn pow(base: $t, exp: usize) -> $t {
+                            Float::powi(base, exp as i32)
+                        }
+                        // otherwise uses the generic `pow` from the root
+
+                        match (is_positive, exp) {
+                            (true,  Ok(exp)) => pow(base, exp),
+                            (false, Ok(exp)) => 1.0 / pow(base, exp),
+                            (_, Err(_))      => return Err(PFE { kind: Invalid }),
+                        }
+                    },
+                    None => 1.0, // no exponent
+                };
+
+                Ok(sig * exp)
+            }
+        }
+    )*);
+    ($name:ident for $($t:ident)*) => ($(
+        impl $name for $t {
+            type FromStrRadixErr = ParseFloatError;
+
+            fn from_str_radix(src: &str, radix: u32)
+                              -> Result<Self, Self::FromStrRadixErr>
+            {
+                use self::FloatErrorKind::*;
+                use self::ParseFloatError as PFE;
+
+                // Special case radix 10 to use more accurate standard library implementation
+                if radix == 10 {
+                    return src.parse().map_err(|_| PFE {
+                        kind: if src.is_empty() { Empty } else { Invalid },
+                    });
+                }
+
+                // Special values
+                if str_to_ascii_lower_eq_str(src, "inf")
+                    || str_to_ascii_lower_eq_str(src, "infinity")
+                {
+                    return Ok($t::INFINITY);
+                } else if str_to_ascii_lower_eq_str(src, "-inf")
+                    || str_to_ascii_lower_eq_str(src, "-infinity")
+                {
+                    return Ok($t::NEG_INFINITY);
+                } else if str_to_ascii_lower_eq_str(src, "nan") {
+                    return Ok($t::NAN);
+                } else if str_to_ascii_lower_eq_str(src, "-nan") {
+                    return Ok(-$t::NAN);
+                }
+
+                fn slice_shift_char(src: &str) -> Option<(char, &str)> {
+                    let mut chars = src.chars();
+                    Some((chars.next()?, chars.as_str()))
+                }
+
+                let (is_positive, src) =  match slice_shift_char(src) {
+                    None             => return Err(PFE { kind: Empty }),
+                    Some(('-', ""))  => return Err(PFE { kind: Empty }),
+                    Some(('-', src)) => (false, src),
+                    Some((_, _))     => (true,  src),
+                };
+
+                // The significand to accumulate
+                let mut sig = if is_positive { 0.0 } else { -0.0 };
+                // Necessary to detect overflow
+                let mut prev_sig = sig;
+                let mut cs = src.chars().enumerate();
+                // Exponent prefix and exponent index offset
+                let mut exp_info = None::<(char, usize)>;
+
+                // Parse the integer part of the significand
+                for (i, c) in cs.by_ref() {
+                    match c.to_digit(radix) {
+                        Some(digit) => {
+                            // shift significand one digit left
+                            sig *= radix as $t;
+
+                            // add/subtract current digit depending on sign
+                            if is_positive {
+                                sig += (digit as isize) as $t;
+                            } else {
+                                sig -= (digit as isize) as $t;
+                            }
+
+                            // Detect overflow by comparing to last value, except
+                            // if we've not seen any non-zero digits.
+                            if prev_sig != 0.0 {
+                                if is_positive && sig <= prev_sig
+                                    { return Ok($t::INFINITY); }
+                                if !is_positive && sig >= prev_sig
+                                    { return Ok($t::NEG_INFINITY); }
+
+                                // Detect overflow by reversing the shift-and-add process
+                                if is_positive && (prev_sig != (sig - digit as $t) / radix as $t)
+                                    { return Ok($t::INFINITY); }
+                                if !is_positive && (prev_sig != (sig + digit as $t) / radix as $t)
+                                    { return Ok($t::NEG_INFINITY); }
+                            }
+                            prev_sig = sig;
+                        },
+                        None => match c {
+                            'e' | 'E' | 'p' | 'P' => {
+                                exp_info = Some((c, i + 1));
+                                break;  // start of exponent
+                            },
+                            '.' => {
+                                break;  // start of fractional part
+                            },
+                            _ => {
+                                return Err(PFE { kind: Invalid });
+                            },
+                        },
+                    }
+                }
+
+                // If we are not yet at the exponent parse the fractional
+                // part of the significand
+                if exp_info.is_none() {
+                    let mut power = 1.0;
+                    for (i, c) in cs.by_ref() {
+                        match c.to_digit(radix) {
+                            Some(digit) => {
+                                // Decrease power one order of magnitude
+                                power /= radix as $t;
+                                // add/subtract current digit depending on sign
+                                sig = if is_positive {
+                                    sig + (digit as $t) * power
+                                } else {
+                                    sig - (digit as $t) * power
+                                };
+                                // Detect overflow by comparing to last value
+                                if is_positive && sig < prev_sig
+                                    { return Ok($t::INFINITY); }
+                                if !is_positive && sig > prev_sig
+                                    { return Ok($t::NEG_INFINITY); }
                                 prev_sig = sig;
                             },
                             None => match c {
@@ -400,7 +565,11 @@ macro_rules! float_trait_impl {
         }
     )*)
 }
+#[cfg(has_f16)]
+float_trait_impl!(Num for f16);
 float_trait_impl!(Num for f32 f64);
+#[cfg(has_f128)]
+float_trait_impl!(no_fast_path Num for f128);
 
 /// A value bounded by a minimum and a maximum
 ///
