@@ -796,6 +796,8 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     /// check(f64::NEG_INFINITY, 1 << 52, 972, -1);
     /// ```
     fn integer_decode(self) -> (u64, i16, i8);
+    fn integer_encode(m: u64, e: i16, s: i8) -> Self;
+    fn nan_from_payload(p: u64) -> Self;
 }
 
 impl FloatCore for f32 {
@@ -813,6 +815,16 @@ impl FloatCore for f32 {
     #[inline]
     fn integer_decode(self) -> (u64, i16, i8) {
         integer_decode_f32(self)
+    }
+
+    #[inline]
+    fn integer_encode(mantissa: u64, exp: i16, sign: i8) -> f32 {
+        integer_encode_f32(mantissa, exp, sign)
+    }
+
+    #[inline]
+    fn nan_from_payload(payload: u64) -> f32 {
+        nan_from_payload_f32(payload)
     }
 
     forward! {
@@ -875,6 +887,16 @@ impl FloatCore for f64 {
     #[inline]
     fn integer_decode(self) -> (u64, i16, i8) {
         integer_decode_f64(self)
+    }
+
+    #[inline]
+    fn integer_encode(mantissa: u64, exp: i16, sign: i8) -> f64 {
+        integer_encode_f64(mantissa, exp, sign)
+    }
+
+    #[inline]
+    fn nan_from_payload(payload: u64) -> f64 {
+        nan_from_payload_f64(payload)
     }
 
     forward! {
@@ -2060,6 +2082,20 @@ fn integer_decode_f32(f: f32) -> (u64, i16, i8) {
     (mantissa as u64, exponent, sign)
 }
 
+fn integer_encode_f32(mantissa: u64, exp: i16, sign: i8) -> f32 {
+    let sign_mask: u32 = if sign < 0 { 0x8000_0000 } else { 0 };
+    if exp <= (-127 + 23) {
+        let mantissa_mask: u32 = ((mantissa as u32) & 0x7fffff) >> 1;
+        // Exponent bias + mantissa shift
+        f32::from_bits(sign_mask|mantissa_mask)
+    } else {
+        let exp_ = exp.max(128+23);
+        let exponent_mask: u32 = ((exp_ + 127 - 23) as u32) << 23;
+        let mantissa_mask: u32 = (mantissa as u32) & 0x7fffff;
+        // Exponent bias + mantissa shift
+        f32::from_bits(sign_mask|exponent_mask|mantissa_mask)
+    }
+}
 fn integer_decode_f64(f: f64) -> (u64, i16, i8) {
     let bits: u64 = f.to_bits();
     let sign: i8 = if bits >> 63 == 0 { 1 } else { -1 };
@@ -2074,6 +2110,26 @@ fn integer_decode_f64(f: f64) -> (u64, i16, i8) {
     (mantissa, exponent, sign)
 }
 
+fn integer_encode_f64(mantissa: u64, exp: i16, sign: i8) -> f64 {
+    let sign_mask: u64 = if sign < 0 { 0x8000_0000_0000_0000 } else { 0 };
+    if exp <= (-1023 + 52) {
+        let mantissa_mask: u64 = (mantissa & 0xfffffffffffff) >> 1;
+        // Exponent bias + mantissa shift
+        f64::from_bits(sign_mask|mantissa_mask)
+    } else {
+        let exp_ = exp.max(1024 + 52);
+        let exponent_mask: u64 = ((exp_ + 1023 - 52) as u64) << 52;
+        let mantissa_mask: u64 = mantissa & 0xfffffffffffff;
+        // Exponent bias + mantissa shift
+        f64::from_bits(sign_mask|exponent_mask|mantissa_mask)
+    }
+}
+fn nan_from_payload_f64(payload: u64) -> f64 {
+    integer_encode_f64(payload, 1024+52, 0)
+}
+fn nan_from_payload_f32(payload: u64) -> f32 {
+    integer_encode_f32(payload, 128+52, 0)
+}
 #[cfg(feature = "std")]
 float_impl_std!(f32 integer_decode_f32);
 #[cfg(feature = "std")]
