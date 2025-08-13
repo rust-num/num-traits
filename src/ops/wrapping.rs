@@ -7,8 +7,8 @@ macro_rules! wrapping_impl {
             type WrappingOutput = $t;
 
             #[inline]
-            fn $method(&self, v: &Self) -> Self {
-                <$t>::$method(*self, *v)
+            fn $method(&self, v: Self) -> Self {
+                <$t>::$method(*self, v)
             }
         }
     };
@@ -19,7 +19,7 @@ pub trait WrappingAdd<Rhs=Self>: Sized + Add<Rhs, Output = Self::WrappingOutput>
     type WrappingOutput;
     /// Wrapping (modular) addition. Computes `self + other`, wrapping around at the boundary of
     /// the type.
-    fn wrapping_add(&self, v: &Rhs) -> Self::WrappingOutput;
+    fn wrapping_add(&self, v: Rhs) -> Self::WrappingOutput;
 }
 
 wrapping_impl!(WrappingAdd, wrapping_add, u8);
@@ -41,7 +41,7 @@ pub trait WrappingSub<Rhs=Self>: Sized + Sub<Rhs, Output=Self::WrappingOutput> {
     type WrappingOutput;
     /// Wrapping (modular) subtraction. Computes `self - other`, wrapping around at the boundary
     /// of the type.
-    fn wrapping_sub(&self, v: &Rhs) -> Self::WrappingOutput;
+    fn wrapping_sub(&self, v: Rhs) -> Self::WrappingOutput;
 }
 
 wrapping_impl!(WrappingSub, wrapping_sub, u8);
@@ -63,7 +63,7 @@ pub trait WrappingMul<Rhs=Self>: Sized + Mul<Rhs, Output=Self::WrappingOutput> {
     type WrappingOutput;
     /// Wrapping (modular) multiplication. Computes `self * other`, wrapping around at the boundary
     /// of the type.
-    fn wrapping_mul(&self, v: &Rhs) -> Self::WrappingOutput;
+    fn wrapping_mul(&self, v: Rhs) -> Self::WrappingOutput;
 }
 
 wrapping_impl!(WrappingMul, wrapping_mul, u8);
@@ -221,8 +221,8 @@ where
 {
     type WrappingOutput = Self;
 
-    fn wrapping_add(&self, v: &Self) -> Self {
-        Wrapping(self.0.wrapping_add(&v.0))
+    fn wrapping_add(&self, v: Self) -> Self {
+        Wrapping(self.0.wrapping_add(v.0))
     }
 }
 
@@ -233,8 +233,8 @@ where
 {
     type WrappingOutput = Self;
 
-    fn wrapping_sub(&self, v: &Self) -> Self {
-        Wrapping(self.0.wrapping_sub(&v.0))
+    fn wrapping_sub(&self, v: Self) -> Self {
+        Wrapping(self.0.wrapping_sub(v.0))
     }
 }
 
@@ -245,8 +245,8 @@ where
 {
     type WrappingOutput = Self;
 
-    fn wrapping_mul(&self, v: &Self) -> Self {
-        Wrapping(self.0.wrapping_mul(&v.0))
+    fn wrapping_mul(&self, v: Self) -> Self {
+        Wrapping(self.0.wrapping_mul(v.0))
     }
 }
 impl<T: WrappingNeg> WrappingNeg for Wrapping<T>
@@ -286,13 +286,13 @@ where
 #[test]
 fn test_wrapping_traits() {
     fn wrapping_add<T: WrappingAdd<WrappingOutput=T>>(a: T, b: T) -> T {
-        a.wrapping_add(&b)
+        a.wrapping_add(b)
     }
     fn wrapping_sub<T: WrappingSub<WrappingOutput=T>>(a: T, b: T) -> T {
-        a.wrapping_sub(&b)
+        a.wrapping_sub(b)
     }
     fn wrapping_mul<T: WrappingMul<WrappingOutput=T>>(a: T, b: T) -> T {
-        a.wrapping_mul(&b)
+        a.wrapping_mul(b)
     }
     fn wrapping_neg<T: WrappingNeg<WrappingOutput=T>>(a: T) -> T {
         a.wrapping_neg()
