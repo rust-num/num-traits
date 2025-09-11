@@ -47,7 +47,7 @@ pub use crate::ops::wrapping::{
     WrappingAdd, WrappingMul, WrappingNeg, WrappingShl, WrappingShr, WrappingSub,
 };
 pub use crate::pow::{checked_pow, pow, Pow};
-pub use crate::sign::{abs, abs_sub, signum, Signed, Unsigned};
+pub use crate::sign::{abs, abs_sub, signum, Signed, Unsigned, UnsignedAbs};
 
 #[macro_use]
 mod macros;

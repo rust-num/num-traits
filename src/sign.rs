@@ -214,3 +214,45 @@ fn signed_wrapping_is_signed() {
     fn require_signed<T: Signed>(_: &T) {}
     require_signed(&Wrapping(-42));
 }
+
+/// A trait for values which can be converted to an unsigned type with the unsigned_abs utility method.
+pub trait UnsignedAbs {
+    type Unsigned;
+
+    fn unsigned_abs(&self) -> Self::Unsigned;
+}
+
+macro_rules! unsigned_abs_impl {
+    ($($t:ty:$ut:ty),*) => ($(
+        impl UnsignedAbs for $t {
+            type Unsigned = $ut;
+
+            #[inline(always)]
+            fn unsigned_abs(&self) -> Self::Unsigned {
+                <$t>::unsigned_abs(*self)
+            }
+        }
+    )*)
+}
+
+unsigned_abs_impl!(i8:u8, i16:u16, i32:u32, i64:u64, i128:u128, isize:usize);
+
+#[test]
+fn unsigned_abs_test() {
+    fn require_unsigned_abs<T: UnsignedAbs>(_: &T) {}
+
+    require_unsigned_abs(&-42_i8);
+    require_unsigned_abs(&-42_i16);
+    require_unsigned_abs(&-42_i32);
+    require_unsigned_abs(&-42_i64);
+    require_unsigned_abs(&-42_i128);
+    require_unsigned_abs(&-42_isize);
+
+    assert_eq!((-42_i8).unsigned_abs(), 42_u8);
+    assert_eq!(42_i8.unsigned_abs(), 42_u8);
+    assert_eq!(i8::MIN.unsigned_abs(), 128_u8);
+
+    assert_eq!((-42_i32).unsigned_abs(), 42_u32);
+    assert_eq!(42_i32.unsigned_abs(), 42_u32);
+    assert_eq!(i32::MIN.unsigned_abs(), 2147483648_u32);
+}
