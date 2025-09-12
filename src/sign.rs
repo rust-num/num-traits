@@ -2,7 +2,7 @@ use core::num::Wrapping;
 use core::ops::Neg;
 
 use crate::float::FloatCore;
-use crate::Num;
+use crate::{Num, PrimInt};
 
 /// Useful functions for signed numbers (i.e. numbers that can be negative).
 pub trait Signed: Sized + Num + Neg<Output = Self> {
@@ -217,7 +217,7 @@ fn signed_wrapping_is_signed() {
 
 /// A trait for values which can be converted to an unsigned type with the unsigned_abs utility method.
 pub trait UnsignedAbs {
-    type Unsigned;
+    type Unsigned: PrimInt + Unsigned;
 
     fn unsigned_abs(&self) -> Self::Unsigned;
 }
