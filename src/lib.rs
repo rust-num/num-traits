@@ -53,6 +53,7 @@ pub use crate::sign::{abs, abs_sub, signum, Signed, Unsigned};
 mod macros;
 
 pub mod bounds;
+pub mod integer_bounds;
 pub mod cast;
 pub mod float;
 pub mod identities;
