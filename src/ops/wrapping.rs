@@ -21,10 +21,10 @@ macro_rules! wrapping_impl {
 }
 
 /// Performs addition that wraps around on overflow.
-pub trait WrappingAdd: Sized + Add<Self, Output = Self> {
+pub trait WrappingAdd<Rhs = Self>: Sized + Add<Rhs, Output = Self> {
     /// Wrapping (modular) addition. Computes `self + other`, wrapping around at the boundary of
     /// the type.
-    fn wrapping_add(&self, v: &Self) -> Self;
+    fn wrapping_add(&self, v: &Rhs) -> Self;
 }
 
 wrapping_impl!(WrappingAdd, wrapping_add, u8);
@@ -42,10 +42,10 @@ wrapping_impl!(WrappingAdd, wrapping_add, isize);
 wrapping_impl!(WrappingAdd, wrapping_add, i128);
 
 /// Performs subtraction that wraps around on overflow.
-pub trait WrappingSub: Sized + Sub<Self, Output = Self> {
+pub trait WrappingSub<Rhs = Self>: Sized + Sub<Rhs, Output = Self> {
     /// Wrapping (modular) subtraction. Computes `self - other`, wrapping around at the boundary
     /// of the type.
-    fn wrapping_sub(&self, v: &Self) -> Self;
+    fn wrapping_sub(&self, v: &Rhs) -> Self;
 }
 
 wrapping_impl!(WrappingSub, wrapping_sub, u8);
@@ -63,10 +63,10 @@ wrapping_impl!(WrappingSub, wrapping_sub, isize);
 wrapping_impl!(WrappingSub, wrapping_sub, i128);
 
 /// Performs multiplication that wraps around on overflow.
-pub trait WrappingMul: Sized + Mul<Self, Output = Self> {
+pub trait WrappingMul<Rhs = Self>: Sized + Mul<Rhs, Output = Self> {
     /// Wrapping (modular) multiplication. Computes `self * other`, wrapping around at the boundary
     /// of the type.
-    fn wrapping_mul(&self, v: &Self) -> Self;
+    fn wrapping_mul(&self, v: &Rhs) -> Self;
 }
 
 wrapping_impl!(WrappingMul, wrapping_mul, u8);
@@ -141,7 +141,7 @@ macro_rules! wrapping_shift_impl {
 }
 
 /// Performs a left shift that does not panic.
-pub trait WrappingShl: Sized + Shl<usize, Output = Self> {
+pub trait WrappingShl<Rhs = u32>: Sized + Shl<usize, Output = Self> {
     /// Panic-free bitwise shift-left; yields `self << mask(rhs)`,
     /// where `mask` removes any high order bits of `rhs` that would
     /// cause the shift to exceed the bitwidth of the type.
@@ -156,7 +156,7 @@ pub trait WrappingShl: Sized + Shl<usize, Output = Self> {
     /// assert_eq!(WrappingShl::wrapping_shl(&x, 15), 0x8000);
     /// assert_eq!(WrappingShl::wrapping_shl(&x, 16), 0x0001);
     /// ```
-    fn wrapping_shl(&self, rhs: u32) -> Self;
+    fn wrapping_shl(&self, rhs: Rhs) -> Self;
 }
 
 wrapping_shift_impl!(WrappingShl, wrapping_shl, u8);
@@ -174,7 +174,7 @@ wrapping_shift_impl!(WrappingShl, wrapping_shl, isize);
 wrapping_shift_impl!(WrappingShl, wrapping_shl, i128);
 
 /// Performs a right shift that does not panic.
-pub trait WrappingShr: Sized + Shr<usize, Output = Self> {
+pub trait WrappingShr<Rhs = u32>: Sized + Shr<usize, Output = Self> {
     /// Panic-free bitwise shift-right; yields `self >> mask(rhs)`,
     /// where `mask` removes any high order bits of `rhs` that would
     /// cause the shift to exceed the bitwidth of the type.
@@ -189,7 +189,7 @@ pub trait WrappingShr: Sized + Shr<usize, Output = Self> {
     /// assert_eq!(WrappingShr::wrapping_shr(&x, 15), 0x0001);
     /// assert_eq!(WrappingShr::wrapping_shr(&x, 16), 0x8000);
     /// ```
-    fn wrapping_shr(&self, rhs: u32) -> Self;
+    fn wrapping_shr(&self, rhs: Rhs) -> Self;
 }
 
 wrapping_shift_impl!(WrappingShr, wrapping_shr, u8);
@@ -239,19 +239,19 @@ where
         Wrapping(self.0.wrapping_neg())
     }
 }
-impl<T: WrappingShl> WrappingShl for Wrapping<T>
+impl<Rhs, T: WrappingShl<Rhs>> WrappingShl<Rhs> for Wrapping<T>
 where
     Wrapping<T>: Shl<usize, Output = Wrapping<T>>,
 {
-    fn wrapping_shl(&self, rhs: u32) -> Self {
+    fn wrapping_shl(&self, rhs: Rhs) -> Self {
         Wrapping(self.0.wrapping_shl(rhs))
     }
 }
-impl<T: WrappingShr> WrappingShr for Wrapping<T>
+impl<Rhs, T: WrappingShr<Rhs>> WrappingShr<Rhs> for Wrapping<T>
 where
     Wrapping<T>: Shr<usize, Output = Wrapping<T>>,
 {
-    fn wrapping_shr(&self, rhs: u32) -> Self {
+    fn wrapping_shr(&self, rhs: Rhs) -> Self {
         Wrapping(self.0.wrapping_shr(rhs))
     }
 }
