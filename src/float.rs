@@ -832,7 +832,7 @@ impl FloatCore for f32 {
         Self::to_radians(self) -> Self;
     }
 
-    #[cfg(feature = "std")]
+    #[cfg(all(feature = "std", not(feature = "force-libm")))]
     forward! {
         Self::floor(self) -> Self;
         Self::ceil(self) -> Self;
@@ -844,7 +844,7 @@ impl FloatCore for f32 {
         Self::powi(self, n: i32) -> Self;
     }
 
-    #[cfg(all(not(feature = "std"), feature = "libm"))]
+    #[cfg(any(feature = "force-libm", all(not(feature = "std"), feature = "libm")))]
     forward! {
         libm::floorf as floor(self) -> Self;
         libm::ceilf as ceil(self) -> Self;
@@ -853,7 +853,7 @@ impl FloatCore for f32 {
         libm::fabsf as abs(self) -> Self;
     }
 
-    #[cfg(all(not(feature = "std"), feature = "libm"))]
+    #[cfg(any(feature = "force-libm", all(not(feature = "std"), feature = "libm")))]
     #[inline]
     fn fract(self) -> Self {
         self - libm::truncf(self)
@@ -894,7 +894,7 @@ impl FloatCore for f64 {
         Self::to_radians(self) -> Self;
     }
 
-    #[cfg(feature = "std")]
+    #[cfg(all(feature = "std", not(feature = "force-libm")))]
     forward! {
         Self::floor(self) -> Self;
         Self::ceil(self) -> Self;
@@ -906,7 +906,7 @@ impl FloatCore for f64 {
         Self::powi(self, n: i32) -> Self;
     }
 
-    #[cfg(all(not(feature = "std"), feature = "libm"))]
+    #[cfg(any(feature = "force-libm", all(not(feature = "std"), feature = "libm")))]
     forward! {
         libm::floor as floor(self) -> Self;
         libm::ceil as ceil(self) -> Self;
@@ -915,7 +915,7 @@ impl FloatCore for f64 {
         libm::fabs as abs(self) -> Self;
     }
 
-    #[cfg(all(not(feature = "std"), feature = "libm"))]
+    #[cfg(any(feature = "force-libm", all(not(feature = "std"), feature = "libm")))]
     #[inline]
     fn fract(self) -> Self {
         self - libm::trunc(self)
@@ -1911,7 +1911,7 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     }
 }
 
-#[cfg(feature = "std")]
+#[cfg(all(feature = "std", not(feature = "force-libm")))]
 macro_rules! float_impl_std {
     ($T:ident $decode:ident) => {
         impl Float for $T {
@@ -1993,7 +1993,7 @@ macro_rules! float_impl_std {
     };
 }
 
-#[cfg(all(not(feature = "std"), feature = "libm"))]
+#[cfg(any(feature = "force-libm", all(not(feature = "std"), feature = "libm")))]
 macro_rules! float_impl_libm {
     ($T:ident $decode:ident) => {
         constant! {
@@ -2074,12 +2074,12 @@ fn integer_decode_f64(f: f64) -> (u64, i16, i8) {
     (mantissa, exponent, sign)
 }
 
-#[cfg(feature = "std")]
+#[cfg(all(feature = "std", not(feature = "force-libm")))]
 float_impl_std!(f32 integer_decode_f32);
-#[cfg(feature = "std")]
+#[cfg(all(feature = "std", not(feature = "force-libm")))]
 float_impl_std!(f64 integer_decode_f64);
 
-#[cfg(all(not(feature = "std"), feature = "libm"))]
+#[cfg(any(feature = "force-libm", all(not(feature = "std"), feature = "libm")))]
 impl Float for f32 {
     float_impl_libm!(f32 integer_decode_f32);
 
@@ -2125,7 +2125,7 @@ impl Float for f32 {
     }
 }
 
-#[cfg(all(not(feature = "std"), feature = "libm"))]
+#[cfg(any(feature = "force-libm", all(not(feature = "std"), feature = "libm")))]
 impl Float for f64 {
     float_impl_libm!(f64 integer_decode_f64);
 

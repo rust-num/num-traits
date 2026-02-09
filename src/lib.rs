@@ -380,7 +380,7 @@ macro_rules! float_trait_impl {
                             None             => return Err(PFE { kind: Invalid }),
                         };
 
-                        #[cfg(feature = "std")]
+                        #[cfg(all(feature = "std", not(feature = "force-libm")))]
                         fn pow(base: $t, exp: usize) -> $t {
                             Float::powi(base, exp as i32)
                         }
