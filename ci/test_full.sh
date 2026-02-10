@@ -27,7 +27,7 @@ if ! check_version $MSRV ; then
   exit 1
 fi
 
-FEATURES=(libm)
+FEATURES=(libm force-libm)
 echo "Testing supported features: ${FEATURES[*]}"
 
 cargo generate-lockfile
