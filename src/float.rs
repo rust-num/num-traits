@@ -1109,7 +1109,7 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// // Values between `0` and `min` are Subnormal.
     /// assert!(!lower_than_min.is_normal());
     /// ```
-    /// [subnormal]: http://en.wikipedia.org/wiki/Subnormal_number
+    /// [subnormal]: https://en.wikipedia.org/wiki/Subnormal_number
     fn is_normal(self) -> bool;
 
     /// Returns `true` if the number is [subnormal].
