@@ -21,6 +21,14 @@ check_version() {
   ]]
 }
 
+export CARGO_RESOLVER_INCOMPATIBLE_RUST_VERSIONS=fallback
+generate_lockfile() {
+  cargo generate-lockfile
+  if ! check_version 1.85 ; then
+    cargo +stable update
+  fi
+}
+
 echo "Testing $CRATE on rustc $RUST_VERSION"
 if ! check_version $MSRV ; then
   echo "The minimum for $CRATE is rustc $MSRV"
@@ -30,8 +38,7 @@ fi
 FEATURES=(libm)
 echo "Testing supported features: ${FEATURES[*]}"
 
-cargo generate-lockfile
-check_version 1.63.0 || cargo update -p libm --precise 0.2.9
+generate_lockfile
 
 set -x
 
