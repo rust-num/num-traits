@@ -40,6 +40,11 @@ echo "Testing supported features: ${FEATURES[*]}"
 
 generate_lockfile
 
+# While that correctly chooses libm v0.2.9 for MSRV, some later versions
+# of Cargo complain about the "cargo::" outputs from its build script.
+# So for now, we can bump it manually to avoid that conflict.
+check_version 1.63 && cargo update -p libm --precise 0.2.16
+
 set -x
 
 # test the default
