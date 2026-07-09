@@ -1,10 +1,10 @@
 use core::ops::{Add, Div, Mul, Rem, Shl, Shr, Sub};
 
 /// Performs addition, returning `None` if overflow occurred.
-pub trait CheckedAdd: Sized + Add<Self, Output = Self> {
+pub trait CheckedAdd<Rhs = Self>: Sized + Add<Rhs, Output = Self> {
     /// Adds two numbers, checking for overflow. If overflow happens, `None` is
     /// returned.
-    fn checked_add(&self, v: &Self) -> Option<Self>;
+    fn checked_add(&self, v: &Rhs) -> Option<Self>;
 }
 
 macro_rules! checked_impl {
@@ -33,10 +33,10 @@ checked_impl!(CheckedAdd, checked_add, isize);
 checked_impl!(CheckedAdd, checked_add, i128);
 
 /// Performs subtraction, returning `None` if overflow occurred.
-pub trait CheckedSub: Sized + Sub<Self, Output = Self> {
+pub trait CheckedSub<Rhs = Self>: Sized + Sub<Rhs, Output = Self> {
     /// Subtracts two numbers, checking for overflow. If overflow happens,
     /// `None` is returned.
-    fn checked_sub(&self, v: &Self) -> Option<Self>;
+    fn checked_sub(&self, v: &Rhs) -> Option<Self>;
 }
 
 checked_impl!(CheckedSub, checked_sub, u8);
@@ -54,10 +54,10 @@ checked_impl!(CheckedSub, checked_sub, isize);
 checked_impl!(CheckedSub, checked_sub, i128);
 
 /// Performs multiplication, returning `None` if overflow occurred.
-pub trait CheckedMul: Sized + Mul<Self, Output = Self> {
+pub trait CheckedMul<Rhs = Self>: Sized + Mul<Rhs, Output = Self> {
     /// Multiplies two numbers, checking for overflow. If overflow happens,
     /// `None` is returned.
-    fn checked_mul(&self, v: &Self) -> Option<Self>;
+    fn checked_mul(&self, v: &Rhs) -> Option<Self>;
 }
 
 checked_impl!(CheckedMul, checked_mul, u8);
@@ -76,10 +76,10 @@ checked_impl!(CheckedMul, checked_mul, i128);
 
 /// Performs division, returning `None` on division by zero or if overflow
 /// occurred.
-pub trait CheckedDiv: Sized + Div<Self, Output = Self> {
+pub trait CheckedDiv<Rhs = Self>: Sized + Div<Rhs, Output = Self> {
     /// Divides two numbers, checking for overflow and division by
     /// zero. If any of that happens, `None` is returned.
-    fn checked_div(&self, v: &Self) -> Option<Self>;
+    fn checked_div(&self, v: &Rhs) -> Option<Self>;
 }
 
 checked_impl!(CheckedDiv, checked_div, u8);
@@ -98,7 +98,7 @@ checked_impl!(CheckedDiv, checked_div, i128);
 
 /// Performs integral remainder, returning `None` on division by zero or if
 /// overflow occurred.
-pub trait CheckedRem: Sized + Rem<Self, Output = Self> {
+pub trait CheckedRem<Rhs = Self>: Sized + Rem<Rhs, Output = Self> {
     /// Finds the remainder of dividing two numbers, checking for overflow and
     /// division by zero. If any of that happens, `None` is returned.
     ///
@@ -118,7 +118,7 @@ pub trait CheckedRem: Sized + Rem<Self, Output = Self> {
     /// assert_eq!(CheckedRem::checked_rem(&MIN, &1), Some(0));
     /// assert_eq!(CheckedRem::checked_rem(&MIN, &-1), None);
     /// ```
-    fn checked_rem(&self, v: &Self) -> Option<Self>;
+    fn checked_rem(&self, v: &Rhs) -> Option<Self>;
 }
 
 checked_impl!(CheckedRem, checked_rem, u8);
@@ -183,7 +183,7 @@ checked_impl_unary!(CheckedNeg, checked_neg, i128);
 
 /// Performs shift left, returning `None` on shifts larger than or equal to
 /// the type width.
-pub trait CheckedShl: Sized + Shl<u32, Output = Self> {
+pub trait CheckedShl<Rhs = u32>: Sized + Shl<Rhs, Output = Self> {
     /// Checked shift left. Computes `self << rhs`, returning `None`
     /// if `rhs` is larger than or equal to the number of bits in `self`.
     ///
@@ -197,7 +197,7 @@ pub trait CheckedShl: Sized + Shl<u32, Output = Self> {
     /// assert_eq!(CheckedShl::checked_shl(&x, 15), Some(0x8000));
     /// assert_eq!(CheckedShl::checked_shl(&x, 16), None);
     /// ```
-    fn checked_shl(&self, rhs: u32) -> Option<Self>;
+    fn checked_shl(&self, rhs: Rhs) -> Option<Self>;
 }
 
 macro_rules! checked_shift_impl {
@@ -227,7 +227,7 @@ checked_shift_impl!(CheckedShl, checked_shl, i128);
 
 /// Performs shift right, returning `None` on shifts larger than or equal to
 /// the type width.
-pub trait CheckedShr: Sized + Shr<u32, Output = Self> {
+pub trait CheckedShr<Rhs = u32>: Sized + Shr<Rhs, Output = Self> {
     /// Checked shift right. Computes `self >> rhs`, returning `None`
     /// if `rhs` is larger than or equal to the number of bits in `self`.
     ///
@@ -241,7 +241,7 @@ pub trait CheckedShr: Sized + Shr<u32, Output = Self> {
     /// assert_eq!(CheckedShr::checked_shr(&x, 15), Some(0x0001));
     /// assert_eq!(CheckedShr::checked_shr(&x, 16), None);
     /// ```
-    fn checked_shr(&self, rhs: u32) -> Option<Self>;
+    fn checked_shr(&self, rhs: Rhs) -> Option<Self>;
 }
 
 checked_shift_impl!(CheckedShr, checked_shr, u8);

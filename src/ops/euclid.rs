@@ -1,6 +1,6 @@
 use core::ops::{Div, Rem};
 
-pub trait Euclid: Sized + Div<Self, Output = Self> + Rem<Self, Output = Self> {
+pub trait Euclid<Rhs = Self>: Sized + Div<Rhs, Output = Self> + Rem<Rhs, Output = Self> {
     /// Calculates Euclidean division, the matching method for `rem_euclid`.
     ///
     /// This computes the integer `n` such that
@@ -20,7 +20,7 @@ pub trait Euclid: Sized + Div<Self, Output = Self> + Rem<Self, Output = Self> {
     /// assert_eq!(Euclid::div_euclid(&a, &-b), -1); // 7 >= -4 * -1
     /// assert_eq!(Euclid::div_euclid(&-a, &-b), 2); // -7 >= -4 * 2
     /// ```
-    fn div_euclid(&self, v: &Self) -> Self;
+    fn div_euclid(&self, v: &Rhs) -> Self;
 
     /// Calculates the least nonnegative remainder of `self (mod v)`.
     ///
@@ -45,7 +45,7 @@ pub trait Euclid: Sized + Div<Self, Output = Self> + Rem<Self, Output = Self> {
     /// assert_eq!(Euclid::rem_euclid(&a, &-b), 3);
     /// assert_eq!(Euclid::rem_euclid(&-a, &-b), 1);
     /// ```
-    fn rem_euclid(&self, v: &Self) -> Self;
+    fn rem_euclid(&self, v: &Rhs) -> Self;
 
     /// Returns both the quotient and remainder from Euclidean division.
     ///
@@ -64,7 +64,7 @@ pub trait Euclid: Sized + Div<Self, Output = Self> + Rem<Self, Output = Self> {
     ///
     /// assert_eq!((div, rem), Euclid::div_rem_euclid(&x, &y));
     /// ```
-    fn div_rem_euclid(&self, v: &Self) -> (Self, Self) {
+    fn div_rem_euclid(&self, v: &Rhs) -> (Self, Self) {
         (self.div_euclid(v), self.rem_euclid(v))
     }
 }
@@ -135,14 +135,14 @@ impl Euclid for f64 {
     }
 }
 
-pub trait CheckedEuclid: Euclid {
+pub trait CheckedEuclid<Rhs = Self>: Euclid<Rhs> {
     /// Performs euclid division, returning `None` on division by zero or if
     /// overflow occurred.
-    fn checked_div_euclid(&self, v: &Self) -> Option<Self>;
+    fn checked_div_euclid(&self, v: &Rhs) -> Option<Self>;
 
     /// Finds the euclid remainder of dividing two numbers, returning `None` on
     /// division by zero or if overflow occurred.
-    fn checked_rem_euclid(&self, v: &Self) -> Option<Self>;
+    fn checked_rem_euclid(&self, v: &Rhs) -> Option<Self>;
 
     /// Returns both the quotient and remainder from checked Euclidean division,
     /// returning `None` on division by zero or if overflow occurred.
@@ -161,7 +161,7 @@ pub trait CheckedEuclid: Euclid {
     ///
     /// assert_eq!(Some((div.unwrap(), rem.unwrap())), CheckedEuclid::checked_div_rem_euclid(&x, &y));
     /// ```
-    fn checked_div_rem_euclid(&self, v: &Self) -> Option<(Self, Self)> {
+    fn checked_div_rem_euclid(&self, v: &Rhs) -> Option<(Self, Self)> {
         Some((self.checked_div_euclid(v)?, self.checked_rem_euclid(v)?))
     }
 }
