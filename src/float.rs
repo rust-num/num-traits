@@ -10,7 +10,7 @@ use crate::{Num, NumCast, ToPrimitive};
 /// Generic trait for floating point numbers that works with `no_std`.
 ///
 /// This trait implements a subset of the `Float` trait.
-pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
+pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Clone {
     /// Returns positive infinity.
     ///
     /// # Examples
@@ -216,7 +216,7 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     /// ```
     #[inline]
     fn is_finite(self) -> bool {
-        !(self.is_nan() || self.is_infinite())
+        !(self.clone().is_nan() || self.is_infinite())
     }
 
     /// Returns `true` if the number is neither zero, infinite, subnormal or NaN.
@@ -316,8 +316,8 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     /// ```
     #[inline]
     fn floor(self) -> Self {
-        let f = self.fract();
-        if f.is_nan() || f.is_zero() {
+        let f = self.clone().fract();
+        if f.clone().is_nan() || f.clone().is_zero() {
             self
         } else if self < Self::zero() {
             self - f - Self::one()
@@ -350,8 +350,8 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     /// ```
     #[inline]
     fn ceil(self) -> Self {
-        let f = self.fract();
-        if f.is_nan() || f.is_zero() {
+        let f = self.clone().fract();
+        if f.clone().is_nan() || f.clone().is_zero() {
             self
         } else if self > Self::zero() {
             self - f + Self::one()
@@ -385,8 +385,8 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     fn round(self) -> Self {
         let one = Self::one();
         let h = Self::from(0.5).expect("Unable to cast from 0.5");
-        let f = self.fract();
-        if f.is_nan() || f.is_zero() {
+        let f = self.clone().fract();
+        if f.clone().is_nan() || f.clone().is_zero() {
             self
         } else if self > Self::zero() {
             if f < h {
@@ -394,7 +394,7 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
             } else {
                 self - f + one
             }
-        } else if -f < h {
+        } else if -f.clone() < h {
             self - f
         } else {
             self - f - one
@@ -425,8 +425,8 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     /// ```
     #[inline]
     fn trunc(self) -> Self {
-        let f = self.fract();
-        if f.is_nan() {
+        let f = self.clone().fract();
+        if f.clone().is_nan() {
             self
         } else {
             self - f
@@ -486,10 +486,10 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     /// ```
     #[inline]
     fn abs(self) -> Self {
-        if self.is_sign_positive() {
+        if self.clone().is_sign_positive() {
             return self;
         }
-        if self.is_sign_negative() {
+        if self.clone().is_sign_negative() {
             return -self;
         }
         Self::nan()
@@ -520,7 +520,7 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     /// ```
     #[inline]
     fn signum(self) -> Self {
-        if self.is_nan() {
+        if self.clone().is_nan() {
             Self::nan()
         } else if self.is_sign_negative() {
             -Self::one()
@@ -605,10 +605,10 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     /// ```
     #[inline]
     fn min(self, other: Self) -> Self {
-        if self.is_nan() {
+        if self.clone().is_nan() {
             return other;
         }
-        if other.is_nan() {
+        if other.clone().is_nan() {
             return self;
         }
         if self < other {
@@ -639,10 +639,10 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     /// ```
     #[inline]
     fn max(self, other: Self) -> Self {
-        if self.is_nan() {
+        if self.clone().is_nan() {
             return other;
         }
-        if other.is_nan() {
+        if other.clone().is_nan() {
             return self;
         }
         if self > other {
@@ -691,7 +691,7 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
     /// use std::{f32, f64};
     ///
     /// fn check<T: FloatCore>(x: T, y: T) {
-    ///     assert!(x.recip() == y);
+    ///     assert!(x.clone().recip() == y);
     ///     assert!(y.recip() == x);
     /// }
     ///
@@ -733,7 +733,7 @@ pub trait FloatCore: Num + NumCast + Neg<Output = Self> + PartialOrd + Copy {
         // It should always be possible to convert a positive `i32` to a `usize`.
         // Note, `i32::MIN` will wrap and still be negative, so we need to convert
         // to `u32` without sign-extension before growing to `usize`.
-        super::pow(self, (exp as u32).to_usize().unwrap())
+        super::pow(self.clone(), (exp as u32).to_usize().unwrap())
     }
 
     /// Converts to degrees, assuming the number is in radians.
@@ -929,7 +929,7 @@ impl FloatCore for f64 {
 ///
 /// This trait is only available with the `std` feature, or with the `libm` feature otherwise.
 #[cfg(any(feature = "std", feature = "libm"))]
-pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
+pub trait Float: Num + Clone + NumCast + PartialOrd + Neg<Output = Self> {
     /// Returns the `NaN` value.
     ///
     /// ```
@@ -1903,7 +1903,7 @@ pub trait Float: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// assert!(f32::nan().copysign(1.0).is_nan());
     /// ```
     fn copysign(self, sign: Self) -> Self {
-        if self.is_sign_negative() == sign.is_sign_negative() {
+        if self.clone().is_sign_negative() == sign.is_sign_negative() {
             self
         } else {
             self.neg()
@@ -2427,25 +2427,25 @@ mod tests {
 
     #[cfg(any(feature = "std", feature = "libm"))]
     fn test_copysign_generic<F: crate::float::Float + ::core::fmt::Debug>(p: F, n: F, nan: F) {
-        assert!(p.is_sign_positive());
-        assert!(n.is_sign_negative());
-        assert!(nan.is_nan());
-        assert!(!nan.is_subnormal());
+        assert!(p.clone().is_sign_positive());
+        assert!(n.clone().is_sign_negative());
+        assert!(nan.clone().is_nan());
+        assert!(!nan.clone().is_subnormal());
 
-        assert_eq!(p, p.copysign(p));
-        assert_eq!(p.neg(), p.copysign(n));
+        assert_eq!(p.clone(), p.clone().copysign(p.clone()));
+        assert_eq!(p.clone().neg(), p.clone().copysign(n.clone()));
 
-        assert_eq!(n, n.copysign(n));
-        assert_eq!(n.neg(), n.copysign(p));
+        assert_eq!(n.clone(), n.clone().copysign(n.clone()));
+        assert_eq!(n.clone().neg(), n.clone().copysign(p.clone()));
 
-        assert!(nan.copysign(p).is_sign_positive());
+        assert!(nan.clone().copysign(p).is_sign_positive());
         assert!(nan.copysign(n).is_sign_negative());
     }
 
     #[cfg(any(feature = "std", feature = "libm"))]
     fn test_subnormal<F: crate::float::Float + ::core::fmt::Debug>() {
         let min_positive = F::min_positive_value();
-        let lower_than_min = min_positive / F::from(2.0f32).unwrap();
+        let lower_than_min = min_positive.clone() / F::from(2.0f32).unwrap();
         assert!(!min_positive.is_subnormal());
         assert!(lower_than_min.is_subnormal());
     }
