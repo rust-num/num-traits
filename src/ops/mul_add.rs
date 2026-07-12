@@ -34,6 +34,17 @@ pub trait MulAddAssign<A = Self, B = Self> {
     fn mul_add_assign(&mut self, a: A, b: B);
 }
 
+#[cfg(has_f16)]
+#[cfg(any(feature = "std", feature = "libm"))]
+impl MulAdd<f16, f16> for f16 {
+    type Output = Self;
+
+    #[inline]
+    fn mul_add(self, a: Self, b: Self) -> Self::Output {
+        <Self as crate::Float>::mul_add(self, a, b)
+    }
+}
+
 #[cfg(any(feature = "std", feature = "libm"))]
 impl MulAdd<f32, f32> for f32 {
     type Output = Self;
@@ -46,6 +57,17 @@ impl MulAdd<f32, f32> for f32 {
 
 #[cfg(any(feature = "std", feature = "libm"))]
 impl MulAdd<f64, f64> for f64 {
+    type Output = Self;
+
+    #[inline]
+    fn mul_add(self, a: Self, b: Self) -> Self::Output {
+        <Self as crate::Float>::mul_add(self, a, b)
+    }
+}
+
+#[cfg(has_f128)]
+#[cfg(any(feature = "std", feature = "libm"))]
+impl MulAdd<f128, f128> for f128 {
     type Output = Self;
 
     #[inline]
@@ -70,6 +92,15 @@ macro_rules! mul_add_impl {
 mul_add_impl!(MulAdd for isize i8 i16 i32 i64 i128);
 mul_add_impl!(MulAdd for usize u8 u16 u32 u64 u128);
 
+#[cfg(has_f16)]
+#[cfg(any(feature = "std", feature = "libm"))]
+impl MulAddAssign<f16, f16> for f16 {
+    #[inline]
+    fn mul_add_assign(&mut self, a: Self, b: Self) {
+        *self = <Self as crate::Float>::mul_add(*self, a, b)
+    }
+}
+
 #[cfg(any(feature = "std", feature = "libm"))]
 impl MulAddAssign<f32, f32> for f32 {
     #[inline]
@@ -80,6 +111,15 @@ impl MulAddAssign<f32, f32> for f32 {
 
 #[cfg(any(feature = "std", feature = "libm"))]
 impl MulAddAssign<f64, f64> for f64 {
+    #[inline]
+    fn mul_add_assign(&mut self, a: Self, b: Self) {
+        *self = <Self as crate::Float>::mul_add(*self, a, b)
+    }
+}
+
+#[cfg(has_f128)]
+#[cfg(any(feature = "std", feature = "libm"))]
+impl MulAddAssign<f128, f128> for f128 {
     #[inline]
     fn mul_add_assign(&mut self, a: Self, b: Self) {
         *self = <Self as crate::Float>::mul_add(*self, a, b)
@@ -144,6 +184,12 @@ mod tests {
             };
         }
 
+        #[cfg(has_f16)]
+        test_mul_add!(f16);
+
         test_mul_add!(f32 f64);
+
+        #[cfg(has_f128)]
+        test_mul_add!(f128);
     }
 }

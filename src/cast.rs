@@ -1,3 +1,7 @@
+#[cfg(has_f128)]
+use core::f128;
+#[cfg(has_f16)]
+use core::f16;
 use core::mem::size_of;
 use core::num::Wrapping;
 use core::num::{
@@ -105,6 +109,15 @@ pub trait ToPrimitive {
         self.to_u64().map(From::from)
     }
 
+    /// Converts the value of `self` to an `f16`. Overflows may map to positive
+    /// or negative inifinity, otherwise `None` is returned if the value cannot
+    /// be represented by an `f16`.
+    #[cfg(has_f16)]
+    #[inline]
+    fn to_f16(&self) -> Option<f16> {
+        self.to_f64().as_ref().and_then(ToPrimitive::to_f16)
+    }
+
     /// Converts the value of `self` to an `f32`. Overflows may map to positive
     /// or negative inifinity, otherwise `None` is returned if the value cannot
     /// be represented by an `f32`.
@@ -127,11 +140,21 @@ pub trait ToPrimitive {
             None => self.to_u64().as_ref().and_then(ToPrimitive::to_f64),
         }
     }
+
+    /// Converts the value of `self` to an `f128`. Overflows may map to positive
+    /// or negative inifinity, otherwise `None` is returned if the value cannot
+    /// be represented by an `f128`.
+    #[cfg(has_f128)]
+    #[inline]
+    fn to_f128(&self) -> Option<f128> {
+        self.to_f64().as_ref().and_then(ToPrimitive::to_f128)
+    }
 }
 
 macro_rules! impl_to_primitive_int_to_int {
-    ($SrcT:ident : $( fn $method:ident -> $DstT:ident ; )*) => {$(
+    ($SrcT:ident : $( $(#[$cfg:meta])* fn $method:ident -> $DstT:ident ; )*) => {$(
         #[inline]
+        $(#[$cfg])*
         fn $method(&self) -> Option<$DstT> {
             let min = $DstT::MIN as $SrcT;
             let max = $DstT::MAX as $SrcT;
@@ -145,8 +168,9 @@ macro_rules! impl_to_primitive_int_to_int {
 }
 
 macro_rules! impl_to_primitive_int_to_uint {
-    ($SrcT:ident : $( fn $method:ident -> $DstT:ident ; )*) => {$(
+    ($SrcT:ident : $( $(#[$cfg:meta])* fn $method:ident -> $DstT:ident ; )*) => {$(
         #[inline]
+        $(#[$cfg])*
         fn $method(&self) -> Option<$DstT> {
             let max = $DstT::MAX as $SrcT;
             if 0 <= *self && (size_of::<$SrcT>() <= size_of::<$DstT>() || *self <= max) {
@@ -179,6 +203,11 @@ macro_rules! impl_to_primitive_int {
                 fn to_u128 -> u128;
             }
 
+            #[cfg(has_f16)]
+            #[inline]
+            fn to_f16(&self) -> Option<f16> {
+                Some(*self as f16)
+            }
             #[inline]
             fn to_f32(&self) -> Option<f32> {
                 Some(*self as f32)
@@ -186,6 +215,11 @@ macro_rules! impl_to_primitive_int {
             #[inline]
             fn to_f64(&self) -> Option<f64> {
                 Some(*self as f64)
+            }
+            #[cfg(has_f128)]
+            #[inline]
+            fn to_f128(&self) -> Option<f128> {
+                Some(*self as f128)
             }
         }
     };
@@ -199,8 +233,9 @@ impl_to_primitive_int!(i64);
 impl_to_primitive_int!(i128);
 
 macro_rules! impl_to_primitive_uint_to_int {
-    ($SrcT:ident : $( fn $method:ident -> $DstT:ident ; )*) => {$(
+    ($SrcT:ident : $( $(#[$cfg:meta])* fn $method:ident -> $DstT:ident ; )*) => {$(
         #[inline]
+        $(#[$cfg])*
         fn $method(&self) -> Option<$DstT> {
             let max = $DstT::MAX as $SrcT;
             if size_of::<$SrcT>() < size_of::<$DstT>() || *self <= max {
@@ -213,8 +248,9 @@ macro_rules! impl_to_primitive_uint_to_int {
 }
 
 macro_rules! impl_to_primitive_uint_to_uint {
-    ($SrcT:ident : $( fn $method:ident -> $DstT:ident ; )*) => {$(
+    ($SrcT:ident : $( $(#[$cfg:meta])* fn $method:ident -> $DstT:ident ; )*) => {$(
         #[inline]
+        $(#[$cfg])*
         fn $method(&self) -> Option<$DstT> {
             let max = $DstT::MAX as $SrcT;
             if size_of::<$SrcT>() <= size_of::<$DstT>() || *self <= max {
@@ -247,6 +283,11 @@ macro_rules! impl_to_primitive_uint {
                 fn to_u128 -> u128;
             }
 
+            #[cfg(has_f16)]
+            #[inline]
+            fn to_f16(&self) -> Option<f16> {
+                Some(*self as f16)
+            }
             #[inline]
             fn to_f32(&self) -> Option<f32> {
                 Some(*self as f32)
@@ -254,6 +295,11 @@ macro_rules! impl_to_primitive_uint {
             #[inline]
             fn to_f64(&self) -> Option<f64> {
                 Some(*self as f64)
+            }
+            #[cfg(has_f128)]
+            #[inline]
+            fn to_f128(&self) -> Option<f128> {
+                Some(*self as f128)
             }
         }
     };
@@ -315,8 +361,9 @@ impl_to_primitive_nonzero!(NonZeroI64);
 impl_to_primitive_nonzero!(NonZeroI128);
 
 macro_rules! impl_to_primitive_float_to_float {
-    ($SrcT:ident : $( fn $method:ident -> $DstT:ident ; )*) => {$(
+    ($SrcT:ident : $( $(#[$cfg:meta])* fn $method:ident -> $DstT:ident ; )*) => {$(
         #[inline]
+        $(#[$cfg])*
         fn $method(&self) -> Option<$DstT> {
             // We can safely cast all values, whether NaN, +-inf, or finite.
             // Finite values that are reducing size may saturate to +-inf.
@@ -334,8 +381,9 @@ macro_rules! float_to_int_unchecked {
 }
 
 macro_rules! impl_to_primitive_float_to_signed_int {
-    ($f:ident : $( fn $method:ident -> $i:ident ; )*) => {$(
+    ($f:ident : $( $(#[$cfg:meta])* fn $method:ident -> $i:ident ; )*) => {$(
         #[inline]
+        $(#[$cfg])*
         fn $method(&self) -> Option<$i> {
             // Float as int truncates toward zero, so we want to allow values
             // in the exclusive range `(MIN-1, MAX+1)`.
@@ -363,8 +411,9 @@ macro_rules! impl_to_primitive_float_to_signed_int {
 }
 
 macro_rules! impl_to_primitive_float_to_unsigned_int {
-    ($f:ident : $( fn $method:ident -> $u:ident ; )*) => {$(
+    ($f:ident : $( $(#[$cfg:meta])* fn $method:ident -> $u:ident ; )*) => {$(
         #[inline]
+        $(#[$cfg])*
         fn $method(&self) -> Option<$u> {
             // Float as int truncates toward zero, so we want to allow values
             // in the exclusive range `(-1, MAX+1)`.
@@ -410,15 +459,23 @@ macro_rules! impl_to_primitive_float {
             }
 
             impl_to_primitive_float_to_float! { $T:
+                #[cfg(has_f16)]
+                fn to_f16 -> f16;
                 fn to_f32 -> f32;
                 fn to_f64 -> f64;
+                #[cfg(has_f128)]
+                fn to_f128 -> f128;
             }
         }
     };
 }
 
+#[cfg(has_f16)]
+impl_to_primitive_float!(f16);
 impl_to_primitive_float!(f32);
 impl_to_primitive_float!(f64);
+#[cfg(has_f128)]
+impl_to_primitive_float!(f128);
 
 /// A generic trait for converting a number to a value.
 ///
@@ -515,6 +572,14 @@ pub trait FromPrimitive: Sized {
         n.to_u64().and_then(FromPrimitive::from_u64)
     }
 
+    /// Converts a `f16` to return an optional value of this type. If the
+    /// value cannot be represented by this type, then `None` is returned.
+    #[cfg(has_f16)]
+    #[inline]
+    fn from_f16(n: f16) -> Option<Self> {
+        FromPrimitive::from_f64(n as f64)
+    }
+
     /// Converts a `f32` to return an optional value of this type. If the
     /// value cannot be represented by this type, then `None` is returned.
     #[inline]
@@ -534,6 +599,14 @@ pub trait FromPrimitive: Sized {
             Some(i) => FromPrimitive::from_i64(i),
             None => n.to_u64().and_then(FromPrimitive::from_u64),
         }
+    }
+
+    /// Converts a `f128` to return an optional value of this type. If the
+    /// value cannot be represented by this type, then `None` is returned.
+    #[cfg(has_f128)]
+    #[inline]
+    fn from_f128(n: f128) -> Option<Self> {
+        FromPrimitive::from_f64(n as f64)
     }
 }
 
@@ -590,12 +663,22 @@ macro_rules! impl_from_primitive {
                 n.$to_ty()
             }
 
+            #[cfg(has_f16)]
+            #[inline]
+            fn from_f16(n: f16) -> Option<$T> {
+                n.$to_ty()
+            }
             #[inline]
             fn from_f32(n: f32) -> Option<$T> {
                 n.$to_ty()
             }
             #[inline]
             fn from_f64(n: f64) -> Option<$T> {
+                n.$to_ty()
+            }
+            #[cfg(has_f128)]
+            #[inline]
+            fn from_f128(n: f128) -> Option<$T> {
                 n.$to_ty()
             }
         }
@@ -614,8 +697,12 @@ impl_from_primitive!(u16, to_u16);
 impl_from_primitive!(u32, to_u32);
 impl_from_primitive!(u64, to_u64);
 impl_from_primitive!(u128, to_u128);
+#[cfg(has_f16)]
+impl_from_primitive!(f16, to_f16);
 impl_from_primitive!(f32, to_f32);
 impl_from_primitive!(f64, to_f64);
+#[cfg(has_f128)]
+impl_from_primitive!(f128, to_f128);
 
 macro_rules! impl_from_primitive_nonzero {
     ($T:ty, $to_ty:ident) => {
@@ -696,8 +783,9 @@ impl_from_primitive_nonzero!(NonZeroU64, to_u64);
 impl_from_primitive_nonzero!(NonZeroU128, to_u128);
 
 macro_rules! impl_to_primitive_wrapping {
-    ($( fn $method:ident -> $i:ident ; )*) => {$(
+    ($( $(#[$cfg:meta])* fn $method:ident -> $i:ident ; )*) => {$(
         #[inline]
+        $(#[$cfg])*
         fn $method(&self) -> Option<$i> {
             (self.0).$method()
         }
@@ -720,14 +808,19 @@ impl<T: ToPrimitive> ToPrimitive for Wrapping<T> {
         fn to_u64 -> u64;
         fn to_u128 -> u128;
 
+        #[cfg(has_f16)]
+        fn to_f16 -> f16;
         fn to_f32 -> f32;
         fn to_f64 -> f64;
+        #[cfg(has_f128)]
+        fn to_f128 -> f128;
     }
 }
 
 macro_rules! impl_from_primitive_wrapping {
-    ($( fn $method:ident ( $i:ident ); )*) => {$(
+    ($( $(#[$cfg:meta])* fn $method:ident ( $i:ident ); )*) => {$(
         #[inline]
+        $(#[$cfg])*
         fn $method(n: $i) -> Option<Self> {
             T::$method(n).map(Wrapping)
         }
@@ -750,8 +843,12 @@ impl<T: FromPrimitive> FromPrimitive for Wrapping<T> {
         fn from_u64(u64);
         fn from_u128(u128);
 
+        #[cfg(has_f16)]
+        fn from_f16(f16);
         fn from_f32(f32);
         fn from_f64(f64);
+        #[cfg(has_f128)]
+        fn from_f128(f128);
     }
 }
 
@@ -810,8 +907,12 @@ impl_num_cast!(i32, to_i32);
 impl_num_cast!(i64, to_i64);
 impl_num_cast!(i128, to_i128);
 impl_num_cast!(isize, to_isize);
+#[cfg(has_f16)]
+impl_num_cast!(f16, to_f16);
 impl_num_cast!(f32, to_f32);
 impl_num_cast!(f64, to_f64);
+#[cfg(has_f128)]
+impl_num_cast!(f128, to_f128);
 
 macro_rules! impl_num_cast_nonzero {
     ($T:ty, $conv:ident) => {
@@ -879,34 +980,39 @@ where
 }
 
 macro_rules! impl_as_primitive {
-    (@ $T: ty =>  impl $U: ty ) => {
+    (@ $T: ty => $(#[$cfg:meta])* impl $U: ty ) => {
+        $(#[$cfg])*
         impl AsPrimitive<$U> for $T {
             #[inline] fn as_(self) -> $U { self as $U }
         }
     };
-    (@ $T: ty => { $( $U: ty ),* } ) => {$(
-        impl_as_primitive!(@ $T => impl $U);
+    (@ $T: ty => { $( $(#[$cfg:meta])* $U: ty ),* } ) => {$(
+        impl_as_primitive!(@ $T => $(#[$cfg])* impl $U);
     )*};
-    ($T: ty => { $( $U: ty ),* } ) => {
-        impl_as_primitive!(@ $T => { $( $U ),* });
+    ($T: ty => { $( $(#[$cfg:meta])* $U: ty ),* } ) => {
+        impl_as_primitive!(@ $T => { $( $(#[$cfg])* $U ),* });
         impl_as_primitive!(@ $T => { u8, u16, u32, u64, u128, usize });
         impl_as_primitive!(@ $T => { i8, i16, i32, i64, i128, isize });
     };
 }
 
-impl_as_primitive!(u8 => { char, f32, f64 });
-impl_as_primitive!(i8 => { f32, f64 });
-impl_as_primitive!(u16 => { f32, f64 });
-impl_as_primitive!(i16 => { f32, f64 });
-impl_as_primitive!(u32 => { f32, f64 });
-impl_as_primitive!(i32 => { f32, f64 });
-impl_as_primitive!(u64 => { f32, f64 });
-impl_as_primitive!(i64 => { f32, f64 });
-impl_as_primitive!(u128 => { f32, f64 });
-impl_as_primitive!(i128 => { f32, f64 });
-impl_as_primitive!(usize => { f32, f64 });
-impl_as_primitive!(isize => { f32, f64 });
-impl_as_primitive!(f32 => { f32, f64 });
-impl_as_primitive!(f64 => { f32, f64 });
+impl_as_primitive!(u8 => { char, #[cfg(has_f16)] f16, f32, f64, #[cfg(has_f128)] f128 });
+impl_as_primitive!(i8 => { #[cfg(has_f16)] f16, f32, f64, #[cfg(has_f128)] f128 });
+impl_as_primitive!(u16 => { #[cfg(has_f16)] f16, f32, f64, #[cfg(has_f128)] f128 });
+impl_as_primitive!(i16 => { #[cfg(has_f16)] f16, f32, f64, #[cfg(has_f128)] f128 });
+impl_as_primitive!(u32 => { #[cfg(has_f16)] f16, f32, f64, #[cfg(has_f128)] f128 });
+impl_as_primitive!(i32 => { #[cfg(has_f16)] f16, f32, f64, #[cfg(has_f128)] f128 });
+impl_as_primitive!(u64 => { #[cfg(has_f16)] f16, f32, f64, #[cfg(has_f128)] f128 });
+impl_as_primitive!(i64 => { #[cfg(has_f16)] f16, f32, f64, #[cfg(has_f128)] f128 });
+impl_as_primitive!(u128 => { #[cfg(has_f16)] f16, f32, f64, #[cfg(has_f128)] f128 });
+impl_as_primitive!(i128 => { #[cfg(has_f16)] f16, f32, f64, #[cfg(has_f128)] f128 });
+impl_as_primitive!(usize => { #[cfg(has_f16)] f16, f32, f64, #[cfg(has_f128)] f128 });
+impl_as_primitive!(isize => { #[cfg(has_f16)] f16, f32, f64, #[cfg(has_f128)] f128 });
+#[cfg(has_f16)]
+impl_as_primitive!(f16 => { f16, f32, f64, #[cfg(has_f128)] f128 });
+impl_as_primitive!(f32 => { #[cfg(has_f16)] f16, f32, f64, #[cfg(has_f128)] f128 });
+impl_as_primitive!(f64 => { #[cfg(has_f16)] f16, f32, f64, #[cfg(has_f128)] f128 });
+#[cfg(has_f128)]
+impl_as_primitive!(f128 => { #[cfg(has_f16)] f16, f32, f64, f128 });
 impl_as_primitive!(char => { char });
 impl_as_primitive!(bool => {});

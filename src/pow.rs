@@ -31,6 +31,41 @@ macro_rules! pow_impl {
     ($t:ty, $rhs:ty) => {
         pow_impl!($t, $rhs, usize, pow);
     };
+    // `From<f16>` is not implemented for `f32`.
+    // See also https://github.com/rust-lang/rust/issues/123831
+    ($t:ty, f16, $desired_rhs:ty, $method:expr) => {
+        impl Pow<f16> for $t {
+            type Output = $t;
+            #[inline]
+            fn pow(self, rhs: f16) -> $t {
+                ($method)(self, rhs as $desired_rhs)
+            }
+        }
+
+        impl<'a> Pow<&'a f16> for $t {
+            type Output = $t;
+            #[inline]
+            fn pow(self, rhs: &'a f16) -> $t {
+                ($method)(self, *rhs as $desired_rhs)
+            }
+        }
+
+        impl<'a> Pow<f16> for &'a $t {
+            type Output = $t;
+            #[inline]
+            fn pow(self, rhs: f16) -> $t {
+                ($method)(*self, rhs as $desired_rhs)
+            }
+        }
+
+        impl<'a, 'b> Pow<&'a f16> for &'b $t {
+            type Output = $t;
+            #[inline]
+            fn pow(self, rhs: &'a f16) -> $t {
+                ($method)(*self, *rhs as $desired_rhs)
+            }
+        }
+    };
     ($t:ty, $rhs:ty, $desired_rhs:ty, $method:expr) => {
         impl Pow<$rhs> for $t {
             type Output = $t;
@@ -147,6 +182,16 @@ mod float_impls {
     use super::Pow;
     use crate::Float;
 
+    #[cfg(has_f16)]
+    pow_impl!(f16, i8, i32, <f16 as Float>::powi);
+    #[cfg(has_f16)]
+    pow_impl!(f16, u8, i32, <f16 as Float>::powi);
+    #[cfg(has_f16)]
+    pow_impl!(f16, i16, i32, <f16 as Float>::powi);
+    #[cfg(has_f16)]
+    pow_impl!(f16, u16, i32, <f16 as Float>::powi);
+    #[cfg(has_f16)]
+    pow_impl!(f16, i32, i32, <f16 as Float>::powi);
     pow_impl!(f32, i8, i32, <f32 as Float>::powi);
     pow_impl!(f32, u8, i32, <f32 as Float>::powi);
     pow_impl!(f32, i16, i32, <f32 as Float>::powi);
@@ -157,9 +202,33 @@ mod float_impls {
     pow_impl!(f64, i16, i32, <f64 as Float>::powi);
     pow_impl!(f64, u16, i32, <f64 as Float>::powi);
     pow_impl!(f64, i32, i32, <f64 as Float>::powi);
+    #[cfg(has_f128)]
+    pow_impl!(f128, i8, i32, <f128 as Float>::powi);
+    #[cfg(has_f128)]
+    pow_impl!(f128, u8, i32, <f128 as Float>::powi);
+    #[cfg(has_f128)]
+    pow_impl!(f128, i16, i32, <f128 as Float>::powi);
+    #[cfg(has_f128)]
+    pow_impl!(f128, u16, i32, <f128 as Float>::powi);
+    #[cfg(has_f128)]
+    pow_impl!(f128, i32, i32, <f128 as Float>::powi);
+    #[cfg(has_f16)]
+    pow_impl!(f16, f16, f16, <f16 as Float>::powf);
+    #[cfg(has_f16)]
+    pow_impl!(f32, f16, f32, <f32 as Float>::powf);
     pow_impl!(f32, f32, f32, <f32 as Float>::powf);
+    #[cfg(has_f16)]
+    pow_impl!(f64, f16, f64, <f64 as Float>::powf);
     pow_impl!(f64, f32, f64, <f64 as Float>::powf);
     pow_impl!(f64, f64, f64, <f64 as Float>::powf);
+    #[cfg(all(has_f16, has_f128))]
+    pow_impl!(f128, f16, f128, <f128 as Float>::powf);
+    #[cfg(has_f128)]
+    pow_impl!(f128, f32, f128, <f128 as Float>::powf);
+    #[cfg(has_f128)]
+    pow_impl!(f128, f64, f128, <f128 as Float>::powf);
+    #[cfg(has_f128)]
+    pow_impl!(f128, f128, f128, <f128 as Float>::powf);
 }
 
 /// Raises a value to the power of exp, using exponentiation by squaring.

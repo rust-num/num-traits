@@ -88,8 +88,39 @@ macro_rules! euclid_forward_impl {
 euclid_forward_impl!(isize i8 i16 i32 i64 i128);
 euclid_forward_impl!(usize u8 u16 u32 u64 u128);
 
+#[cfg(has_f16)]
+#[cfg(feature = "std")]
+euclid_forward_impl!(f16);
+
 #[cfg(feature = "std")]
 euclid_forward_impl!(f32 f64);
+
+#[cfg(has_f128)]
+#[cfg(feature = "std")]
+euclid_forward_impl!(f128);
+
+#[cfg(has_f16)]
+#[cfg(not(feature = "std"))]
+impl Euclid for f16 {
+    #[inline]
+    fn div_euclid(&self, v: &f16) -> f16 {
+        let q = <f16 as crate::float::FloatCore>::trunc(self / v);
+        if self % v < 0.0 {
+            return if *v > 0.0 { q - 1.0 } else { q + 1.0 };
+        }
+        q
+    }
+
+    #[inline]
+    fn rem_euclid(&self, v: &f16) -> f16 {
+        let r = self % v;
+        if r < 0.0 {
+            r + <f16 as crate::float::FloatCore>::abs(*v)
+        } else {
+            r
+        }
+    }
+}
 
 #[cfg(not(feature = "std"))]
 impl Euclid for f32 {
@@ -129,6 +160,29 @@ impl Euclid for f64 {
         let r = self % v;
         if r < 0.0 {
             r + <f64 as crate::float::FloatCore>::abs(*v)
+        } else {
+            r
+        }
+    }
+}
+
+#[cfg(has_f128)]
+#[cfg(not(feature = "std"))]
+impl Euclid for f128 {
+    #[inline]
+    fn div_euclid(&self, v: &f128) -> f128 {
+        let q = <f128 as crate::float::FloatCore>::trunc(self / v);
+        if self % v < 0.0 {
+            return if *v > 0.0 { q - 1.0 } else { q + 1.0 };
+        }
+        q
+    }
+
+    #[inline]
+    fn rem_euclid(&self, v: &f128) -> f128 {
+        let r = self % v;
+        if r < 0.0 {
+            r + <f128 as crate::float::FloatCore>::abs(*v)
         } else {
             r
         }
@@ -256,7 +310,13 @@ mod tests {
             };
         }
 
+        #[cfg(has_f16)]
+        test_euclid!(f16);
+
         test_euclid!(f32 f64);
+
+        #[cfg(has_f128)]
+        test_euclid!(f128);
     }
 
     #[test]
