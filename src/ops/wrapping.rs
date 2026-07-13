@@ -3,28 +3,25 @@ use core::ops::{Add, Mul, Neg, Shl, Shr, Sub};
 
 macro_rules! wrapping_impl {
     ($trait_name:ident, $method:ident, $t:ty) => {
-        impl $trait_name for $t {
+        impl $trait_name<Self> for $t {
+            type WrappingOutput = $t;
+
             #[inline]
-            fn $method(&self, v: &Self) -> Self {
-                <$t>::$method(*self, *v)
-            }
-        }
-    };
-    ($trait_name:ident, $method:ident, $t:ty, $rhs:ty) => {
-        impl $trait_name<$rhs> for $t {
-            #[inline]
-            fn $method(&self, v: &$rhs) -> Self {
-                <$t>::$method(*self, *v)
+            fn $method(self, v: Self) -> Self {
+                <$t>::$method(self, v)
             }
         }
     };
 }
 
 /// Performs addition that wraps around on overflow.
-pub trait WrappingAdd: Sized + Add<Self, Output = Self> {
+pub trait WrappingAdd<Rhs = Self>: Sized + Add<Rhs, Output = Self::WrappingOutput> {
+    /// The result type.
+    type WrappingOutput;
+
     /// Wrapping (modular) addition. Computes `self + other`, wrapping around at the boundary of
     /// the type.
-    fn wrapping_add(&self, v: &Self) -> Self;
+    fn wrapping_add(self, v: Rhs) -> Self::WrappingOutput;
 }
 
 wrapping_impl!(WrappingAdd, wrapping_add, u8);
@@ -42,10 +39,13 @@ wrapping_impl!(WrappingAdd, wrapping_add, isize);
 wrapping_impl!(WrappingAdd, wrapping_add, i128);
 
 /// Performs subtraction that wraps around on overflow.
-pub trait WrappingSub: Sized + Sub<Self, Output = Self> {
+pub trait WrappingSub<Rhs = Self>: Sized + Sub<Rhs, Output = Self::WrappingOutput> {
+    /// The result type.
+    type WrappingOutput;
+
     /// Wrapping (modular) subtraction. Computes `self - other`, wrapping around at the boundary
     /// of the type.
-    fn wrapping_sub(&self, v: &Self) -> Self;
+    fn wrapping_sub(self, v: Rhs) -> Self::WrappingOutput;
 }
 
 wrapping_impl!(WrappingSub, wrapping_sub, u8);
@@ -63,10 +63,13 @@ wrapping_impl!(WrappingSub, wrapping_sub, isize);
 wrapping_impl!(WrappingSub, wrapping_sub, i128);
 
 /// Performs multiplication that wraps around on overflow.
-pub trait WrappingMul: Sized + Mul<Self, Output = Self> {
+pub trait WrappingMul<Rhs = Self>: Sized + Mul<Rhs, Output = Self::WrappingOutput> {
+    /// The result type.
+    type WrappingOutput;
+
     /// Wrapping (modular) multiplication. Computes `self * other`, wrapping around at the boundary
     /// of the type.
-    fn wrapping_mul(&self, v: &Self) -> Self;
+    fn wrapping_mul(self, v: Rhs) -> Self::WrappingOutput;
 }
 
 wrapping_impl!(WrappingMul, wrapping_mul, u8);
@@ -86,9 +89,11 @@ wrapping_impl!(WrappingMul, wrapping_mul, i128);
 macro_rules! wrapping_unary_impl {
     ($trait_name:ident, $method:ident, $t:ty) => {
         impl $trait_name for $t {
+            type WrappingOutput = Self;
+
             #[inline]
-            fn $method(&self) -> $t {
-                <$t>::$method(*self)
+            fn $method(self) -> Self {
+                <$t>::$method(self)
             }
         }
     };
@@ -96,6 +101,9 @@ macro_rules! wrapping_unary_impl {
 
 /// Performs a negation that does not panic.
 pub trait WrappingNeg: Sized {
+    /// The result type.
+    type WrappingOutput;
+
     /// Wrapping (modular) negation. Computes `-self`,
     /// wrapping around at the boundary of the type.
     ///
@@ -113,7 +121,7 @@ pub trait WrappingNeg: Sized {
     /// assert_eq!((-100i8).wrapping_neg(), 100);
     /// assert_eq!((-128i8).wrapping_neg(), -128); // wrapped!
     /// ```
-    fn wrapping_neg(&self) -> Self;
+    fn wrapping_neg(self) -> Self::WrappingOutput;
 }
 
 wrapping_unary_impl!(WrappingNeg, wrapping_neg, u8);
@@ -132,9 +140,11 @@ wrapping_unary_impl!(WrappingNeg, wrapping_neg, i128);
 macro_rules! wrapping_shift_impl {
     ($trait_name:ident, $method:ident, $t:ty) => {
         impl $trait_name for $t {
+            type WrappingOutput = Self;
+
             #[inline]
-            fn $method(&self, rhs: u32) -> $t {
-                <$t>::$method(*self, rhs)
+            fn $method(self, rhs: u32) -> Self::WrappingOutput {
+                <$t>::$method(self, rhs)
             }
         }
     };
@@ -142,6 +152,9 @@ macro_rules! wrapping_shift_impl {
 
 /// Performs a left shift that does not panic.
 pub trait WrappingShl: Sized + Shl<usize, Output = Self> {
+    /// The result type.
+    type WrappingOutput;
+
     /// Panic-free bitwise shift-left; yields `self << mask(rhs)`,
     /// where `mask` removes any high order bits of `rhs` that would
     /// cause the shift to exceed the bitwidth of the type.
@@ -151,12 +164,12 @@ pub trait WrappingShl: Sized + Shl<usize, Output = Self> {
     ///
     /// let x: u16 = 0x0001;
     ///
-    /// assert_eq!(WrappingShl::wrapping_shl(&x, 0),  0x0001);
-    /// assert_eq!(WrappingShl::wrapping_shl(&x, 1),  0x0002);
-    /// assert_eq!(WrappingShl::wrapping_shl(&x, 15), 0x8000);
-    /// assert_eq!(WrappingShl::wrapping_shl(&x, 16), 0x0001);
+    /// assert_eq!(WrappingShl::wrapping_shl(x, 0),  0x0001);
+    /// assert_eq!(WrappingShl::wrapping_shl(x, 1),  0x0002);
+    /// assert_eq!(WrappingShl::wrapping_shl(x, 15), 0x8000);
+    /// assert_eq!(WrappingShl::wrapping_shl(x, 16), 0x0001);
     /// ```
-    fn wrapping_shl(&self, rhs: u32) -> Self;
+    fn wrapping_shl(self, rhs: u32) -> Self::WrappingOutput;
 }
 
 wrapping_shift_impl!(WrappingShl, wrapping_shl, u8);
@@ -175,6 +188,9 @@ wrapping_shift_impl!(WrappingShl, wrapping_shl, i128);
 
 /// Performs a right shift that does not panic.
 pub trait WrappingShr: Sized + Shr<usize, Output = Self> {
+    /// The result type.
+    type WrappingOutput;
+
     /// Panic-free bitwise shift-right; yields `self >> mask(rhs)`,
     /// where `mask` removes any high order bits of `rhs` that would
     /// cause the shift to exceed the bitwidth of the type.
@@ -184,12 +200,12 @@ pub trait WrappingShr: Sized + Shr<usize, Output = Self> {
     ///
     /// let x: u16 = 0x8000;
     ///
-    /// assert_eq!(WrappingShr::wrapping_shr(&x, 0),  0x8000);
-    /// assert_eq!(WrappingShr::wrapping_shr(&x, 1),  0x4000);
-    /// assert_eq!(WrappingShr::wrapping_shr(&x, 15), 0x0001);
-    /// assert_eq!(WrappingShr::wrapping_shr(&x, 16), 0x8000);
+    /// assert_eq!(WrappingShr::wrapping_shr(x, 0),  0x8000);
+    /// assert_eq!(WrappingShr::wrapping_shr(x, 1),  0x4000);
+    /// assert_eq!(WrappingShr::wrapping_shr(x, 15), 0x0001);
+    /// assert_eq!(WrappingShr::wrapping_shr(x, 16), 0x8000);
     /// ```
-    fn wrapping_shr(&self, rhs: u32) -> Self;
+    fn wrapping_shr(self, rhs: u32) -> Self::WrappingOutput;
 }
 
 wrapping_shift_impl!(WrappingShr, wrapping_shr, u8);
@@ -207,73 +223,93 @@ wrapping_shift_impl!(WrappingShr, wrapping_shr, isize);
 wrapping_shift_impl!(WrappingShr, wrapping_shr, i128);
 
 // Well this is a bit funny, but all the more appropriate.
-impl<T: WrappingAdd> WrappingAdd for Wrapping<T>
+impl<T> WrappingAdd for Wrapping<T>
 where
-    Wrapping<T>: Add<Output = Wrapping<T>>,
+    T: WrappingAdd<T, WrappingOutput = T>,
+    Wrapping<T>: Add<Output = Self>,
 {
-    fn wrapping_add(&self, v: &Self) -> Self {
-        Wrapping(self.0.wrapping_add(&v.0))
+    type WrappingOutput = Self;
+
+    fn wrapping_add(self, v: Self) -> Self {
+        Wrapping(self.0.wrapping_add(v.0))
     }
 }
-impl<T: WrappingSub> WrappingSub for Wrapping<T>
+
+impl<T> WrappingSub for Wrapping<T>
 where
+    T: WrappingSub<T, WrappingOutput = T>,
     Wrapping<T>: Sub<Output = Wrapping<T>>,
 {
-    fn wrapping_sub(&self, v: &Self) -> Self {
-        Wrapping(self.0.wrapping_sub(&v.0))
+    type WrappingOutput = Self;
+
+    fn wrapping_sub(self, v: Self) -> Self {
+        Wrapping(self.0.wrapping_sub(v.0))
     }
 }
-impl<T: WrappingMul> WrappingMul for Wrapping<T>
+
+impl<T> WrappingMul for Wrapping<T>
 where
+    T: WrappingMul<T, WrappingOutput = T>,
     Wrapping<T>: Mul<Output = Wrapping<T>>,
 {
-    fn wrapping_mul(&self, v: &Self) -> Self {
-        Wrapping(self.0.wrapping_mul(&v.0))
+    type WrappingOutput = Self;
+
+    fn wrapping_mul(self, v: Self) -> Self {
+        Wrapping(self.0.wrapping_mul(v.0))
     }
 }
 impl<T: WrappingNeg> WrappingNeg for Wrapping<T>
 where
+    T: WrappingNeg<WrappingOutput = T>,
     Wrapping<T>: Neg<Output = Wrapping<T>>,
 {
-    fn wrapping_neg(&self) -> Self {
+    type WrappingOutput = Self;
+
+    fn wrapping_neg(self) -> Self {
         Wrapping(self.0.wrapping_neg())
     }
 }
 impl<T: WrappingShl> WrappingShl for Wrapping<T>
 where
+    T: WrappingShl<WrappingOutput = T>,
     Wrapping<T>: Shl<usize, Output = Wrapping<T>>,
 {
-    fn wrapping_shl(&self, rhs: u32) -> Self {
+    type WrappingOutput = Self;
+
+    fn wrapping_shl(self, rhs: u32) -> Self {
         Wrapping(self.0.wrapping_shl(rhs))
     }
 }
 impl<T: WrappingShr> WrappingShr for Wrapping<T>
 where
+    T: WrappingShr<WrappingOutput = T>,
     Wrapping<T>: Shr<usize, Output = Wrapping<T>>,
 {
-    fn wrapping_shr(&self, rhs: u32) -> Self {
+    type WrappingOutput = Self;
+
+    fn wrapping_shr(self, rhs: u32) -> Self {
         Wrapping(self.0.wrapping_shr(rhs))
     }
 }
 
 #[test]
 fn test_wrapping_traits() {
-    fn wrapping_add<T: WrappingAdd>(a: T, b: T) -> T {
-        a.wrapping_add(&b)
+    fn wrapping_add<T: WrappingAdd<WrappingOutput = T>>(a: T, b: T) -> T {
+        a.wrapping_add(b)
     }
-    fn wrapping_sub<T: WrappingSub>(a: T, b: T) -> T {
-        a.wrapping_sub(&b)
+    fn wrapping_sub<T: WrappingSub<WrappingOutput = T>>(a: T, b: T) -> T {
+        a.wrapping_sub(b)
     }
-    fn wrapping_mul<T: WrappingMul>(a: T, b: T) -> T {
-        a.wrapping_mul(&b)
+    fn wrapping_mul<T: WrappingMul<WrappingOutput = T>>(a: T, b: T) -> T {
+        a.wrapping_mul(b)
     }
-    fn wrapping_neg<T: WrappingNeg>(a: T) -> T {
+    fn wrapping_neg<T: WrappingNeg<WrappingOutput = T>>(a: T) -> T {
         a.wrapping_neg()
     }
-    fn wrapping_shl<T: WrappingShl>(a: T, b: u32) -> T {
+    fn wrapping_shl<T: WrappingShl<WrappingOutput = T>>(a: T, b: u32) -> T {
         a.wrapping_shl(b)
     }
-    fn wrapping_shr<T: WrappingShr>(a: T, b: u32) -> T {
+    fn wrapping_shr<T: WrappingShr<WrappingOutput = T>>(a: T, b: u32) -> T {
         a.wrapping_shr(b)
     }
     assert_eq!(wrapping_add(255, 1), 0u8);
