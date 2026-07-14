@@ -107,6 +107,29 @@ pub trait Real: Num + Copy + NumCast + PartialOrd + Neg<Output = Self> {
     /// ```
     fn round(self) -> Self;
 
+    /// Rounds to the nearest integer, with ties biasing towards an even result.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use num_traits::real::Real;
+    ///
+    /// fn check<T: Real>(x: T, rounded: T) {
+    ///     assert!(x.round_ties_even() == rounded);
+    /// }
+    ///
+    /// check(1.0f32, 1.0);
+    /// check(1.25f32, 1.0);
+    /// check(1.75f32, 2.0);
+    /// check(1.5f32, 2.0);
+    /// check(2.5f32, 2.0);
+    /// check(3.5f32, 4.0);
+    /// check(-3.5f32, -4.0);
+    /// ```
+    fn round_ties_even(self) -> Self {
+        round_ties_even_impl!(self)
+    }
+
     /// Return the integer part of a number.
     ///
     /// ```
@@ -830,5 +853,6 @@ impl<T: Float> Real for T {
         Float::asinh(self) -> Self;
         Float::acosh(self) -> Self;
         Float::atanh(self) -> Self;
+        Float::round_ties_even(self) -> Self;
     }
 }

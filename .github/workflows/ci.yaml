@@ -12,6 +12,7 @@ jobs:
           1.60.0, # MSRV
           1.62.0, # has_total_cmp
           1.74.0, # has_num_saturating
+          1.77.0, # has_round_ties_even
           stable,
           beta,
           nightly,
