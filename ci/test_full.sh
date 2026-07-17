@@ -35,7 +35,7 @@ if ! check_version $MSRV ; then
   exit 1
 fi
 
-FEATURES=(libm)
+FEATURES=(libm force-libm)
 echo "Testing supported features: ${FEATURES[*]}"
 
 generate_lockfile
@@ -70,3 +70,23 @@ cargo test --features="std ${FEATURES[*]}"
 
 cargo build --features="${FEATURES[*]}"
 cargo test --features="${FEATURES[*]}"
+
+# Verify that `force-libm` feature actually switches the math implementation
+# by checking for libm symbols in the linked test binary.
+get_test_binary() {
+  cargo test --no-run --no-default-features --features="$1" --message-format=json 2>/dev/null \
+    | grep '"name":"num_traits"' \
+    | sed -n 's/.*"executable":"\([^"]*\)".*/\1/p'
+}
+
+echo "Checking that test binary built with only the 'std' feature DOES NOT contain libm math symbols..."
+if nm -C "$(get_test_binary "std")" | grep -q 'libm::math'; then
+  echo "force-libm symbol check failed: std-only binary should not contain libm math symbols"
+  exit 1
+fi
+
+echo "Checking that test binary built with 'std' and 'force-libm' features DOES contain libm math symbols..."
+if ! nm -C "$(get_test_binary "std,force-libm")" | grep -q 'libm::math'; then
+  echo "force-libm symbol check failed: force-libm binary should contain libm math symbols"
+  exit 1
+fi
