@@ -37,7 +37,8 @@ pub use crate::identities::{one, zero, ConstOne, ConstZero, One, Zero};
 pub use crate::int::PrimInt;
 pub use crate::ops::bytes::{FromBytes, ToBytes};
 pub use crate::ops::checked::{
-    CheckedAdd, CheckedDiv, CheckedMul, CheckedNeg, CheckedRem, CheckedShl, CheckedShr, CheckedSub,
+    CheckedAdd, CheckedDiv, CheckedMul, CheckedNeg, CheckedNumOps, CheckedRem, CheckedShl,
+    CheckedShr, CheckedSub,
 };
 pub use crate::ops::euclid::{CheckedEuclid, Euclid};
 pub use crate::ops::inv::Inv;
