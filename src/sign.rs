@@ -17,6 +17,10 @@ pub trait Signed: Sized + Num + Neg<Output = Self> {
     ///
     /// Returns `zero` if the number is less than or equal to `other`, otherwise the difference
     /// between `self` and `other` is returned.
+    ///
+    /// For signed integers, the difference may not be representable (e.g.
+    /// `MAX.abs_sub(&-1)`), in which case the subtraction overflows: it panics when overflow
+    /// checks are enabled and wraps around otherwise.
     fn abs_sub(&self, other: &Self) -> Self;
 
     /// Returns the sign of the number.
@@ -46,7 +50,9 @@ macro_rules! signed_impl {
         impl Signed for $t {
             #[inline]
             fn abs(&self) -> $t {
-                if self.is_negative() { -*self } else { *self }
+                // `wrapping_abs` matches the documented behavior (`::MIN` is returned for
+                // `::MIN`); negation would panic on `::MIN` when overflow checks are enabled.
+                self.wrapping_abs()
             }
 
             #[inline]
@@ -213,4 +219,17 @@ fn unsigned_wrapping_is_unsigned() {
 fn signed_wrapping_is_signed() {
     fn require_signed<T: Signed>(_: &T) {}
     require_signed(&Wrapping(-42));
+}
+
+#[test]
+fn abs_min_returns_min() {
+    // The documented behavior: "For signed integers, `::MIN` will be returned if the number
+    // is `::MIN`." This must also hold when overflow checks are enabled.
+    assert_eq!(Signed::abs(&isize::MIN), isize::MIN);
+    assert_eq!(Signed::abs(&i8::MIN), i8::MIN);
+    assert_eq!(Signed::abs(&i16::MIN), i16::MIN);
+    assert_eq!(Signed::abs(&i32::MIN), i32::MIN);
+    assert_eq!(Signed::abs(&i64::MIN), i64::MIN);
+    assert_eq!(Signed::abs(&i128::MIN), i128::MIN);
+    assert_eq!(crate::sign::abs(i32::MIN), i32::MIN);
 }
