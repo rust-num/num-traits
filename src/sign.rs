@@ -19,8 +19,8 @@ pub trait Signed: Sized + Num + Neg<Output = Self> {
     /// between `self` and `other` is returned.
     ///
     /// For signed integers, the difference may not be representable (e.g.
-    /// `MAX.abs_sub(&-1)`), in which case the subtraction overflows: it panics when overflow
-    /// checks are enabled and wraps around otherwise.
+    /// `i32::MAX.abs_sub(&-1)`), in which case the subtraction overflows: it panics when
+    /// overflow checks are enabled and wraps around otherwise.
     fn abs_sub(&self, other: &Self) -> Self;
 
     /// Returns the sign of the number.
