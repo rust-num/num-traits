@@ -74,6 +74,62 @@ fn wrapping_is_numcast() {
 }
 
 #[test]
+#[cfg(has_num_saturating)]
+fn saturating_to_primitive() {
+    use core::num::Saturating;
+
+    macro_rules! test_saturating_to_primitive {
+        ($($t:ty)+) => {
+            $({
+                let i: $t = 0;
+                let w = Saturating(i);
+                assert_eq!(i.to_u8(),    w.to_u8());
+                assert_eq!(i.to_u16(),   w.to_u16());
+                assert_eq!(i.to_u32(),   w.to_u32());
+                assert_eq!(i.to_u64(),   w.to_u64());
+                assert_eq!(i.to_usize(), w.to_usize());
+                assert_eq!(i.to_i8(),    w.to_i8());
+                assert_eq!(i.to_i16(),   w.to_i16());
+                assert_eq!(i.to_i32(),   w.to_i32());
+                assert_eq!(i.to_i64(),   w.to_i64());
+                assert_eq!(i.to_isize(), w.to_isize());
+                assert_eq!(i.to_f32(),   w.to_f32());
+                assert_eq!(i.to_f64(),   w.to_f64());
+            })+
+        };
+    }
+
+    test_saturating_to_primitive!(usize u8 u16 u32 u64 isize i8 i16 i32 i64);
+}
+
+#[test]
+#[cfg(has_num_saturating)]
+fn saturating_is_toprimitive() {
+    use core::num::Saturating;
+
+    fn require_toprimitive<T: ToPrimitive>(_: &T) {}
+    require_toprimitive(&Saturating(42));
+}
+
+#[test]
+#[cfg(has_num_saturating)]
+fn saturating_is_fromprimitive() {
+    use core::num::Saturating;
+
+    fn require_fromprimitive<T: FromPrimitive>(_: &T) {}
+    require_fromprimitive(&Saturating(42));
+}
+
+#[test]
+#[cfg(has_num_saturating)]
+fn saturating_is_numcast() {
+    use core::num::Saturating;
+
+    fn require_numcast<T: NumCast>(_: &T) {}
+    require_numcast(&Saturating(42));
+}
+
+#[test]
 fn as_primitive() {
     let x: f32 = (1.625f64).as_();
     assert_eq!(x, 1.625f32);

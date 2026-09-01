@@ -695,7 +695,7 @@ impl_from_primitive_nonzero!(NonZeroU32, to_u32);
 impl_from_primitive_nonzero!(NonZeroU64, to_u64);
 impl_from_primitive_nonzero!(NonZeroU128, to_u128);
 
-macro_rules! impl_to_primitive_wrapping {
+macro_rules! impl_to_primitive_for_wrapper {
     ($( fn $method:ident -> $i:ident ; )*) => {$(
         #[inline]
         fn $method(&self) -> Option<$i> {
@@ -705,7 +705,7 @@ macro_rules! impl_to_primitive_wrapping {
 }
 
 impl<T: ToPrimitive> ToPrimitive for Wrapping<T> {
-    impl_to_primitive_wrapping! {
+    impl_to_primitive_for_wrapper! {
         fn to_isize -> isize;
         fn to_i8 -> i8;
         fn to_i16 -> i16;
@@ -725,17 +725,39 @@ impl<T: ToPrimitive> ToPrimitive for Wrapping<T> {
     }
 }
 
-macro_rules! impl_from_primitive_wrapping {
-    ($( fn $method:ident ( $i:ident ); )*) => {$(
+macro_rules! impl_from_primitive_for_wrapper {
+    ($wrapper:path, $( fn $method:ident ( $i:ident ); )*) => {$(
         #[inline]
         fn $method(n: $i) -> Option<Self> {
-            T::$method(n).map(Wrapping)
+            T::$method(n).map($wrapper)
         }
     )*}
 }
 
 impl<T: FromPrimitive> FromPrimitive for Wrapping<T> {
-    impl_from_primitive_wrapping! {
+    impl_from_primitive_for_wrapper! { Wrapping,
+        fn from_isize(isize);
+        fn from_i8(i8);
+        fn from_i16(i16);
+        fn from_i32(i32);
+        fn from_i64(i64);
+        fn from_i128(i128);
+
+        fn from_usize(usize);
+        fn from_u8(u8);
+        fn from_u16(u16);
+        fn from_u32(u32);
+        fn from_u64(u64);
+        fn from_u128(u128);
+
+        fn from_f32(f32);
+        fn from_f64(f64);
+    }
+}
+
+#[cfg(has_num_saturating)]
+impl<T: FromPrimitive> FromPrimitive for core::num::Saturating<T> {
+    impl_from_primitive_for_wrapper! { core::num::Saturating,
         fn from_isize(isize);
         fn from_i8(i8);
         fn from_i16(i16);
@@ -841,6 +863,35 @@ impl_num_cast_nonzero!(NonZeroI128, to_i128);
 impl<T: NumCast> NumCast for Wrapping<T> {
     fn from<U: ToPrimitive>(n: U) -> Option<Self> {
         T::from(n).map(Wrapping)
+    }
+}
+
+#[cfg(has_num_saturating)]
+impl<T: ToPrimitive> ToPrimitive for core::num::Saturating<T> {
+    impl_to_primitive_for_wrapper! {
+        fn to_isize -> isize;
+        fn to_i8 -> i8;
+        fn to_i16 -> i16;
+        fn to_i32 -> i32;
+        fn to_i64 -> i64;
+        fn to_i128 -> i128;
+
+        fn to_usize -> usize;
+        fn to_u8 -> u8;
+        fn to_u16 -> u16;
+        fn to_u32 -> u32;
+        fn to_u64 -> u64;
+        fn to_u128 -> u128;
+
+        fn to_f32 -> f32;
+        fn to_f64 -> f64;
+    }
+}
+
+#[cfg(has_num_saturating)]
+impl<T: NumCast> NumCast for core::num::Saturating<T> {
+    fn from<U: ToPrimitive>(n: U) -> Option<Self> {
+        T::from(n).map(core::num::Saturating)
     }
 }
 

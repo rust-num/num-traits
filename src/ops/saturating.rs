@@ -107,6 +107,36 @@ saturating_impl!(SaturatingMul, saturating_mul, i128);
 
 // TODO: add SaturatingNeg for signed integer primitives once the saturating_neg() API is stable.
 
+#[cfg(has_num_saturating)]
+impl<T: SaturatingAdd> SaturatingAdd for core::num::Saturating<T>
+where
+    core::num::Saturating<T>: Add<Output = core::num::Saturating<T>>,
+{
+    fn saturating_add(&self, v: &Self) -> Self {
+        core::num::Saturating(self.0.saturating_add(&v.0))
+    }
+}
+
+#[cfg(has_num_saturating)]
+impl<T: SaturatingSub> SaturatingSub for core::num::Saturating<T>
+where
+    core::num::Saturating<T>: Sub<Output = core::num::Saturating<T>>,
+{
+    fn saturating_sub(&self, v: &Self) -> Self {
+        core::num::Saturating(self.0.saturating_sub(&v.0))
+    }
+}
+
+#[cfg(has_num_saturating)]
+impl<T: SaturatingMul> SaturatingMul for core::num::Saturating<T>
+where
+    core::num::Saturating<T>: Mul<Output = core::num::Saturating<T>>,
+{
+    fn saturating_mul(&self, v: &Self) -> Self {
+        core::num::Saturating(self.0.saturating_mul(&v.0))
+    }
+}
+
 #[test]
 fn test_saturating_traits() {
     fn saturating_add<T: SaturatingAdd>(a: T, b: T) -> T {
@@ -127,4 +157,25 @@ fn test_saturating_traits() {
     assert_eq!(saturating_mul(255, 2), 255u8);
     assert_eq!(saturating_mul(127, 2), 127i8);
     assert_eq!(saturating_mul(-128, 2), -128i8);
+}
+
+#[test]
+#[cfg(has_num_saturating)]
+fn saturating_is_saturatingadd() {
+    fn require_saturatingadd<T: SaturatingAdd>(_: &T) {}
+    require_saturatingadd(&core::num::Saturating(42));
+}
+
+#[test]
+#[cfg(has_num_saturating)]
+fn saturating_is_saturatingsub() {
+    fn require_saturatingsub<T: SaturatingSub>(_: &T) {}
+    require_saturatingsub(&core::num::Saturating(42));
+}
+
+#[test]
+#[cfg(has_num_saturating)]
+fn saturating_is_saturatingmul() {
+    fn require_saturatingmul<T: SaturatingMul>(_: &T) {}
+    require_saturatingmul(&core::num::Saturating(42));
 }

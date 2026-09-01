@@ -130,6 +130,31 @@ pow_impl!(Wrapping<i128>);
 pow_impl!(Wrapping<usize>);
 pow_impl!(Wrapping<isize>);
 
+#[cfg(has_num_saturating)]
+pow_impl!(core::num::Saturating<u8>);
+#[cfg(has_num_saturating)]
+pow_impl!(core::num::Saturating<i8>);
+#[cfg(has_num_saturating)]
+pow_impl!(core::num::Saturating<u16>);
+#[cfg(has_num_saturating)]
+pow_impl!(core::num::Saturating<i16>);
+#[cfg(has_num_saturating)]
+pow_impl!(core::num::Saturating<u32>);
+#[cfg(has_num_saturating)]
+pow_impl!(core::num::Saturating<i32>);
+#[cfg(has_num_saturating)]
+pow_impl!(core::num::Saturating<u64>);
+#[cfg(has_num_saturating)]
+pow_impl!(core::num::Saturating<i64>);
+#[cfg(has_num_saturating)]
+pow_impl!(core::num::Saturating<u128>);
+#[cfg(has_num_saturating)]
+pow_impl!(core::num::Saturating<i128>);
+#[cfg(has_num_saturating)]
+pow_impl!(core::num::Saturating<usize>);
+#[cfg(has_num_saturating)]
+pow_impl!(core::num::Saturating<isize>);
+
 // FIXME: these should be possible
 // pow_impl!(u8, u64);
 // pow_impl!(i16, u64);
