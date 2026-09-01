@@ -124,6 +124,16 @@ impl<T: Bounded> Bounded for Wrapping<T> {
     }
 }
 
+#[cfg(has_num_saturating)]
+impl<T: Bounded> Bounded for core::num::Saturating<T> {
+    fn min_value() -> Self {
+        core::num::Saturating(T::min_value())
+    }
+    fn max_value() -> Self {
+        core::num::Saturating(T::max_value())
+    }
+}
+
 bounded_impl!(f32, f32::MIN, f32::MAX);
 
 macro_rules! for_each_tuple_ {
@@ -192,6 +202,44 @@ fn wrapping_is_bounded() {
     fn require_bounded<T: Bounded>(_: &T) {}
     require_bounded(&Wrapping(42_u32));
     require_bounded(&Wrapping(-42));
+}
+
+#[test]
+#[cfg(has_num_saturating)]
+fn saturating_bounded() {
+    macro_rules! test_saturating_bounded {
+        ($($t:ty)+) => {
+            $(
+                assert_eq!(<core::num::Saturating<$t> as Bounded>::min_value().0, <$t>::min_value());
+                assert_eq!(<core::num::Saturating<$t> as Bounded>::max_value().0, <$t>::max_value());
+            )+
+        };
+    }
+
+    test_saturating_bounded!(usize u8 u16 u32 u64 isize i8 i16 i32 i64);
+}
+
+#[test]
+#[cfg(has_num_saturating)]
+fn saturating_bounded_i128() {
+    macro_rules! test_saturating_bounded {
+        ($($t:ty)+) => {
+            $(
+                assert_eq!(<core::num::Saturating<$t> as Bounded>::min_value().0, <$t>::min_value());
+                assert_eq!(<core::num::Saturating<$t> as Bounded>::max_value().0, <$t>::max_value());
+            )+
+        };
+    }
+
+    test_saturating_bounded!(u128 i128);
+}
+
+#[test]
+#[cfg(has_num_saturating)]
+fn saturating_is_bounded() {
+    fn require_bounded<T: Bounded>(_: &T) {}
+    require_bounded(&core::num::Saturating(42_u32));
+    require_bounded(&core::num::Saturating(-42));
 }
 
 #[test]

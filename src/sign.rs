@@ -1,3 +1,5 @@
+#[cfg(has_num_saturating)]
+use core::num::Saturating;
 use core::num::Wrapping;
 use core::ops::Neg;
 
@@ -91,6 +93,37 @@ where
     #[inline]
     fn signum(&self) -> Self {
         Wrapping(self.0.signum())
+    }
+
+    #[inline]
+    fn is_positive(&self) -> bool {
+        self.0.is_positive()
+    }
+
+    #[inline]
+    fn is_negative(&self) -> bool {
+        self.0.is_negative()
+    }
+}
+
+#[cfg(has_num_saturating)]
+impl<T: Signed> Signed for Saturating<T>
+where
+    Saturating<T>: Num + Neg<Output = Saturating<T>>,
+{
+    #[inline]
+    fn abs(&self) -> Self {
+        Saturating(self.0.abs())
+    }
+
+    #[inline]
+    fn abs_sub(&self, other: &Self) -> Self {
+        Saturating(self.0.abs_sub(&other.0))
+    }
+
+    #[inline]
+    fn signum(&self) -> Self {
+        Saturating(self.0.signum())
     }
 
     #[inline]
@@ -203,6 +236,9 @@ empty_trait_impl!(Unsigned for usize u8 u16 u32 u64 u128);
 
 impl<T: Unsigned> Unsigned for Wrapping<T> where Wrapping<T>: Num {}
 
+#[cfg(has_num_saturating)]
+impl<T: Unsigned> Unsigned for Saturating<T> where Saturating<T>: Num {}
+
 #[test]
 fn unsigned_wrapping_is_unsigned() {
     fn require_unsigned<T: Unsigned>(_: &T) {}
@@ -213,4 +249,18 @@ fn unsigned_wrapping_is_unsigned() {
 fn signed_wrapping_is_signed() {
     fn require_signed<T: Signed>(_: &T) {}
     require_signed(&Wrapping(-42));
+}
+
+#[test]
+#[cfg(has_num_saturating)]
+fn unsigned_saturating_is_unsigned() {
+    fn require_unsigned<T: Unsigned>(_: &T) {}
+    require_unsigned(&Saturating(42_u32));
+}
+
+#[test]
+#[cfg(has_num_saturating)]
+fn signed_saturating_is_signed() {
+    fn require_signed<T: Signed>(_: &T) {}
+    require_signed(&Saturating(-42));
 }
