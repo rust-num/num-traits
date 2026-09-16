@@ -26,6 +26,7 @@ libm = { version = "0.2.0", optional = true }
 default = ["std"]
 libm = ["dep:libm"]
 std = []
+force-libm = ["libm"]
 
 # vestigial features, now always in effect
 i128 = []

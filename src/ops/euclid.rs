@@ -88,10 +88,10 @@ macro_rules! euclid_forward_impl {
 euclid_forward_impl!(isize i8 i16 i32 i64 i128);
 euclid_forward_impl!(usize u8 u16 u32 u64 u128);
 
-#[cfg(feature = "std")]
+#[cfg(all(feature = "std", not(feature = "force-libm")))]
 euclid_forward_impl!(f32 f64);
 
-#[cfg(not(feature = "std"))]
+#[cfg(any(feature = "force-libm", not(feature = "std")))]
 impl Euclid for f32 {
     #[inline]
     fn div_euclid(&self, v: &f32) -> f32 {
@@ -113,7 +113,7 @@ impl Euclid for f32 {
     }
 }
 
-#[cfg(not(feature = "std"))]
+#[cfg(any(feature = "force-libm", not(feature = "std")))]
 impl Euclid for f64 {
     #[inline]
     fn div_euclid(&self, v: &f64) -> f64 {
