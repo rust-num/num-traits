@@ -34,10 +34,46 @@ pub trait Signed: Sized + Num + Neg<Output = Self> {
     /// * `-1` if the number is negative
     fn signum(&self) -> Self;
 
-    /// Returns true if the number is positive and false if the number is zero or negative.
+    /// Returns `true` if the number is positive.
+    ///
+    /// For signed integers, zero is neither positive nor negative.
+    ///
+    /// For `f32` and `f64`, the result follows the sign bit. Therefore, `+0.0` is positive,
+    /// `-0.0` is negative, and positive and negative infinity follow the same rule. NaN values
+    /// also follow their sign bit. The sign of a NaN produced by arithmetic is not specified here.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use num_traits::Signed;
+    ///
+    /// assert!(<f32 as Signed>::is_positive(&0.0));
+    /// assert!(<f64 as Signed>::is_positive(&0.0));
+    /// assert!(!<f32 as Signed>::is_positive(&-0.0));
+    /// assert!(!<f64 as Signed>::is_positive(&-0.0));
+    /// assert!(!<i32 as Signed>::is_positive(&0));
+    /// ```
     fn is_positive(&self) -> bool;
 
-    /// Returns true if the number is negative and false if the number is zero or positive.
+    /// Returns `true` if the number is negative.
+    ///
+    /// For signed integers, zero is neither positive nor negative.
+    ///
+    /// For `f32` and `f64`, the result follows the sign bit. Therefore, `-0.0` is negative,
+    /// `+0.0` is positive, and negative and positive infinity follow the same rule. NaN values
+    /// also follow their sign bit. The sign of a NaN produced by arithmetic is not specified here.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use num_traits::Signed;
+    ///
+    /// assert!(!<f32 as Signed>::is_negative(&0.0));
+    /// assert!(!<f64 as Signed>::is_negative(&0.0));
+    /// assert!(<f32 as Signed>::is_negative(&-0.0));
+    /// assert!(<f64 as Signed>::is_negative(&-0.0));
+    /// assert!(!<i32 as Signed>::is_negative(&0));
+    /// ```
     fn is_negative(&self) -> bool;
 }
 
