@@ -12,7 +12,7 @@ use core::num::Saturating;
 /// a + 0 = a       ∀ a ∈ Self
 /// 0 + a = a       ∀ a ∈ Self
 /// ```
-pub trait Zero: Sized + Add<Self, Output = Self> {
+pub trait Zero: Sized {
     /// Returns the additive identity element of `Self`, `0`.
     /// # Purity
     ///
@@ -132,7 +132,7 @@ where
 /// a * 1 = a       ∀ a ∈ Self
 /// 1 * a = a       ∀ a ∈ Self
 /// ```
-pub trait One: Sized + Mul<Self, Output = Self> {
+pub trait One: Sized {
     /// Returns the multiplicative identity element of `Self`, `1`.
     ///
     /// # Purity
